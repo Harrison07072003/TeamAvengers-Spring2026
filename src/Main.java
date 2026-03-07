@@ -1,6 +1,4 @@
 public class Main {
-    String name = "Harrison";
-    //jocelins comment
-    //hellooooooooooooooo
-    string a ="Gethsemane";
-}
+    String a = "Gethsemane";
+    String b = "Jose Munoz-suastegui";
+    }
