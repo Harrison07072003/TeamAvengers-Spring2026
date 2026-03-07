@@ -1,4 +1,4 @@
 public class Main {
     String a = "Gethsemane";
-    String b = "Jose Munoz-S";
+    String b = "Jose Munoz";
     }
