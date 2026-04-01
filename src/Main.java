@@ -4,4 +4,9 @@ public class Main {
     String c = "Harrison";
     String d = "Asliee";
     String e = "Jocelin";
+
+    public static void main(String[] args) {
+        GameController gc = new GameController();
+        gc.run();
     }
+}
