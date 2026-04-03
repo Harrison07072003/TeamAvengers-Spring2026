@@ -1,11 +1,27 @@
 public class View {
     //fields
     //constructor
-    public View(){
-
-    }
+    public View(){}
     //methods
     public void display(String str){
         System.out.println(str);
     }
+    public void displayStatus(String health,int attack,int defense){
+        System.out.println("HP: " + health + "  \n" +
+        "Attack: " + attack + " | Defense: " + defense + "\n" +
+        "Vials:  |   Coins:");
+    }
+    public void navHelp(){
+        System.out.println("Commands: \n" + "1.Status - Display current HP,stats,vial count, and money count\n" + "2.Inventory - View collected items" +
+                "\n" + "3.Help - Show a list of available commands\n" + "4.Checkpoint - Saves checkpoint\n" + "5.Show map - Displays the map and the player's location\n"
+        + "6.Escape - Escape the school(only usable with all vials)\n" + "7.Save Game - Saves gameplay\n" + "8.Load Game - Loads saved game or checkpoint\n" +
+                "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay");
+    }
+    public void showMap(){
+        System.out.println("Map: \n" +
+        " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall]\n" +
+        "       |                          |                        |\n" +
+        " [Meditation Room] -------- [Student Lounge] ------  [  Campus Cafe  ]");
+    }
+
 }

@@ -33,6 +33,12 @@ public class Character {
     public int getCurrentHP() {
         return currentHP;
     }
+    public int getMaxHP(){
+        return this.maxHP;
+    }
+    public String getHealth() {
+        return this.currentHP + "/" + this.maxHP;
+    }
     public boolean isAlive() {
         return this.alive;
     }
