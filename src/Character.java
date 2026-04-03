@@ -20,7 +20,26 @@ public class Character {
         this.alive = true;
     }
     //methods
+    //getters and setters
     public String getCharaterID() {
         return this.charaterID;
+    }
+    public int getAttack() {
+        return this.attack;
+    }
+    public int getDefense() {
+        return this.defense;
+    }
+    public int getCurrentHP() {
+        return currentHP;
+    }
+    public boolean isAlive() {
+        return this.alive;
+    }
+    public void setAlive(boolean status) {
+        this.alive = status;
+    }
+    public void setCurrentHP(int hp) {
+        this.currentHP = hp;
     }
 }
