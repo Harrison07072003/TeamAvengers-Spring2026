@@ -11,6 +11,13 @@ public class View {
         "Attack: " + attack + " | Defense: " + defense + "\n" +
         "Vials:  |   Coins:");
     }
+    public void monsterUI(String health,String monster,String monsterHealth){
+        System.out.println("Your HP: " + health + "\n" +
+                           monster+"'s HP: " + monsterHealth + "\n" +
+                "Commands: Attack, Heavy Attack, Defend,Dodge, Retreat + \n" +
+                "--------------------------------\n" + "Action:");
+    }
+    public void puzzleUI(){}
     public void navHelp(){
         System.out.println("Commands: \n" + "1.Status - Display current HP,stats,vial count, and money count\n" + "2.Inventory - View collected items" +
                 "\n" + "3.Help - Show a list of available commands\n" + "4.Checkpoint - Saves checkpoint\n" + "5.Show map - Displays the map and the player's location\n"

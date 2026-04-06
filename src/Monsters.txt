@@ -1,3 +1,4 @@
+(ID,Name,Description,Health,Attack,Defense,Room)
 M1,Freddy Krueger,Attack the player in dark rooms while whispering: "Don't fall asleep.",80,25,15,R18
 M2,Micheal Myers,A slow but unstoppable monster that silently follows the player: "He never stops.",120,30,25,R15
 M3,Riddler,Blocks the player's path and demands answers saying: "Solve or suffer.",65,15,10,R11

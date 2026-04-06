@@ -18,6 +18,7 @@ public class GameController {
         while(isRunning) {
             v.display("Enter a command:");
             v.display("Commands: status, map, refresh, quit");
+            v.monsterUI(A.getHealth(), "Monster", "50/50");
             String command = input.nextLine();
             if(command.equals("quit")){
                 isRunning = false;
@@ -38,5 +39,11 @@ public class GameController {
                     v.display("Invalid command. Try again.");
                 }
         }
+    }
+    public void battle(){
+
+    }
+    public void puzzle(){
+
     }
 }
