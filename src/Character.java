@@ -7,7 +7,7 @@ public class Character {
     private int currentHP;
     private int attack;
     private int defense;
-    //private ArrayList<Item> inventory;
+    private ArrayList<Item> inventory;
     private boolean alive;
     //constructor
     public Character(String id, int maxHP, int attack, int defense) {
@@ -16,7 +16,7 @@ public class Character {
         this.currentHP = maxHP;
         this.attack = attack;
         this.defense = defense;
-        //this.inventory = new ArrayList<Item>();
+        this.inventory = new ArrayList<Item>();
         this.alive = true;
     }
     //methods
@@ -38,6 +38,19 @@ public class Character {
     }
     public String getHealth() {
         return this.currentHP + "/" + this.maxHP;
+    }
+    public ArrayList<Item> getInventory() {
+        return null;
+    }
+    public String getInventoryString() {
+        String inventoryString = "";
+        if (this.inventory.isEmpty()) {
+            return "Empty";
+        }
+        for (Item item : this.getInventory()) {
+            inventoryString += item.getItemName() + ", ";
+        }
+        return inventoryString.substring(0, inventoryString.length() - 2);
     }
     public boolean isAlive() {
         return this.alive;

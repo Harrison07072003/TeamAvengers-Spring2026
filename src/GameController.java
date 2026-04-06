@@ -31,6 +31,9 @@ public class GameController {
                 else if(command.equals("help")){
                     v.navHelp();
                 }
+                else if(command.equals("inventory")){
+                    v.display(A.getInventoryString());
+                }
                 else{
                     v.display("Invalid command. Try again.");
                 }

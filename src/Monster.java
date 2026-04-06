@@ -21,4 +21,10 @@ public class Monster extends Character{
         if(player.getCurrentHP() <= 0)
             player.setAlive(false);
     }
+    public Item dropItem(){
+        if(!this.isAlive())
+            return this.getInventory().get(0);
+        else
+            return null;
+    }
 }
