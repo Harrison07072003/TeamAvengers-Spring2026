@@ -1,0 +1,8 @@
+puzzleId|puzzleName|question|solution|roomId|hint|attemptsRemaining|isSolved|rewards
+P1|Puzzle 1|What's between 5 and 8?|67|R4|Think about the numbers in order.|3|false|A3
+P2|Puzzle 2|What is Mario's brother's name?|Luigi|R5|He wears green.|3|false|A3
+P3|Puzzle 3|What is the liquid form of frozen H2O?|Water|R1|It melts into this.|3|false|A2,A12
+P4|Puzzle 4|To find the code, count the legs of a spider, 2 stools, 1 table, and the janitor himself.|8442|R2|It's a 4-digit code.|3|false|A11
+P5|Puzzle 5|What's between rack A and rack C?|Rack B|R12|It's the next rack in sequence.|3|false|A6,A5
+P6|Puzzle 6|How many letters are in hamburger and milkshake?|18|R8|Count both words together.|3|false|A5,A5,A5
+P7|Puzzle 7|What does HP stand for?|Health point|R13|It is your life stat.|3|false|A6,A6,A6
