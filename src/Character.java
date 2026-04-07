@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Character {
+public abstract class Character {
     //fields
     private String charaterID;
     private int maxHP;
@@ -9,8 +9,9 @@ public class Character {
     private int defense;
     private ArrayList<Item> inventory;
     private boolean alive;
+    private int coins;
     //constructor
-    public Character(String id, int maxHP, int attack, int defense) {
+    public Character(String id, int maxHP, int attack, int defense, int coins) {
         this.charaterID = id;
         this.maxHP = maxHP;
         this.currentHP = maxHP;
@@ -18,6 +19,7 @@ public class Character {
         this.defense = defense;
         this.inventory = new ArrayList<Item>();
         this.alive = true;
+        this.coins = coins;
     }
     //methods
     //getters and setters
@@ -40,7 +42,13 @@ public class Character {
         return this.currentHP + "/" + this.maxHP;
     }
     public ArrayList<Item> getInventory() {
-        return null;
+        return this.inventory;
+    }
+    public int getCoins() {
+        return this.coins;
+    }
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
     public String getInventoryString() {
         String inventoryString = "";
@@ -61,4 +69,5 @@ public class Character {
     public void setCurrentHP(int hp) {
         this.currentHP = hp;
     }
+
 }

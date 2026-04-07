@@ -6,15 +6,16 @@ public class View {
     public void display(String str){
         System.out.println(str);
     }
-    public void displayStatus(String health,int attack,int defense){
+    public void displayStatus(String health,int attack,int defense, int vials, int coins){
         System.out.println("HP: " + health + "  \n" +
         "Attack: " + attack + " | Defense: " + defense + "\n" +
-        "Vials:  |   Coins:");
+        "Vials: " + vials + "/5 | Coins: " + coins);
     }
+    public void navUI(){}
     public void monsterUI(String health,String monster,String monsterHealth){
         System.out.println("Your HP: " + health + "\n" +
                            monster+"'s HP: " + monsterHealth + "\n" +
-                "Commands: Attack, Heavy Attack, Defend,Dodge, Retreat + \n" +
+                "Commands: Attack, Heavy Attack, Defend,Dodge, Retreat \n" +
                 "--------------------------------\n" + "Action:");
     }
     public void puzzleUI(){}
@@ -25,8 +26,9 @@ public class View {
                 "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay");
     }
     public void showMap(){
-        System.out.println("Map: \n" +
-        " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall]\n" +
+        System.out.println(
+                "                            |Building E|                                       \n" +
+        " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall] -----> Library\n" +
         "       |                          |                        |\n" +
         " [Meditation Room] -------- [Student Lounge] ------  [  Campus Cafe  ]");
     }
