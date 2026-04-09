@@ -9,6 +9,7 @@ public abstract class Character {
     private int defense;
     private ArrayList<Item> inventory;
     private boolean alive;
+    private boolean defending;
     private int coins;
     //constructor
     public Character(String id, int maxHP, int attack, int defense, int coins) {
@@ -19,6 +20,7 @@ public abstract class Character {
         this.defense = defense;
         this.inventory = new ArrayList<Item>();
         this.alive = true;
+        this.defending = false;
         this.coins = coins;
     }
     //methods
@@ -69,5 +71,12 @@ public abstract class Character {
     public void setCurrentHP(int hp) {
         this.currentHP = hp;
     }
+    public boolean isDefending() {
+        return this.defending;
+    }
+    public void setDefending(boolean defending) {
+        this.defending = defending;
+    }
+    public abstract Item dropItem(String item);
 
 }

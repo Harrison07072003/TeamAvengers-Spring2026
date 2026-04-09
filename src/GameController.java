@@ -6,27 +6,39 @@ public class GameController {
     private View v;
     private Scanner input;
     private boolean isRunning;
+    private CombatEngine combatEngine;
+    private RoomMap school;
     //constructor
-    GameController() {
-        A = new Player("Player", 100, 5, 5, 10,"R12");
-        v = new View();
-        input = new Scanner(System.in);
-        isRunning = true;
+    GameController(View v) {
+        this.school = new RoomMap();
+        this.A = new Player("Player", 100, 18, 5, 10,"R1",school);
+        this.v = v;
+        this.input = new Scanner(System.in);
+        this.isRunning = true;
+        this.combatEngine = new CombatEngine(A);
     }
     //methods
     public void run(){
+        school.getRooms().add(new Room("R1","Classroom","A typical classroom with desks and a whiteboard.",new int[]{1,2,3,4}));
+        school.getRooms().add(new Room("R2","Library","A quiet library filled with books.",new int[]{0,5,6,7}));
         while(isRunning) {
+            v.display(A.getRoomID());
+            v.display("Commands: status, map, engage,inventory,inspect, quit");
             v.display("Enter a command:");
-            v.display("Commands: status, map, refresh, quit");
             String command = input.nextLine();
-            Monster m = new Monster("Monster", "A scary monster", 50, 10, 3,2,"Room1");
-            Item s = new Item("IO1","Sword", "A sharp sword");
+            Monster m = new Monster("Monster", "A scary monster", 75, 10, 3,2,"R1");
+            Monster m2 = new Monster("Monster2", "A scarier monster", 100, 15, 5,5,"R2");
+            school.getRooms().get(0).getMonsters().add(m);
+            school.getRooms().get(1).getMonsters().add(m2);
+            Item s = new Item("IO1","Sword", "A sharp sword",100);
+            Item s2 = new Item("IO2","Shield", "A sturdy shield",0);
             m.getInventory().add(s);
+            m2.getInventory().add(s2);
             if(command.equals("quit")){
                 isRunning = false;
             }
                 else if(command.equals("status")){
-                    v.displayStatus(A.getHealth(), A.getAttack(), A.getDefense(),0,A.getCoins());
+                    v.displayStatus(A.getHealth(), A.getAttack(),A.getAttackBonus(), A.getDefense(),0,A.getCoins());
                 }
                 else if(command.equals("map")){
                     v.showMap();
@@ -38,89 +50,60 @@ public class GameController {
                     v.display(A.getInventoryString());
                 }
                 else if(command.equals("inspect")){
-                    v.display(A.inspectMonster(m));
+                    v.display(A.inspectMonster());
                 }
                 else if(command.equals("engage")){
-                    battle(m);
+                    boolean engage = A.engageMonster();
+                    if(engage){
+                        v.display("You have engaged the monster! Prepare for battle!");
+                        battle();
+                    }
+                    else{
+                        v.display("There is no monster to engage in this room.");
+                    }
+                }
+                else if(command.equals("move")) {
+                    A.setCurrentRoom("R2");
+                }
+                else if(command.equals("back")){
+                    A.setCurrentRoom("R1");
+                }
+                else if(command.startsWith("equip ")){
+                    String itemName = command.substring(6);
+                    boolean eq = A.equipWeapon(itemName);
+                    if(eq){
+                        v.display("You have equipped the " + itemName + "!");
+                    }
+                    else{
+                        v.display("You don't have a " + itemName + " in your inventory.");
+                    }
                 }
                 else{
                     v.display("Invalid command. Try again.");
                 }
         }
     }
-    public void battle(Monster m){
-        int turns = 1;
-        boolean defending = false;
-        while(A.isAlive() && m.isAlive()){
-            if(turns % 3 == 0)
-                defending = true;
-            else
-                defending = false;
-            v.display("Turn: " + turns);
-            v.monsterUI(A.getHealth(),"Monster",m.getHealth());
+    public void battle(){
+        combatEngine.resetEngine();
+        while(!combatEngine.isBattleOver()){
+            v.display("Turn: " + combatEngine.getTurns());
+            v.monsterUI(A.getHealth(),"Monster", combatEngine.getMonsterHealth());
             String command = input.nextLine();
             if(command.equals("status")){
-                v.displayStatus(A.getHealth(), A.getAttack(), A.getDefense(),3,100);
-                turns--;
+                v.displayStatus(A.getHealth(), A.getAttack(),A.getAttackBonus(), A.getDefense(),3,100);
+                continue;
             }
-            else if(command.equals("attack")){
-               if(defending){
-                     v.display("The monster is defending! Your attack is less effective.");
-                     A.attack(m,defending);
-                }
-               else{
-                 A.attack(m,defending);
-                 m.attack(A,false);
-               }
-            }
-            else if(command.equals("heavy attack")){
-                if(defending){
-                    v.display("The monster is defending! Your attack is less effective.");
-                    boolean result = A.heavyAttack(m,defending);
-                    if(result){
-                        v.display("Your heavy attack was successful!");
-                    }
-                    else{
-                        v.display("Your heavy attack missed!");
-                    }
-                }
-                else{
-                    boolean result = A.heavyAttack(m,defending);
-                    if(result){
-                        v.display("Your heavy attack was successful!");
-                    }
-                    else{
-                        v.display("Your heavy attack missed!");
-                    }
-                    m.attack(A,false);
-                }
-            }
-            else if(command.equals("defend")){
-                if (defending) {
-                    v.display("Both you and the monster are defending! No damage dealt.");
-                }
-                else
-                    m.attack(A, true);
-            }
-            else if(command.equals("retreat")){
-                A.retreat();
-                break;
-            }
-            else {
-                v.display("Invalid");
-                turns--;
-                }
-            turns++;
+            String result = combatEngine.action(command);
+            v.display(result + "------------------------------");
         }
-        if(!m.isAlive()) {
-            v.display("The monster has been defeated! You found a " + m.dropItem().getItemName() + " and collected " + m.dropCoins() + " coins.");
+        if(!combatEngine.getMonsterAlive()){
+            v.display("You won the battle!");
+            v.display("You found a " + A.getInventory().get(A.getInventory().size() - 1).getItemName() + " on the monster!");
         }
         else if(!A.isAlive()){
-            v.display("You have been defeated. Game over.");
+            v.display("You were defeated...");
             isRunning = false;
         }
-        else
-            v.display("You retreated from battle.");
     }
     public void puzzle(){
 

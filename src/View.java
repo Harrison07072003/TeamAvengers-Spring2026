@@ -6,9 +6,9 @@ public class View {
     public void display(String str){
         System.out.println(str);
     }
-    public void displayStatus(String health,int attack,int defense, int vials, int coins){
+    public void displayStatus(String health,int attack,int weapon,int defense, int vials, int coins){
         System.out.println("HP: " + health + "  \n" +
-        "Attack: " + attack + " | Defense: " + defense + "\n" +
+        "Attack: " + attack + " | ATK Bonus: (+" + weapon +") | Defense: " + defense + "\n" +
         "Vials: " + vials + "/5 | Coins: " + coins);
     }
     public void navUI(){}
