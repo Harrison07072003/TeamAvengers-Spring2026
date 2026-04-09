@@ -1,3 +1,0 @@
-A1, Flashlight, Used to see throughout the game. Needs batteries to stay powered , tool
-A2, Batteries, Used to power the flashlight , tool
-A10, Backpack, A sturdy backpack used for carrying items and supplies during the game , tools

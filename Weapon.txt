@@ -1,5 +1,0 @@
-A7, Kitchen Knife, Sharp knife used for cutting and self-defense , weapon
-A8, Fork, A utensil used for eating and can be used as a weapon in emergencies , weapon
-A9, Book, A worn-out book filled with ancient knowledge and secrets , weapon
-A11, Broom, A cleaning tool that can be used for sweeping and as a makeshift weapon , weapon
-

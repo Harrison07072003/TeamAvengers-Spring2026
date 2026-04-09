@@ -1,2 +1,0 @@
-A4, Vending Machine food, conummable,
-A5, Normal food, conummable,
