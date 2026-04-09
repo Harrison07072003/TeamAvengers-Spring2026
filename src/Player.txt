@@ -1,0 +1,13 @@
+currentRoom=R1
+hp=100
+atk=5
+def=0
+coins=15
+vialCount=0
+inventoryCapacity=5
+equippedWeapon=none
+hasBackpack=false
+weapons=
+items=
+questItems=
+tools=
