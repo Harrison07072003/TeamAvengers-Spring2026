@@ -1,2 +1,2 @@
-C1, Vending Machine food,
-C2, Normal food, 
+A4, Vending Machine food, conummable,
+A5, Normal food, conummable,

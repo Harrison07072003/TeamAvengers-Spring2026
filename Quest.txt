@@ -1,0 +1,3 @@
+A3, Cure Vital, Used to make a cure for the plague , quest
+A12, Office Key, A key that opens the office door, granting access to important information and resources , quest
+A13, Cure, A powerful remedy that can cure the plague , quest
