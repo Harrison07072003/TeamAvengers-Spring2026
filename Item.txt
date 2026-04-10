@@ -1,13 +1,13 @@
-A1, Flashlight, Used to see throughout the game. Needs batteries to stay powered , tool
-A2, Batteries, Used to power the flashlight , tool
-A3, Cure Vital, Used to make a cure for the plague , quest
-A4, Vending Machine food, conummable,
-A5, Normal food, conummable,
-A7, Kitchen Knife, Sharp knife used for cutting and self-defense , weapon
-A8, Fork, A utensil used for eating and can be used as a weapon in emergencies , weapon
-A9, Book, A worn-out book filled with ancient knowledge and secrets , weapon
-A10, Backpack, A sturdy backpack used for carrying items and supplies during the game , tools
-A11, Broom, A cleaning tool that can be used for sweeping and as a makeshift weapon , weapon
-A12, Office Key, A key that opens the office door, granting access to important information and resources , quest
-A13, Cure, A powerful remedy that can cure the plague , quest
+A1, Flashlight, Used to see throughout the game. Needs batteries to stay powered, tool
+A2, Batteries, Used to power the flashlight, tool
+A3, Cure Vital, Used to make a cure for the plague, quest
+A4, Vending Machine food, consumable,
+A5, Normal food, consumable,
+A7, Kitchen Knife, Sharp knife used for cutting and self-defense, weapon
+A8, Fork, A utensil used for eating and can be used as a weapon in emergencies, weapon
+A9, Book, A worn-out book filled with ancient knowledge and secrets, weapon
+A10, Backpack, A sturdy backpack used for carrying items and supplies during the game, tools
+A11, Broom, A cleaning tool that can be used for sweeping and as a makeshift weapon, weapon
+A12, Office Key, A key that opens the office door, quest
+A13, Cure, A powerful remedy that can cure the plague, quest
 
