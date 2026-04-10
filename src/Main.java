@@ -8,6 +8,7 @@ public class Main {
     public static void main(String[] args) {
         View view = new View();
         GameController gc = new GameController(view);
-        gc.run();
+        gc.startGame();
+
     }
 }

@@ -2,9 +2,11 @@ public class Monster extends Character{
     //fields
     private String monsterDescription;
     private String RoomID;
+    private String name;
     //constructor
-    public Monster(String id,String description, int maxHP, int attack, int defense,int coins, String roomID) {
+    public Monster(String id,String Name,String description, int maxHP, int attack, int defense,int coins, String roomID) {
         super(id, maxHP, attack, defense,coins);
+        this.name = Name;
         this.monsterDescription = description;
         this.RoomID = roomID;
     }
@@ -28,5 +30,8 @@ public class Monster extends Character{
             return this.getInventory().get(0);
         else
             return null;
+    }
+    public String getName(){
+        return this.name;
     }
 }

@@ -25,12 +25,17 @@ public class View {
         + "6.Escape - Escape the school(only usable with all vials)\n" + "7.Save Game - Saves gameplay\n" + "8.Load Game - Loads saved game or checkpoint\n" +
                 "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay");
     }
-    public void showMap(){
-        System.out.println(
-                "                            |Building E|                                       \n" +
-        " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall] -----> Library\n" +
-        "       |                          |                        |\n" +
-        " [Meditation Room] -------- [Student Lounge] ------  [  Campus Cafe  ]");
+    public void showMap(String building) {
+        if (building.equals("Building E")) {
+            System.out.println(
+                    "                            |Building E|                                       \n" +
+                            " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall] -----> Library\n" +
+                            "       |                          |                        |\n" +
+                            " [Meditation Room] -------- [Student Lounge] ------  [  Campus Cafe  ]");
+        }
+        else{
+            System.out.println("You good");
+        }
     }
 
 }

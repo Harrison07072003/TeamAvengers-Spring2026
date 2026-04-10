@@ -30,9 +30,14 @@ public class Player extends Character{
         this.setCoins(this.getCoins() + coins);
     }
     public String inspectMonster(){
-        Monster monster = this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
-        return monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
-                + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
+        Monster monster = this.getMonster();
+        if(monster.isAlive()) {
+            return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
+                    + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
+        }
+        else{
+            return "No Monsters detected";
+        }
     }
     public boolean heavyAttack(Monster monster){
         if(monster.isAlive()){
@@ -76,8 +81,14 @@ public class Player extends Character{
      public void setCurrentRoom(String roomID){
         this.currentRoom = roomID;
     }
+    public String checkWeapon(){
+        return this.equippedWeapon.toString();
+    }
     public int getAttackBonus(){
         return this.equippedWeapon.getAttackBonus();
+    }
+    public String getBuilding(){
+        return this.getCurrentRoom(currentRoom).getBuilding();
     }
     public boolean equipWeapon(String weapon){
         for(int i = 0; i < this.getInventory().size(); i++){
@@ -87,6 +98,15 @@ public class Player extends Character{
             }
         }
         return false;
+    }
+    public String getRoomName(){
+        return this.getCurrentRoom(currentRoom).getName();
+    }
+    public String getMonsterName(){
+        return this.getMonster().getName();
+    }
+    public Monster getMonster(){
+        return this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
     }
 
 }

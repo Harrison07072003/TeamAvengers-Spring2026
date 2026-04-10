@@ -19,7 +19,7 @@ public class CombatEngine {
         return this.turns;
     }
     public void resetEngine(){
-        this.enemy = player.getCurrentRoom(player.getRoomID()).getMonsters().get(0);
+        this.enemy = player.getMonster();
         this.turns = 1;
         retreated = false;
     }
@@ -34,7 +34,7 @@ public class CombatEngine {
         boolean defending = (turns % 3 == 0);
         if(command.equals("attack")){
             if(defending){
-                result += "The monster is defending! Your attack is less effective.\n";
+                result += enemy.getName() + " is defending! Your attacks will be less effective.\n";
             }
             enemy.setDefending(defending);
             player.attack(enemy);
@@ -43,9 +43,6 @@ public class CombatEngine {
             }
         }
         else if(command.equals("heavy attack")){
-            if(defending){
-                result += "The monster is defending!\n";
-            }
             enemy.setDefending(defending);
             boolean success = player.heavyAttack(enemy);
             if(success && !defending){
@@ -53,7 +50,7 @@ public class CombatEngine {
                 enemy.attack(player);
             }
             else if(success && defending){
-                result += "Your heavy attack was less effective against the defending monster, but you still did a lot of damage!\n";
+                result += "Your heavy attack was less effective against the defending enemy, but you still did a lot of damage!\n";
             }
             else if(!success){
                 result += "Your heavy attack missed!\n";
@@ -63,7 +60,23 @@ public class CombatEngine {
         else if(command.equals("defend")){
             player.defend();
             result += "You brace yourself for the next attack.\n";
-            enemy.attack(player);
+            if(!defending)
+                enemy.attack(player);
+            else
+                result += "Both you and the enemy prepared yourselves and defended!\n";
+        }
+        else if(command.equals("dodge")){
+            double dodgeChance = (Math.random()*100);
+            if(dodgeChance >= 50 && !defending){
+                result += enemy.getName() + " missed!\n";
+            }
+            else if(defending){
+                result += "The dodge was wasted " + enemy.getName() +" didn't strike.\n";
+            }
+            else{
+                result += "You failed to dodge the enemy's strike.\n";
+                enemy.attack(player);
+            }
         }
         else if(command.equals("retreat")){
             result += "You retreat from the battle, to the last room you were in.\n";
