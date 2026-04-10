@@ -30,14 +30,14 @@ public class Player extends Character{
         this.setCoins(this.getCoins() + coins);
     }
     public String inspectMonster(){
-        Monster monster = this.getMonster();
-        if(monster.isAlive()) {
-            return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
-                    + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
+        if(this.getCurrentRoom(currentRoom).hasMonsters()) {
+            Monster monster = this.getMonster();
+            if (monster.isAlive()) {
+                return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
+                        + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
+            }
         }
-        else{
-            return "No Monsters detected";
-        }
+        return "No Monsters detected";
     }
     public boolean heavyAttack(Monster monster){
         if(monster.isAlive()){

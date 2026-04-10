@@ -22,13 +22,13 @@ public class GameController {
         school.getRooms().add(new Room("R1","Classroom","A typical classroom with desks and a whiteboard.",new int[]{1,2,3,4},"Building E"));
         school.getRooms().add(new Room("R2","Library","A quiet library filled with books.",new int[]{0,5,6,7},"Library"));
         Monster m = new Monster("M1","Masked Man" ,"A scary monster", 75, 10, 3,2,"R1");
-        Monster m2 = new Monster("M2","Porky" ,"A scarier monster", 100, 15, 5,5,"R2");
+       // Monster m2 = new Monster("M2","Porky" ,"A scarier monster", 100, 15, 5,5,"R2");
         school.getRooms().get(0).getMonsters().add(m);
-        school.getRooms().get(1).getMonsters().add(m2);
+       // school.getRooms().get(1).getMonsters().add(m2);
         Item s = new Item("IO1","Sword", "A sharp sword",100);
         Item s2 = new Item("IO2","Shield", "A sturdy shield",0);
         m.getInventory().add(s);
-        m2.getInventory().add(s2);
+        //m2.getInventory().add(s2);
         while(isRunning) {
             v.display(A.getRoomName());
             v.display("Commands: status, map, engage,inventory,inspect, quit");
@@ -53,7 +53,8 @@ public class GameController {
                     v.display(A.inspectMonster());
                     if(A.inspectMonster().equals("No Monsters detected"))
                         continue;
-                    v.display("Do you want to engage or ignore monster?");
+                    v.display("Do you want to engage or ignore monster? Type in 'engage' to fight" +
+                            " or press any other key to ignore.");
                     command = input.nextLine();
                     if(command.equals("engage")){
                         boolean engage = A.engageMonster();

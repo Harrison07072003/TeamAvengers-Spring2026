@@ -55,7 +55,7 @@ public abstract class Character {
     public String getInventoryString() {
         String inventoryString = "";
         if (this.inventory.isEmpty()) {
-            return "Empty";
+            return "Your Inventory is Empty";
         }
         for (Item item : this.getInventory()) {
             inventoryString += item.getItemName() + ", ";
