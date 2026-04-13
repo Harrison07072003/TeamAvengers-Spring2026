@@ -67,9 +67,20 @@ public class Room {
 
 
     //methods
-    public void addExit(String exit) {
-        exits.add(exit);
+    public boolean checkItem(){
     }
+
+    public boolean checkMonster(){
+    }
+
+    public boolean checkPuzzle(){
+
+    }
+
+    public boolean checkVendingMachine(){
+
+    }
+
 
     public void addItem(Item item) {
         inventory.add(item);
@@ -78,6 +89,22 @@ public class Room {
     public void removeItem(Item item) {
         inventory.remove(item);
     }
+
+    public void removeItem(Item item){
+        inventory.remove(item);
+    }
+
+    public void removeMonster(){
+        monster = null;
+    }
+
+    public void removePuzzle(){
+        puzzle = null;
+    }
+    public void addExit(String exit) {
+        exits.add(exit);
+    }
+
 
 
 }
