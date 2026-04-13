@@ -1,24 +1,22 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class RoomMap {
-    //fields
+    // fields
     private ArrayList<Room> rooms;
 
     private String roomsFile;
     private String puzzlesFile;
     private String monstersFile;
     private String itemsFile;
-
-    //one save file
     private String saveFile;
 
-
-    public RoomMap(){
+    public RoomMap() {
         rooms = new ArrayList<Room>();
+
         roomsFile = "data/rooms.txt";
         puzzlesFile = "data/puzzles.txt";
         monstersFile = "data/monsters.txt";
@@ -26,77 +24,343 @@ public class RoomMap {
         saveFile = "data/saveGame.txt";
     }
 
-
-        //empty methods
     public void generateRooms() {
-        // this will read from rooms.txt
-        // should create actual Room Objects
+        ArrayList<String> exitData = new ArrayList<String>();
 
         try {
             Scanner input = new Scanner(new File(roomsFile));
+
             while (input.hasNextLine()) {
                 String line = input.nextLine().trim();
-                if (line.length() == 0) {
-                    continue; // skip empty lines
+
+                if (line.length() == 0 || line.startsWith("#")) {
+                    continue;
                 }
-                rooms.add(line); //place holder, should create Room object and add to rooms list
+
+                // format:
+                // roomId|roomName|description|exit1,exit2,exit3
+                String[] parts = line.split("\\|");
+
+                if (parts.length < 4) {
+                    System.out.println("Skipping bad room line: " + line);
+                    continue;
+                }
+
+                String roomId = parts[0].trim();
+                String roomName = parts[1].trim();
+                String description = parts[2].trim();
+                String exits = parts[3].trim();
+
+                // assumes Room constructor is Room(String id, String name, String description)
+                Room room = new Room(roomId, roomName, description);
+                rooms.add(room);
+
+                // save exit ids temporarily so we can connect rooms after all rooms are created
+                exitData.add(roomId + "|" + exits);
             }
+
             input.close();
+
+            // second pass: connect exits
+            for (int i = 0; i < exitData.size(); i++) {
+                String[] parts = exitData.get(i).split("\\|");
+
+                String roomId = parts[0].trim();
+                String exitsPart = parts[1].trim();
+
+                Room currentRoom = getRoom(roomId);
+
+                ArrayList<Room> exitRooms = new ArrayList<Room>();
+
+                if (exitsPart.length() > 0) {
+                    String[] exitIds = exitsPart.split(",");
+
+                    for (int j = 0; j < exitIds.length; j++) {
+                        String exitId = exitIds[j].trim();
+                        Room exitRoom = getRoom(exitId);
+
+                        if (exitRoom != null) {
+                            exitRooms.add(exitRoom);
+                        }
+                    }
+                }
+
+                // assumes Room has setExits(ArrayList<Room>)
+                currentRoom.setExits(exitRooms);
+            }
+
             System.out.println("Rooms loaded successfully.");
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
             System.out.println("Error: rooms.txt file not found.");
         }
     }
 
-    public void loadPuzzles(){
-        //read from puzzles.txt
-        //find room and assign puzzle data to that room
-
+    public void loadPuzzles() {
         try {
             Scanner input = new Scanner(new File(puzzlesFile));
+
             while (input.hasNextLine()) {
                 String line = input.nextLine().trim();
-                if (line.length() == 0) {
-                    continue; // skip empty lines
-                }
-                //to do still:
-                //parse puzzle line
-                //find matching room
-                //assign puzzle to that room
 
-                System.out.println("Puzzle loaded: " + line); //placeholder, should assign to room
+                if (line.length() == 0 || line.startsWith("#") || line.startsWith("puzzleId")) {
+                    continue;
+                }
+
+                // format:
+                // puzzleId|puzzleName|question|solution|roomId|hint|attemptsRemaining|isSolved|rewards
+                String[] parts = line.split("\\|");
+
+                if (parts.length < 9) {
+                    System.out.println("Skipping bad puzzle line: " + line);
+                    continue;
+                }
+
+                String puzzleId = parts[0].trim();
+                String puzzleName = parts[1].trim();
+                String question = parts[2].trim();
+                String solution = parts[3].trim();
+                String roomId = parts[4].trim();
+                String hint = parts[5].trim();
+                int attemptsRemaining = Integer.parseInt(parts[6].trim());
+                boolean isSolved = Boolean.parseBoolean(parts[7].trim());
+
+                // rewards are stored as ids for now
+                ArrayList<String> rewards = new ArrayList<String>();
+                String[] rewardParts = parts[8].split(",");
+
+                for (int i = 0; i < rewardParts.length; i++) {
+                    rewards.add(rewardParts[i].trim());
+                }
+
+                // assumes Puzzle constructor like this
+                Puzzle puzzle = new Puzzle(
+                        puzzleId,
+                        puzzleName,
+                        question,
+                        solution,
+                        roomId,
+                        hint,
+                        attemptsRemaining,
+                        isSolved,
+                        rewards
+                );
+
+                Room room = getRoom(roomId);
+
+                if (room != null) {
+                    // assumes Room has setPuzzle(Puzzle)
+                    room.setPuzzle(puzzle);
+                }
             }
 
             input.close();
-            System.out.println("Puzzle loaded successfully.");
-        } catch (FileNotFoundException e) {
+            System.out.println("Puzzles loaded successfully.");
+        }
+        catch (FileNotFoundException e) {
             System.out.println("puzzles.txt file not found.");
         }
     }
 
-    public void spawnMonsters(){
-        //read from monsters.txt
-        //find room and assign monster data to that room
+    public void spawnMonsters() {
+        try {
+            Scanner input = new Scanner(new File(monstersFile));
+
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+
+                if (line.length() == 0 || line.startsWith("#") || line.startsWith("(ID")) {
+                    continue;
+                }
+
+                // format:
+                // ID,Name,Description,HP,Attack,Defense,Coins,Room
+                String[] parts = line.split(",");
+
+                if (parts.length < 8) {
+                    System.out.println("Skipping bad monster line: " + line);
+                    continue;
+                }
+
+                String monsterId = parts[0].trim();
+                String monsterName = parts[1].trim();
+                String description = parts[2].trim();
+                int hp = Integer.parseInt(parts[3].trim());
+                int attack = Integer.parseInt(parts[4].trim());
+                int defense = Integer.parseInt(parts[5].trim());
+                int coins = Integer.parseInt(parts[6].trim());
+                String roomId = parts[7].trim();
+
+                // assumes Monster constructor like this
+                Monster monster = new Monster(
+                        monsterId,
+                        monsterName,
+                        description,
+                        hp,
+                        attack,
+                        defense,
+                        coins,
+                        roomId
+                );
+
+                Room room = getRoom(roomId);
+
+                if (room != null) {
+                    // assumes Room has setMonster(Monster)
+                    room.setMonster(monster);
+                }
+            }
+
+            input.close();
+            System.out.println("Monsters loaded successfully.");
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("monsters.txt file not found.");
+        }
     }
 
-    public void loadItems(){
-        //read from items.txt
-        //find room and assign item data to that room
+    public void loadItems() {
+        try {
+            Scanner input = new Scanner(new File(itemsFile));
+
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+
+                if (line.length() == 0 || line.startsWith("#")) {
+                    continue;
+                }
+
+                // TODO:
+                // this depends on the exact items.txt format your teammate created
+                // update parsing once you share the real file format
+
+                System.out.println("Item line read: " + line);
+            }
+
+            input.close();
+            System.out.println("Items loaded successfully.");
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("items.txt file not found.");
+        }
     }
 
-    public String getRoom(String roomId){
-        // should return Room object based on roomId
+    public Room getRoom(String roomId) {
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getRoomId().equalsIgnoreCase(roomId)) {
+                return rooms.get(i);
+            }
+        }
+
         return null;
     }
 
-    public void saveGame(){
-        //write current game state into saveGame.txt
+    public void saveGame(Player player) {
+        try {
+            PrintWriter output = new PrintWriter(saveFile);
+
+            // ---- player data ----
+            // rename these getters if your Player class uses different names
+            output.println("PLAYER");
+            output.println(player.getCharacterId() + "," +
+                    player.getCurrentHP() + "," +
+                    player.getAttack() + "," +
+                    player.getDefense() + "," +
+                    player.getCoins() + "," +
+                    player.getCurrentRoom());
+
+            // ---- room data ----
+            output.println("ROOMS");
+            for (int i = 0; i < rooms.size(); i++) {
+                Room room = rooms.get(i);
+
+                String puzzleData = "none";
+                String monsterData = "none";
+
+                if (room.getPuzzle() != null) {
+                    // rename if your Puzzle getter names are different
+                    puzzleData = room.getPuzzle().getPuzzleId() + ":" + room.getPuzzle().isSolved();
+                }
+
+                if (room.getMonster() != null) {
+                    // rename if your Monster getter names are different
+                    monsterData = room.getMonster().getCharacterId();
+                }
+
+                output.println(room.getRoomId() + "|" + puzzleData + "|" + monsterData);
+            }
+
+            output.close();
+            System.out.println("Game saved successfully.");
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("Could not save the game.");
+        }
     }
 
-    public void loadGame(){
-        //read from most recent saved game form ONE file
-        //restore room/world/player related state from that file
+    public void loadGame(Player player) {
+        try {
+            Scanner input = new Scanner(new File(saveFile));
+
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+
+                if (line.length() == 0 || line.equals("PLAYER") || line.equals("ROOMS")) {
+                    continue;
+                }
+
+                // first player line
+                if (line.contains(",") && line.startsWith("P")) {
+                    String[] parts = line.split(",");
+
+                    // rename setters if needed
+                    // format: characterId,hp,atk,def,coins,currentRoom
+                    player.setCurrentHP(Integer.parseInt(parts[1].trim()));
+                    player.setAttack(Integer.parseInt(parts[2].trim()));
+                    player.setDefense(Integer.parseInt(parts[3].trim()));
+                    player.setCoins(Integer.parseInt(parts[4].trim()));
+                    player.setCurrentRoom(parts[5].trim());
+                }
+                else if (line.contains("|")) {
+                    String[] parts = line.split("\\|");
+
+                    String roomId = parts[0].trim();
+                    Room room = getRoom(roomId);
+
+                    if (room != null && parts.length >= 3) {
+                        String puzzleData = parts[1].trim();
+                        String monsterData = parts[2].trim();
+
+                        // puzzle restore
+                        if (!puzzleData.equals("none") && room.getPuzzle() != null) {
+                            String[] puzzleParts = puzzleData.split(":");
+                            if (puzzleParts.length == 2) {
+                                boolean solved = Boolean.parseBoolean(puzzleParts[1].trim());
+                                room.getPuzzle().setSolved(solved);
+                            }
+                        }
+
+                        // monster restore
+                        // for now this just assumes monster presence stays tied to original load
+                        // if your team later tracks monster defeated/alive, add it here
+                    }
+                }
+            }
+
+            input.close();
+            System.out.println("Game loaded successfully.");
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("There are no saved games or checkpoints found.");
+        }
     }
 
+    public void checkpoint(Player player) {
+        saveGame(player);
+        System.out.println("Checkpoint created successfully.");
+    }
 
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
 }
