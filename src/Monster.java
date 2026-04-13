@@ -26,12 +26,24 @@ public class Monster extends Character{
         }
     }
     public Item dropItem(String item){
-        if(!this.isAlive() && !this.getInventory().isEmpty())
-            return this.getInventory().get(0);
+        Item drop = this.getInventory().get(0);
+        if(!this.isAlive() && !this.getInventory().isEmpty()) {
+            this.getInventory().remove(0);
+            return drop;
+        }
         else
             return null;
     }
     public String getName(){
         return this.name;
+    }
+    public int getDamage(Player p){
+        double damage = this.getAttack() - p.getDefense();
+        if(p.isDefending())
+            damage = damage*0.6;
+        if(damage < 1)
+            return 1;
+        else
+            return (int) damage;
     }
 }

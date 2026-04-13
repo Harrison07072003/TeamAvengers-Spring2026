@@ -1,14 +1,16 @@
 public class Player extends Character{
     //fields
     private String currentRoom;
-    private GameMap Map;
+    private final GameMap Map;
     private Item equippedWeapon;
+    private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
     //constructor
     public Player(String id, int maxHP, int attack, int defense, int coins,String roomID,GameMap map) {
         super(id, maxHP, attack, defense,coins);
         this.currentRoom = roomID;
         this.Map = map;
         this.equippedWeapon = new Item("I0","Fists","test,",0);
+        this.currentState = 1;
     }
 
 
@@ -26,23 +28,10 @@ public class Player extends Character{
             }
         }
     }
-    public void collectCoins(int coins){
-        this.setCoins(this.getCoins() + coins);
-    }
-    public String inspectMonster(){
-        if(this.getCurrentRoom(currentRoom).hasMonsters()) {
-            Monster monster = this.getMonster();
-            if (monster.isAlive()) {
-                return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
-                        + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
-            }
-        }
-        return "No Monsters detected";
-    }
     public boolean heavyAttack(Monster monster){
         if(monster.isAlive()){
-            double heavyDamage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.4 - monster.getDefense());
-            if(monster.isDefending()){heavyDamage = heavyDamage*(0.6);}
+            double heavyDamage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3);
+            if(monster.isDefending()){heavyDamage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3 - monster.getDefense());}
             if(heavyDamage <= 0){heavyDamage = 1;}
             int chance = (int)(Math.random() * 100);
             if(chance > 40){
@@ -57,20 +46,42 @@ public class Player extends Character{
         }
         return false;
     }
+    public void collectCoins(int coins){
+        this.setCoins(this.getCoins() + coins);
+    }
+    public String inspectMonster(){
+        if(this.getCurrentRoom(currentRoom).hasMonsters()) {
+            Monster monster = this.getMonster();
+            if (monster.isAlive()) {
+                return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
+                        + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
+            }
+        }
+        return "No Monsters detected";
+    }
     public void retreat(){
 
     }
-    public boolean engageMonster(){
-        if(this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive()){
-            return true;
-        }
-        return false;
+    public int getDamage(Monster enemy,boolean heavyDamage){
+        double damage;
+        if(heavyDamage && enemy.isDefending())
+            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus())  - enemy.getDefense())* 1.3);
+        else if(heavyDamage)
+            damage = (this.getAttack() + this.equippedWeapon.getAttackBonus() )*1.3;
+        else if(enemy.isDefending())
+            damage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) - enemy.getDefense())*0.6;
+        else
+            damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - enemy.getDefense();
+        if(damage < 1)
+            return 1;
+        else
+            return (int) damage;
+    }
+    public boolean engageMonster() {
+        return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
     }
     public Item dropItem(String item){
         return null;
-    }
-    public void defend(){
-        this.setDefending(true);
     }
     public Room getCurrentRoom(String roomID){
          return this.Map.getRoom(roomID);
@@ -107,6 +118,12 @@ public class Player extends Character{
     }
     public Monster getMonster(){
         return this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
+    }
+    public int getCurrentState(){
+        return this.currentState;
+    }
+    public void setState(int state){
+        this.currentState = state;
     }
 
 }

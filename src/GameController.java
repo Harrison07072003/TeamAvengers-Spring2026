@@ -2,12 +2,12 @@ import java.util.Scanner;
 
 public class GameController {
     //fields
-    private Player A;
-    private View v;
-    private Scanner input;
+    private final Player A;
+    private final View v;
+    private final Scanner input;
     private boolean isRunning;
-    private CombatEngine combatEngine;
-    private RoomMap school;
+    private final CombatEngine combatEngine;
+    private final RoomMap school;
     //constructor
     GameController(View v) {
         this.school = new RoomMap();
@@ -19,19 +19,24 @@ public class GameController {
     }
     //methods
     public void run(){
-        school.getRooms().add(new Room("R1","Classroom","A typical classroom with desks and a whiteboard.",new int[]{1,2,3,4},"Building E"));
+        school.getRooms().add(new Room("R1","Dining Hall","Trays of food are scattered around, and some tables and chairs have been scattered.",new int[]{1,2,3,4},"Building E"));
         school.getRooms().add(new Room("R2","Library","A quiet library filled with books.",new int[]{0,5,6,7},"Library"));
+        school.getRooms().add(new Room("R3","Chem Lab","A science lab that has chemicals to quell plague",new int[]{8,9,10,11},"Building H"));
         Monster m = new Monster("M1","Masked Man" ,"A scary monster", 75, 10, 3,2,"R1");
-       // Monster m2 = new Monster("M2","Porky" ,"A scarier monster", 100, 15, 5,5,"R2");
+        Monster m2 = new Monster("M2","Porky" ,"A scarier monster", 100, 15, 5,5,"R2");
+        Monster m3 = new Monster("M3","Takaya","Revolver wielding maniac",95,20,7,10,"R3");
         school.getRooms().get(0).getMonsters().add(m);
-       // school.getRooms().get(1).getMonsters().add(m2);
-        Item s = new Item("IO1","Sword", "A sharp sword",100);
-        Item s2 = new Item("IO2","Shield", "A sturdy shield",0);
+        school.getRooms().get(1).getMonsters().add(m2);
+        school.getRooms().get(2).getMonsters().add(m3);
+        Item s = new Item("IO1","Sword", "A sharp sword",5);
+        Item s2 = new Item("IO2","Shield", "A sturdy shield",100);
+        Item s3 = new Item("IO3","Revolver","Crimson case",20);
         m.getInventory().add(s);
-        //m2.getInventory().add(s2);
+        m2.getInventory().add(s2);
+        m3.getInventory().add(s3);
         while(isRunning) {
             v.display(A.getRoomName());
-            v.display("Commands: status, map, engage,inventory,inspect, quit");
+            v.display("Commands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help");
             v.display("Enter a command:");
             String command = input.nextLine();
             if(command.equals("quit")){
@@ -44,7 +49,7 @@ public class GameController {
                     v.showMap(A.getBuilding());
                 }
                 else if(command.equals("help")){
-                    v.navHelp();
+                    v.navHelp(A.getCurrentState());
                 }
                 else if(command.equals("inventory")){
                     v.display(A.getInventoryString());
@@ -76,6 +81,9 @@ public class GameController {
                 else if(command.equals("back")){
                     A.setCurrentRoom("R1");
                 }
+                else if(command.equals("third")){
+                    A.setCurrentRoom("R3");
+                }
                 else if(command.startsWith("equip ")){
                     String itemName = command.substring(6);
                     boolean eq = A.equipWeapon(itemName);
@@ -89,6 +97,7 @@ public class GameController {
                 else{
                     v.display("Invalid command. Try again.");
                 }
+                v.display("-----------------------------------");
         }
     }
     public void battle(){
@@ -99,6 +108,10 @@ public class GameController {
             String command = input.nextLine();
             if(command.equals("check weapon")){
                 v.display(A.checkWeapon());
+                continue;
+            }
+            if(command.equals("help")){
+                v.navHelp(A.getCurrentState());
                 continue;
             }
             String result = combatEngine.action(command);
@@ -112,6 +125,7 @@ public class GameController {
             v.display("You were defeated...");
             isRunning = false;
         }
+        A.setState(1);
     }
     public void puzzle(){
 
