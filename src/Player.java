@@ -8,8 +8,10 @@ public class Player extends Character {
     public Player(String id, int maxHP, int attack, int defense) {
         super(id, maxHP, attack, defense);
         this.inventory = new ArrayList<>();
-        this.coins = 10; // Starting coins
+        this.coins = 15; // Starting coins
         this.equippedWeapon = null;
+        // add capacity start capacity  5 then increase by the backpack to 10
+        // backpack can be dropped decrases back to 5
     }
 
     public ArrayList<Item> getInventory() {

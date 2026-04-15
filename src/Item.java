@@ -55,8 +55,8 @@ public class Item {
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
                 String[] parts = line.split(", ", -1);
-                if (parts.length >= 4) {
-                    Item item = new Item(parts[0], parts[1], parts[2], parts[3]);
+                if (parts.length >= 5) {
+                    Item item = new Item(parts[0], parts[1], parts[2], parts[3], Integer.parseInt(parts[4]));
                     items.add(item);
                 }
             }
