@@ -17,11 +17,11 @@ public class RoomMap {
     public RoomMap() {
         rooms = new ArrayList<Room>();
 
-        roomsFile = "data/rooms.txt";
-        puzzlesFile = "data/puzzles.txt";
-        monstersFile = "data/monsters.txt";
-        itemsFile = "data/items.txt";
-        saveFile = "data/saveGame.txt";
+        roomsFile = "rooms.txt";
+        puzzlesFile = "puzzles.txt";
+        monstersFile = "monsters.txt";
+        itemsFile = "items.txt";
+        saveFile = "saveGame.txt";
     }
 
     public void generateRooms() {
@@ -231,8 +231,8 @@ public class RoomMap {
                 }
 
                 // TODO:
-                // this depends on the exact items.txt format your teammate created
-                // update parsing once you share the real file format
+                // this depends on the exact items.txt format from teammates
+                // update parsing once the real file format is kn
 
                 System.out.println("Item line read: " + line);
             }
@@ -259,18 +259,18 @@ public class RoomMap {
         try {
             PrintWriter output = new PrintWriter(saveFile);
 
-            // ---- player data ----
-            // rename these getters if your Player class uses different names
+            // ---- PLAYER SECTION ----
             output.println("PLAYER");
-            output.println(player.getCharacterId() + "," +
+            output.println(player.getCharaterID() + "," +
                     player.getCurrentHP() + "," +
                     player.getAttack() + "," +
                     player.getDefense() + "," +
-                    player.getCoins() + "," +
+                    player.getVialCount() + "," +
                     player.getCurrentRoom());
 
-            // ---- room data ----
+            // ---- ROOMS SECTION ----
             output.println("ROOMS");
+
             for (int i = 0; i < rooms.size(); i++) {
                 Room room = rooms.get(i);
 
@@ -278,12 +278,10 @@ public class RoomMap {
                 String monsterData = "none";
 
                 if (room.getPuzzle() != null) {
-                    // rename if your Puzzle getter names are different
                     puzzleData = room.getPuzzle().getPuzzleId() + ":" + room.getPuzzle().isSolved();
                 }
 
                 if (room.getMonster() != null) {
-                    // rename if your Monster getter names are different
                     monsterData = room.getMonster().getCharacterId();
                 }
 
@@ -292,8 +290,7 @@ public class RoomMap {
 
             output.close();
             System.out.println("Game saved successfully.");
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("Could not save the game.");
         }
     }
@@ -302,56 +299,53 @@ public class RoomMap {
         try {
             Scanner input = new Scanner(new File(saveFile));
 
-            while (input.hasNextLine()) {
-                String line = input.nextLine().trim();
+            // ---- PLAYER SECTION ----
+            if (input.hasNextLine()) {
+                String section = input.nextLine();
 
-                if (line.length() == 0 || line.equals("PLAYER") || line.equals("ROOMS")) {
-                    continue;
-                }
-
-                // first player line
-                if (line.contains(",") && line.startsWith("P")) {
+                if (section.equals("PLAYER")) {
+                    String line = input.nextLine();
                     String[] parts = line.split(",");
 
-                    // rename setters if needed
-                    // format: characterId,hp,atk,def,coins,currentRoom
-                    player.setCurrentHP(Integer.parseInt(parts[1].trim()));
-                    player.setAttack(Integer.parseInt(parts[2].trim()));
-                    player.setDefense(Integer.parseInt(parts[3].trim()));
-                    player.setCoins(Integer.parseInt(parts[4].trim()));
-                    player.setCurrentRoom(parts[5].trim());
+                    // remember order MUST match saveGame()
+                    player.setCurrentRoom(parts[5]);
+                    player.setVialCount(Integer.parseInt(parts[4]));
                 }
-                else if (line.contains("|")) {
-                    String[] parts = line.split("\\|");
+            }
 
-                    String roomId = parts[0].trim();
-                    Room room = getRoom(roomId);
+            // ---- ROOMS SECTION ----
+            if (input.hasNextLine()) {
+                String section = input.nextLine();
 
-                    if (room != null && parts.length >= 3) {
-                        String puzzleData = parts[1].trim();
-                        String monsterData = parts[2].trim();
+                if (section.equals("ROOMS")) {
+                    while (input.hasNextLine()) {
+                        String line = input.nextLine();
 
-                        // puzzle restore
+                        String[] parts = line.split("\\|");
+
+                        String roomId = parts[0];
+                        String puzzleData = parts[1];
+                        String monsterData = parts[2];
+
+                        Room room = getRoom(roomId);
+
+                        // restore puzzle state
                         if (!puzzleData.equals("none") && room.getPuzzle() != null) {
                             String[] puzzleParts = puzzleData.split(":");
-                            if (puzzleParts.length == 2) {
-                                boolean solved = Boolean.parseBoolean(puzzleParts[1].trim());
-                                room.getPuzzle().setSolved(solved);
-                            }
+                            boolean solved = Boolean.parseBoolean(puzzleParts[1]);
+                            room.getPuzzle().setSolved(solved);
                         }
 
-                        // monster restore
-                        // for now this just assumes monster presence stays tied to original load
-                        // if your team later tracks monster defeated/alive, add it here
+                        // (monster restoring can be added later if needed)
                     }
                 }
             }
 
             input.close();
             System.out.println("Game loaded successfully.");
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("There are no saved games or checkpoints found.");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("No saved game found.");
         }
     }
 
