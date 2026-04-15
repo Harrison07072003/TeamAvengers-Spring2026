@@ -6,10 +6,10 @@ public class View {
     public void display(String str){
         System.out.println(str);
     }
-    public void displayStatus(String health,int attack,int weapon,int defense, int vials, int coins){
+    public void displayStatus(String health,int attack,int bonus,int defense, int vials, int coins,String weapon){
         System.out.println("HP: " + health + "  \n" +
-        "Attack: " + attack + " | ATK Bonus: (+" + weapon +") | Defense: " + defense + "\n" +
-        "Vials: " + vials + "/5 | Coins: " + coins);
+        "Attack: " + attack + " | ATK Bonus: (+" + bonus +") | Defense: " + defense + "\n" +
+        "Vials: " + vials + "/5 | Coins: " + coins + "\nCurrent Weapon: " + weapon);
     }
     public void navUI(){}
     public void monsterUI(String health,String monster,String monsterHealth){

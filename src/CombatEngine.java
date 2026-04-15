@@ -95,6 +95,7 @@ public class CombatEngine {
         else if(command.equals("retreat")){
             result += "You retreat from the battle, to the last room you were in.\n";
             retreated = true;
+            player.retreat();
         }
         else{
             result += "Invalid command. Try again.\n";
@@ -103,7 +104,5 @@ public class CombatEngine {
         turns++;
         return result;
     }
-
-
 
 }

@@ -31,7 +31,7 @@ public class Player extends Character{
     public boolean heavyAttack(Monster monster){
         if(monster.isAlive()){
             double heavyDamage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3);
-            if(monster.isDefending()){heavyDamage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3 - monster.getDefense());}
+            if(monster.isDefending()){heavyDamage -= monster.getDefense();}
             if(heavyDamage <= 0){heavyDamage = 1;}
             int chance = (int)(Math.random() * 100);
             if(chance > 40){
@@ -60,16 +60,20 @@ public class Player extends Character{
         return "No Monsters detected";
     }
     public void retreat(){
-
+        //this.move();
+        int roomId = Integer.parseInt(this.getRoomID().substring(1)) - 1;
+        String room = "R" + roomId;
+        if(roomId >= 1)
+            this.setCurrentRoom(room);
     }
     public int getDamage(Monster enemy,boolean heavyDamage){
         double damage;
         if(heavyDamage && enemy.isDefending())
-            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus())  - enemy.getDefense())* 1.3);
+            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus()*1.3)  - enemy.getDefense()));
         else if(heavyDamage)
             damage = (this.getAttack() + this.equippedWeapon.getAttackBonus() )*1.3;
         else if(enemy.isDefending())
-            damage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) - enemy.getDefense())*0.6;
+            damage = ((this.getAttack() + this.equippedWeapon.getAttackBonus())*0.6 - enemy.getDefense());
         else
             damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - enemy.getDefense();
         if(damage < 1)
@@ -124,6 +128,9 @@ public class Player extends Character{
     }
     public void setState(int state){
         this.currentState = state;
+    }
+    public String getEquippedWeaponName(){
+        return this.equippedWeapon.getItemName();
     }
 
 }

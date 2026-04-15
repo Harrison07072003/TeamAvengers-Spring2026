@@ -43,7 +43,7 @@ public class GameController {
                 isRunning = false;
             }
                 else if(command.equals("status")){
-                    v.displayStatus(A.getHealth(), A.getAttack(),A.getAttackBonus(), A.getDefense(),0,A.getCoins());
+                    v.displayStatus(A.getHealth(), A.getAttack(),A.getAttackBonus(), A.getDefense(),0,A.getCoins(),A.getEquippedWeaponName());
                 }
                 else if(command.equals("map")){
                     v.showMap(A.getBuilding());
@@ -131,17 +131,16 @@ public class GameController {
 
     }
     public void startGame(){
-        // Simple console title screen using the existing View and Scanner
+        // New simple, bold console title screen (GGC PLAGUE)
         String[] title = new String[]{
             "====================================================",
-            "  _____  _____   _____    _____   _      _   _  _____",
-            " |  __ \\|  __ \\ / ____|  / ____| | |    | | | ||  __ \\",
-            " | |  | | |__) | |  __  | (___   | |    | | | || |__) |",
-            " | |  | |  _  /| | |_ |  \\___ \\  | |    | | | ||  _  / ",
-            " | |__| | | \\ \\\\ |__| |  ____) | | |____| |_| || | \\ \\",
-            " |_____/|_|  \\_\\\\_____| |_____/  |______|\\___/ |_|  \\_\\\\",
+            "  ____   ____   ____    ____    _      _   ____  _____",
+            " / ___| / ___| / ___|  / ___|  / \\    | | / ___|| ____|",
+            "| |  _ | |  _ | |  _  | |  _  / _ \\   | || |  _ |  _|  ",
+            "| |_| || |_| || |_| | | |_| |/ ___ \\  | || |_| || |___ ",
+            " \\____| \\____| \\____|  \\____/_/   \\_\\_| \\____||_____|",
             "",
-            "                    GGC PLAGUE",
+            "                      GGC PLAGUE",
             "===================================================="
         };
 
@@ -183,7 +182,7 @@ public class GameController {
                     System.exit(0);
                     break;
                 default:
-                    v.display("Invalid option. Please enter 1, 2, or 3 (or start/load/quit).");
+                    v.display("Invalid option. Please enter 1, 2, or 3 (or start/load/quit). ");
             }
         }
     }
