@@ -13,7 +13,7 @@ public class Item {
         this.item_Name = item_Name;
         this.item_Description = item_Description;
         this.item_type = item_type;
-        this.value = 0; // Default value, can be set based on type
+        this.value = value;
     }
 
     public String getItem_Id() {
@@ -55,10 +55,35 @@ public class Item {
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
                 String[] parts = line.split(", ", -1);
+                String id = parts[0];
+                String name = parts[1];
+                String desc = parts[2];
+                String type = parts[3];
+                int val = 0;
                 if (parts.length >= 5) {
-                    Item item = new Item(parts[0], parts[1], parts[2], parts[3], Integer.parseInt(parts[4]));
-                    items.add(item);
+                    val = Integer.parseInt(parts[4]);
                 }
+                Item item;
+                switch (type.toLowerCase()) {
+                    case "consumable":
+                        item = new Consumable(id, name, desc, type, val);
+                        break;
+                    case "weapon":
+                        item = new Weapon(id, name, desc, type, val);
+                        break;
+                    case "tool":
+                        // Default utilityType; could be parsed from desc if needed
+                        String utilityType = "utility";
+                        item = new Tool(id, name, desc, type, val, utilityType);
+                        break;
+                    case "quest":
+                        item = new QuestItem(id, name, desc, type, val);
+                        break;
+                    default:
+                        item = new Item(id, name, desc, type, val);
+                        break;
+                }
+                items.add(item);
             }
         }
         return items;
