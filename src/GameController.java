@@ -2,134 +2,81 @@ import java.util.Scanner;
 
 public class GameController {
     //fields
-    private final Player A;
     private final View v;
     private final Scanner input;
     private boolean isRunning;
-    private final CombatEngine combatEngine;
-    private final RoomMap school;
+    private GameEngine engine;
     //constructor
     GameController(View v) {
-        this.school = new RoomMap();
-        this.A = new Player("Player", 100, 18, 5, 10,"R1",school);
         this.v = v;
         this.input = new Scanner(System.in);
         this.isRunning = true;
-        this.combatEngine = new CombatEngine(A);
+        this.engine = new GameEngine();
     }
     //methods
+    //main navigation loop
     public void run(){
-        school.getRooms().add(new Room("R1","Dining Hall","Trays of food are scattered around, and some tables and chairs have been scattered.",new int[]{1,2,3,4},"Building E"));
-        school.getRooms().add(new Room("R2","Library","A quiet library filled with books.",new int[]{0,5,6,7},"Library"));
-        school.getRooms().add(new Room("R3","Chem Lab","A science lab that has chemicals to quell plague",new int[]{8,9,10,11},"Building H"));
-        Monster m = new Monster("M1","Masked Man" ,"A scary monster", 75, 10, 3,2,"R1");
-        Monster m2 = new Monster("M2","Porky" ,"A scarier monster", 100, 15, 5,5,"R2");
-        Monster m3 = new Monster("M3","Takaya","Revolver wielding maniac",95,20,7,10,"R3");
-        school.getRooms().get(0).getMonsters().add(m);
-        school.getRooms().get(1).getMonsters().add(m2);
-        school.getRooms().get(2).getMonsters().add(m3);
-        Item s = new Item("IO1","Sword", "A sharp sword",5);
-        Item s2 = new Item("IO2","Shield", "A sturdy shield",100);
-        Item s3 = new Item("IO3","Revolver","Crimson case",20);
-        m.getInventory().add(s);
-        m2.getInventory().add(s2);
-        m3.getInventory().add(s3);
+        engine.test();
         while(isRunning) {
-            v.display(A.getRoomName());
+            v.display(engine.getRoomName());
             v.display("Commands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help");
             v.display("Enter a command:");
             String command = input.nextLine();
-            if(command.equals("quit")){
+            if(command.equals("help"))
+                v.navHelp(engine.getPlayerState());
+            else if(command.equals("quit")){
                 isRunning = false;
             }
-                else if(command.equals("status")){
-                    v.displayStatus(A.getHealth(), A.getAttack(),A.getAttackBonus(), A.getDefense(),0,A.getCoins(),A.getEquippedWeaponName());
-                }
-                else if(command.equals("map")){
-                    v.showMap(A.getBuilding());
-                }
-                else if(command.equals("help")){
-                    v.navHelp(A.getCurrentState());
-                }
-                else if(command.equals("inventory")){
-                    v.display(A.getInventoryString());
-                }
-                else if(command.equals("inspect")){
-                    v.display(A.inspectMonster());
-                    if(A.inspectMonster().equals("No Monsters detected"))
-                        continue;
+            else {
+                String result = engine.navCommand(command);
+                v.display(result);
+                if (command.equals("inspect") && !(result.substring(0, result.length() - 1).startsWith("No Monsters detected"))) {
                     v.display("Do you want to engage or ignore monster? Type in 'engage' to fight" +
                             " or press any other key to ignore.");
-                    command = input.nextLine();
-                    if(command.equals("engage")){
-                        boolean engage = A.engageMonster();
-                        if(engage){
-                            v.display("You have engaged battle with the monster! Prepare for battle!");
-                            battle();
-                        }
-                        else{
-                            v.display("There is no monster to engage in this room.");
-                        }
-                    }
-                    else{
+                    String response = input.nextLine();
+                    if (response.equals("engage")) {
+                        v.display("You have engaged battle with the monster! Prepare for battle!");
+                        battle();
+                    } else {
                         v.display("You decided not to engage");
                     }
+
                 }
-                else if(command.equals("move")) {
-                    A.setCurrentRoom("R2");
-                }
-                else if(command.equals("back")){
-                    A.setCurrentRoom("R1");
-                }
-                else if(command.equals("third")){
-                    A.setCurrentRoom("R3");
-                }
-                else if(command.startsWith("equip ")){
-                    String itemName = command.substring(6);
-                    boolean eq = A.equipWeapon(itemName);
-                    if(eq){
-                        v.display("You have equipped the " + itemName + "!");
-                    }
-                    else{
-                        v.display("You don't have a " + itemName + " in your inventory.");
-                    }
-                }
-                else{
-                    v.display("Invalid command. Try again.");
-                }
-                v.display("-----------------------------------");
+            }
         }
+        v.display("You have left the game");
     }
+    //battle loop
     public void battle(){
-        combatEngine.resetEngine();
-        while(!combatEngine.isBattleOver()){
-            v.display("Turn: " + combatEngine.getTurns());
-            v.monsterUI(A.getHealth(),A.getMonsterName(), combatEngine.getMonsterHealth());
+        this.engine.resetCombat();
+        //battle loop
+        while(!engine.battleEnded()){
+            v.display("Turn: " + engine.getTurn());
+            v.display(engine.monsterUI());
             String command = input.nextLine();
-            if(command.equals("check weapon")){
-                v.display(A.checkWeapon());
-                continue;
+            if(command.equals("help"))
+                v.navHelp(engine.getPlayerState());
+            else {
+                String result = this.engine.battleCommand(command);
+                v.display(result + "------------------------------");
             }
-            if(command.equals("help")){
-                v.navHelp(A.getCurrentState());
-                continue;
-            }
-            String result = combatEngine.action(command);
-            v.display(result + "------------------------------");
         }
-        if(!combatEngine.getMonsterAlive()){
+        //after battle
+        if(!engine.monsterAlive()){
             v.display("You won the battle!");
-            v.display("You found a " + A.getInventory().get(A.getInventory().size() - 1).getItemName() + " on " + A.getMonsterName() + "! You also found " + A.getMonster().getCoins() +" coins");
+            v.display("You found a " + engine.getPlayer().getInventory().get(engine.getPlayer().getInventory().size() - 1).getItemName() + " on " + engine.getPlayer().getMonsterName() + "! You also found " + engine.getPlayer().getMonster().getCoins() +" coins");
         }
-        else if(!A.isAlive()){
+        else if(!engine.playerAlive()){
             v.display("You were defeated...");
             isRunning = false;
         }
-        A.setState(1);
+        engine.getPlayer().setState(1);
     }
+    //puzzle loop
     public void puzzle(){
 
     }
+    //starts game
     public void startGame(){
         // New simple, bold console title screen (GGC PLAGUE)
         String[] title = new String[]{
@@ -138,7 +85,7 @@ public class GameController {
             " / ___| / ___| / ___|  / ___|  / \\    | | / ___|| ____|",
             "| |  _ | |  _ | |  _  | |  _  / _ \\   | || |  _ |  _|  ",
             "| |_| || |_| || |_| | | |_| |/ ___ \\  | || |_| || |___ ",
-            " \\____| \\____| \\____|  \\____/_/   \\_\\_| \\____||_____|",
+            " \\____| \\____| \\____|  \\____/_/   \\_\\_| \\____||_____",
             "",
             "                      GGC PLAGUE",
             "===================================================="
@@ -178,9 +125,12 @@ public class GameController {
                 case "3":
                 case "quit":
                 case "q":
+                    // Instead of terminating the JVM here, cleanly stop the controller loop
                     v.display("Goodbye!");
-                    System.exit(0);
-                    break;
+                    // signal run() (if running) to stop and return control to caller
+                    isRunning = false;
+                    menuActive = false;
+                    return; // return from startGame and let the caller decide lifecycle
                 default:
                     v.display("Invalid option. Please enter 1, 2, or 3 (or start/load/quit). ");
             }

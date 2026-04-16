@@ -53,14 +53,16 @@ public abstract class Character {
         this.coins = coins;
     }
     public String getInventoryString() {
+        int i = 1;
         String inventoryString = "";
         if (this.inventory.isEmpty()) {
             return "Your Inventory is Empty";
         }
         for (Item item : this.getInventory()) {
-            inventoryString += item.getItemName() + ", ";
+            inventoryString += i + "." + item.getItemName() +"\n";
+            i++;
         }
-        return inventoryString.substring(0, inventoryString.length() - 2);
+        return inventoryString.substring(0,inventoryString.length()-1);
     }
     public boolean isAlive() {
         return this.alive;
@@ -77,6 +79,7 @@ public abstract class Character {
     public void setDefending(boolean defending) {
         this.defending = defending;
     }
+    //drop item
     public abstract Item dropItem(String item);
 
 }

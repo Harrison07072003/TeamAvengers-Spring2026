@@ -1,6 +1,5 @@
 public class CombatEngine {
-    //fields
-    private final
+    //fieldss
     Player player;
     Monster enemy;
     private int turns;
@@ -12,11 +11,9 @@ public class CombatEngine {
         this.retreated = false;
     }
     //methods
+    //battle conditions
     public boolean isBattleOver(){
         return !player.isAlive() || !enemy.isAlive() || retreated;
-    }
-    public int getTurns(){
-        return this.turns;
     }
     public void resetEngine(){
         this.player.setState(2);
@@ -24,16 +21,29 @@ public class CombatEngine {
         this.turns = 1;
         this.retreated = false;
     }
+    //getters
+    public int getTurns(){
+        return this.turns;
+    }
     public String getMonsterHealth(){
         return this.enemy.getHealth();
     }
     public boolean getMonsterAlive(){
         return this.enemy.isAlive();
     }
+    //battle command
     public String action(String command){
         String result = "";
         boolean defending = (turns % 3 == 0);
-        if(command.equals("attack")){
+        if(command.equals("check weapon")) {
+            result += player.checkWeapon() + "\n";
+            turns--;
+        }
+        else if(command.equals("help")) {
+            result += "help";
+            turns--;
+        }
+        else if(command.equals("attack")){
             if(defending)
                 result += enemy.getName() + " is defending! Your attacks will be less effective.\n";
             enemy.setDefending(defending);

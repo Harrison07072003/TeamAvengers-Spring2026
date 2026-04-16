@@ -3,6 +3,7 @@ public class Player extends Character{
     private String currentRoom;
     private final GameMap Map;
     private Item equippedWeapon;
+    private int vials;
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
     //constructor
     public Player(String id, int maxHP, int attack, int defense, int coins,String roomID,GameMap map) {
@@ -11,10 +12,12 @@ public class Player extends Character{
         this.Map = map;
         this.equippedWeapon = new Item("I0","Fists","test,",0);
         this.currentState = 1;
+        this.vials = 0;
     }
 
 
     //methods
+    //monster methods
     public void attack(Monster monster){
         if(monster.isAlive()) {
             double damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - monster.getDefense();
@@ -54,7 +57,7 @@ public class Player extends Character{
             Monster monster = this.getMonster();
             if (monster.isAlive()) {
                 return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
-                        + monster.getAttack() + "\nDefense: " + monster.getDefense() + "\n------------------------------";
+                        + monster.getAttack() + "\nDefense: " + monster.getDefense();
             }
         }
         return "No Monsters detected";
@@ -66,6 +69,10 @@ public class Player extends Character{
         if(roomId >= 1)
             this.setCurrentRoom(room);
     }
+    public boolean engageMonster() {
+        return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
+    }
+    //getters and setters
     public int getDamage(Monster enemy,boolean heavyDamage){
         double damage;
         if(heavyDamage && enemy.isDefending())
@@ -80,39 +87,6 @@ public class Player extends Character{
             return 1;
         else
             return (int) damage;
-    }
-    public boolean engageMonster() {
-        return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
-    }
-    public Item dropItem(String item){
-        return null;
-    }
-    public Room getCurrentRoom(String roomID){
-         return this.Map.getRoom(roomID);
-    }
-    public String getRoomID(){
-        return this.currentRoom;
-    }
-     public void setCurrentRoom(String roomID){
-        this.currentRoom = roomID;
-    }
-    public String checkWeapon(){
-        return this.equippedWeapon.toString();
-    }
-    public int getAttackBonus(){
-        return this.equippedWeapon.getAttackBonus();
-    }
-    public String getBuilding(){
-        return this.getCurrentRoom(currentRoom).getBuilding();
-    }
-    public boolean equipWeapon(String weapon){
-        for(int i = 0; i < this.getInventory().size(); i++){
-            if(this.getInventory().get(i).getItemName().equalsIgnoreCase(weapon)){
-                this.equippedWeapon = this.getInventory().get(i);
-                return true;
-            }
-        }
-        return false;
     }
     public String getRoomName(){
         return this.getCurrentRoom(currentRoom).getName();
@@ -131,6 +105,40 @@ public class Player extends Character{
     }
     public String getEquippedWeaponName(){
         return this.equippedWeapon.getItemName();
+    }
+    public int getVials(){
+        return this.vials;
+    }
+    public Room getCurrentRoom(String roomID){
+        return this.Map.getRoom(roomID);
+    }
+    public String getRoomID(){
+        return this.currentRoom;
+    }
+    public void setCurrentRoom(String roomID){
+        this.currentRoom = roomID;
+    }
+    public int getAttackBonus(){
+        return this.equippedWeapon.getAttackBonus();
+    }
+    public String getBuilding(){
+        return this.getCurrentRoom(currentRoom).getBuilding();
+    }
+    //item methods
+    public Item dropItem(String item){
+        return null;
+    }
+    public String checkWeapon(){
+        return this.equippedWeapon.toString();
+    }
+    public boolean equipWeapon(String weapon){
+        for(int i = 0; i < this.getInventory().size(); i++){
+            if(this.getInventory().get(i).getItemName().equalsIgnoreCase(weapon)){
+                this.equippedWeapon = this.getInventory().get(i);
+                return true;
+            }
+        }
+        return false;
     }
 
 }

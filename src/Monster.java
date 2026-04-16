@@ -15,6 +15,19 @@ public class Monster extends Character{
     public String getMonsterDescription() {
         return this.monsterDescription;
     }
+    public String getName(){
+        return this.name;
+    }
+    public int getDamage(Player p){
+        double damage = this.getAttack() - p.getDefense();
+        if(p.isDefending())
+            damage = damage*0.6;
+        if(damage < 1)
+            return 1;
+        else
+            return (int) damage;
+    }
+    //combat methods
     public void attack(Character player){
         if(this.isAlive()) {
             double damage = this.getAttack() - player.getDefense();
@@ -33,17 +46,5 @@ public class Monster extends Character{
         }
         else
             return null;
-    }
-    public String getName(){
-        return this.name;
-    }
-    public int getDamage(Player p){
-        double damage = this.getAttack() - p.getDefense();
-        if(p.isDefending())
-            damage = damage*0.6;
-        if(damage < 1)
-            return 1;
-        else
-            return (int) damage;
     }
 }
