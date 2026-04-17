@@ -7,15 +7,13 @@ public class GameController {
     View view;
     boolean isRunning;
     Scanner input;
-    CombatEngine combatEngine;
     //constructor
     GameController() {
-        player = new Player("Player", 100, 10, 5);
-        map = new RoomMap();
         view = new View();
+        player = new Player("Player", 100, 10, 5, view);
+        map = new RoomMap();
         input = new Scanner(System.in);
         isRunning = true;
-        combatEngine = new CombatEngine();
     }
     //methods
     public void run(){
@@ -151,7 +149,7 @@ public class GameController {
             (i1.getItem_Name().equalsIgnoreCase("Flashlight") && i2.getItem_Name().equalsIgnoreCase("Batteries"))) {
             player.removeItem(i1);
             player.removeItem(i2);
-            Item combined = new Item("C1", "Powered Flashlight", "A flashlight with batteries, ready to use.", "tool");
+            Item combined = new Item("C1", "Powered Flashlight", "A flashlight with batteries, ready to use.", "tool", 0);
             player.addItem(combined);
             view.display("Combined into Powered Flashlight.");
         } else {
@@ -165,7 +163,7 @@ public class GameController {
             if (player.getCoins() >= 4) {
                 player.setCoins(player.getCoins() - 4);
                 // Add food to room
-                Item food = new Item("F" + System.currentTimeMillis(), "Vending Machine Food", "Food bought from vending machine", "consumable");
+                Item food = new Item("F" + System.currentTimeMillis(), "Vending Machine Food", "Food bought from vending machine", "consumable", 5);
                 room.addItem(food);
                 view.display("Bought food. It is now in the room.");
             } else {
@@ -200,7 +198,7 @@ public class GameController {
         }
         Item item = player.getItem(weaponName);
         if (item != null && "weapon".equalsIgnoreCase(item.getItem_type())) {
-            player.setEquippedWeapon(item);
+            player.setEquippedWeapon((Weapon) item);
             view.display("Equipped " + weaponName + ".");
         } else if (item != null) {
             view.display(weaponName + " is not a weapon.");

@@ -13,6 +13,5 @@ public class Weapon extends Item {
     public void use() {
         // Logic to use the weapon would go here
         // For now, just a placeholder
-        System.out.println("Used weapon " + getItem_Name() + ", attack increased by " + atkIncrease);
     }
 }

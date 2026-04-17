@@ -13,6 +13,5 @@ public class Consumable extends Item {
     public void use() {
         // Logic to consume the item and restore HP would go here
         // For now, just a placeholder
-        System.out.println("Consumed " + getItem_Name() + ", HP restored by " + hpRestore);
     }
 }

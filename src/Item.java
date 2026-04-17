@@ -54,14 +54,23 @@ public class Item {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(", ", -1);
+                String[] parts = line.split(",", -1);
+                for (int i = 0; i < parts.length; i++) {
+                    parts[i] = parts[i].trim();
+                }
                 String id = parts[0];
                 String name = parts[1];
-                String desc = parts[2];
-                String type = parts[3];
+                String desc;
+                String type;
                 int val = 0;
-                if (parts.length >= 5) {
-                    val = Integer.parseInt(parts[4]);
+                if (parts.length >= 4 && isNumeric(parts[3])) {
+                    desc = parts[1];
+                    type = parts[2];
+                    val = Integer.parseInt(parts[3]);
+                } else {
+                    desc = parts[2];
+                    type = parts[3];
+                    val = 0;
                 }
                 Item item;
                 switch (type.toLowerCase()) {
@@ -72,6 +81,7 @@ public class Item {
                         item = new Weapon(id, name, desc, type, val);
                         break;
                     case "tool":
+                    case "tools":
                         // Default utilityType; could be parsed from desc if needed
                         String utilityType = "utility";
                         item = new Tool(id, name, desc, type, val, utilityType);
@@ -87,5 +97,14 @@ public class Item {
             }
         }
         return items;
+    }
+
+    private static boolean isNumeric(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

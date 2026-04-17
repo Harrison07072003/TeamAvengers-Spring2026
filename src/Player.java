@@ -8,15 +8,17 @@ public class Player extends Character {
     private int vialCount;
     private int capacity; // Perhaps same as inventoryCapacity
     private String currentRoom;
-    private GameMap gameMap; // Assuming GameMap class exists
+    private RoomMap gameMap; // Assuming GameMap class exists
+    private View view;
 
-    public Player(String id, int maxHP, int attack, int defense) {
+    public Player(String id, int maxHP, int attack, int defense, View view) {
         super(id, maxHP, attack, defense);
         this.inventory = new ArrayList<>();
         this.coins = 15; // Starting coins
         this.equippedWeapon = null;
         this.inventoryCapacity = 5; // add capacity start capacity  5 then increase by the backpack to 10
         // backpack can be dropped decrases back to 5
+        this.view = view;
     }
 
     public ArrayList<Item> getInventory() {
@@ -67,7 +69,7 @@ public class Player extends Character {
 
     public void pickUpItem(String itemName) {
         // Placeholder: Assume item is available and add to inventory
-        System.out.println("Picked up " + itemName);
+        view.display("Picked up " + itemName);
         // In a full implementation, this would interact with the room
     }
 
@@ -75,7 +77,7 @@ public class Player extends Character {
         Item item = getItem(itemName);
         if (item != null) {
             removeItem(item);
-            System.out.println("Dropped " + itemName);
+            view.display("Dropped " + itemName);
             return item;
         }
         return null;
@@ -87,34 +89,37 @@ public class Player extends Character {
             consumable.use();
             setHP(getHP() + consumable.getHpRestore());
             removeItem(item);
+            view.display("Consumed " + item.getItem_Name() + ", HP restored by " + consumable.getHpRestore());
         } else if (item instanceof Tool) {
             Tool tool = (Tool) item;
             tool.use(this);
+            view.display("Used " + item.getItem_Name() + " (" + tool.getUtilityType() + ") on player");
         } else if (item instanceof Weapon) {
-            equipWeapon((Weapon) item);
+            String msg = equipWeapon((Weapon) item);
+            view.display(msg);
         } else {
-            System.out.println("Cannot use " + item.getItem_Name());
+            view.display("Cannot use " + item.getItem_Name());
         }
     }
 
     public boolean storeItem(Item item) {
         if (inventory.size() < inventoryCapacity) {
             addItem(item);
-            System.out.println("Stored " + item.getItem_Name());
+            view.display("Stored " + item.getItem_Name());
             return true;
         } else {
-            System.out.println("Inventory full");
+            view.display("Inventory full");
             return false;
         }
     }
 
-    public void equipWeapon(Weapon weapon) {
+    public String equipWeapon(Weapon weapon) {
         if (hasItem(weapon.getItem_Name())) {
             setEquippedWeapon(weapon);
             setATK(getATK() + weapon.getAtkIncrease());
-            System.out.println("Equipped " + weapon.getItem_Name());
+            return "Equipped " + weapon.getItem_Name();
         } else {
-            System.out.println("Weapon not in inventory");
+            return "Weapon not in inventory";
         }
     }
 
@@ -123,10 +128,10 @@ public class Player extends Character {
             coins -= 4;
             Consumable food = new Consumable("food_id", "Food", "Edible food", "consumable", 10);
             addItem(food);
-            System.out.println("Bought food");
+            view.display("Bought food");
             return true;
         } else {
-            System.out.println("Not enough coins");
+            view.display("Not enough coins");
             return false;
         }
     }
@@ -148,7 +153,7 @@ public class Player extends Character {
             removeItem(flashlight);
             Tool poweredFlashlight = new Tool("combined_id", "Powered Flashlight", "Flashlight with batteries", "tool", 0, "light");
             addItem(poweredFlashlight);
-            System.out.println("Combined Batteries and Flashlight into Powered Flashlight");
+            view.display("Combined Batteries and Flashlight into Powered Flashlight");
             return true;
         }
         return false;
@@ -156,7 +161,7 @@ public class Player extends Character {
 
     public boolean enterRoom(String room) {
         // Placeholder
-        System.out.println("Entering room " + room);
+        view.display("Entering room " + room);
         currentRoom = room;
         return true;
     }
@@ -168,73 +173,18 @@ public class Player extends Character {
 
     public void startGame() {
         // Placeholder
-        System.out.println("Game started");
+        view.display("Game started");
     }
 
     public void quitGame() {
         // Placeholder
-        System.out.println("Game quit");
+        view.display("Game quit");
     }
 
     public void viewInventory() {
-        System.out.println("Inventory:");
+        view.display("Inventory:");
         for (Item item : inventory) {
-            System.out.println("- " + item.getItem_Name());
+            view.display("- " + item.getItem_Name());
         }
-    }
-
-    public void attack(Monster enemy, boolean defending) {
-        // Placeholder
-        System.out.println("Attacking enemy");
-    }
-
-    public void heavyAttack(Monster enemy, boolean defending) {
-        // Placeholder
-        System.out.println("Heavy attacking enemy");
-    }
-
-    public void defend() {
-        // Placeholder
-        System.out.println("Defending");
-    }
-
-    public void dodge() {
-        // Placeholder
-        System.out.println("Dodging");
-    }
-
-    public void retreat() {
-        // Placeholder
-        System.out.println("Retreating");
-    }
-
-    public String inspectMonster(Monster enemy) {
-        // Placeholder
-        return "Inspecting monster";
-    }
-
-    public void ignoreMonster() {
-        // Placeholder
-        System.out.println("Ignoring monster");
-    }
-
-    public void engageMonster() {
-        // Placeholder
-        System.out.println("Engaging monster");
-    }
-
-    public void explorePuzzle() {
-        // Placeholder
-        System.out.println("Exploring puzzle");
-    }
-
-    public void solvePuzzle() {
-        // Placeholder
-        System.out.println("Solving puzzle");
-    }
-
-    public void ignorePuzzle() {
-        // Placeholder
-        System.out.println("Ignoring puzzle");
     }
 }

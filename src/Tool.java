@@ -9,6 +9,9 @@ public class Tool extends Item {
     public void use(Player player) {
         // Logic to use the tool on the player would go here
         // For now, just a placeholder
-        System.out.println("Used " + getItem_Name() + " (" + utilityType + ") on player");
+    }
+
+    public String getUtilityType() {
+        return utilityType;
     }
 }
