@@ -230,11 +230,32 @@ public class RoomMap {
                     continue;
                 }
 
-                // TODO:
-                // this depends on the exact items.txt format from teammates
-                // update parsing once the real file format is kn
+                // format:
+                // itemId|itemName|category|description|attackBonus|healValue|roomId
+                String[] parts = line.split("\\|");
 
-                System.out.println("Item line read: " + line);
+                if (parts.length < 7) {
+                    System.out.println("Skipping bad item line: " + line);
+                    continue;
+                }
+
+                String itemId = parts[0].trim();
+                String itemName = parts[1].trim();
+                String category = parts[2].trim();
+                String description = parts[3].trim();
+                int attackBonus = Integer.parseInt(parts[4].trim());
+                int healValue = Integer.parseInt(parts[5].trim());
+                String roomId = parts[6].trim();
+
+                Item item = new Item(itemId, itemName, category, description, attackBonus, healValue);
+
+                Room room = getRoom(roomId);
+
+                if (room != null) {
+                    room.addItem(item);
+                } else {
+                    System.out.println("Room not found for item: " + itemId);
+                }
             }
 
             input.close();
@@ -259,7 +280,7 @@ public class RoomMap {
         try {
             PrintWriter output = new PrintWriter(saveFile);
 
-            // ---- PLAYER SECTION ----
+            // PLAYER
             output.println("PLAYER");
             output.println(player.getCharaterID() + "," +
                     player.getCurrentHP() + "," +
@@ -268,75 +289,104 @@ public class RoomMap {
                     player.getVialCount() + "," +
                     player.getCurrentRoom());
 
-            // ---- ROOMS SECTION ----
+            // INVENTORY
+            output.println("INVENTORY");
+            for (Item item : player.getInventory()) {
+                output.println(item.toFileString());
+            }
+
+            // ROOMS
             output.println("ROOMS");
 
-            for (int i = 0; i < rooms.size(); i++) {
-                Room room = rooms.get(i);
+            for (Room room : rooms) {
+                output.println(room.getRoomId());
 
-                String puzzleData = "none";
-                String monsterData = "none";
-
+                // puzzle
                 if (room.getPuzzle() != null) {
-                    puzzleData = room.getPuzzle().getPuzzleId() + ":" + room.getPuzzle().isSolved();
+                    output.println("PUZZLE|" + room.getPuzzle().getPuzzleId() + "|" + room.getPuzzle().isSolved());
+                } else {
+                    output.println("PUZZLE|none");
                 }
 
+                // monster
                 if (room.getMonster() != null) {
-                    monsterData = room.getMonster().getCharacterId();
+                    output.println("MONSTER|" + room.getMonster().getCharacterId());
+                } else {
+                    output.println("MONSTER|none");
                 }
 
-                output.println(room.getRoomId() + "|" + puzzleData + "|" + monsterData);
+                // items
+                for (Item item : room.getItems()) {
+                    output.println("ITEM|" + item.toFileString());
+                }
+
+                output.println("ENDROOM");
             }
 
             output.close();
             System.out.println("Game saved successfully.");
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not save the game.");
+        } catch (Exception e) {
+            System.out.println("Error saving game.");
         }
     }
+
+
 
     public void loadGame(Player player) {
         try {
             Scanner input = new Scanner(new File(saveFile));
 
-            // ---- PLAYER SECTION ----
-            if (input.hasNextLine()) {
-                String section = input.nextLine();
+            player.clearInventory();
 
-                if (section.equals("PLAYER")) {
-                    String line = input.nextLine();
-                    String[] parts = line.split(",");
-
-                    // remember order MUST match saveGame()
-                    player.setCurrentRoom(parts[5]);
-                    player.setVialCount(Integer.parseInt(parts[4]));
-                }
+            for (Room r : rooms) {
+                r.clearItems();
             }
 
-            // ---- ROOMS SECTION ----
-            if (input.hasNextLine()) {
-                String section = input.nextLine();
+            String section = "";
 
-                if (section.equals("ROOMS")) {
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+
+                if (line.equals("PLAYER") || line.equals("INVENTORY") || line.equals("ROOMS")) {
+                    section = line;
+                    continue;
+                }
+
+                if (section.equals("PLAYER")) {
+                    String[] parts = line.split(",");
+                    player.setCharacterID(parts[0]);
+                    player.setCurrentHP(Integer.parseInt(parts[1]));
+                    player.setAttack(Integer.parseInt(parts[2]));
+                    player.setDefense(Integer.parseInt(parts[3]));
+                    player.setVialCount(Integer.parseInt(parts[4]));
+                    player.setCurrentRoom(parts[5]);
+                }
+
+                else if (section.equals("INVENTORY")) {
+                    player.addItem(Item.fromFileString(line));
+                }
+
+                else if (section.equals("ROOMS")) {
+                    if (line.equals("ENDROOM")) continue;
+
+                    Room room = getRoom(line);
+
                     while (input.hasNextLine()) {
-                        String line = input.nextLine();
+                        String inner = input.nextLine().trim();
 
-                        String[] parts = line.split("\\|");
+                        if (inner.equals("ENDROOM")) break;
 
-                        String roomId = parts[0];
-                        String puzzleData = parts[1];
-                        String monsterData = parts[2];
-
-                        Room room = getRoom(roomId);
-
-                        // restore puzzle state
-                        if (!puzzleData.equals("none") && room.getPuzzle() != null) {
-                            String[] puzzleParts = puzzleData.split(":");
-                            boolean solved = Boolean.parseBoolean(puzzleParts[1]);
-                            room.getPuzzle().setSolved(solved);
+                        if (inner.startsWith("PUZZLE")) {
+                            if (!inner.contains("none") && room.getPuzzle() != null) {
+                                String[] p = inner.split("\\|");
+                                room.getPuzzle().setSolved(Boolean.parseBoolean(p[2]));
+                            }
                         }
 
-                        // (monster restoring can be added later if needed)
+                        if (inner.startsWith("ITEM")) {
+                            String data = inner.substring(5);
+                            room.addItem(Item.fromFileString(data));
+                        }
                     }
                 }
             }
@@ -344,7 +394,7 @@ public class RoomMap {
             input.close();
             System.out.println("Game loaded successfully.");
 
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             System.out.println("No saved game found.");
         }
     }
