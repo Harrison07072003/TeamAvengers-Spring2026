@@ -49,6 +49,15 @@ public class Room {
         return exits;
     }
 
+    public String getExit(String input) {
+        if (exits.containsKey(input)) {
+            return exits.get(input);
+        }else if(exits.containsValue(input)){
+            return input;
+        }
+        return null;
+    }
+
     public ArrayList<Item> getInventory() {
         return inventory;
     }
@@ -120,9 +129,4 @@ public class Room {
     public void addExit(String direction, String roomId){
         exits.put(direction, roomId);
     }
-
-
-
-
-
 }
