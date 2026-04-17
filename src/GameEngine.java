@@ -49,8 +49,6 @@ public class GameEngine {
         }
         else if(command.equals("inventory"))
             this.result.setMessage(A.getInventoryString()+"\n");
-        else if(command.equals("map"))
-            this.result.setMessage(this.getVMap(A.getBuilding())+"\n");
         else if(command.equals("inspect"))
             this.result.setMessage(A.inspectMonster()+"\n");
         else if(command.startsWith("equip ")) {
@@ -60,9 +58,6 @@ public class GameEngine {
                 this.result.setMessage("You have equipped the " + itemName + "!\n");
             else
                 this.result.setMessage("You don't have a " + itemName + " in your inventory.\n");
-        }
-        else if(command.equals("help")) {
-            this.result.setMessage("" + A.getCurrentState()+"\n");
         }
         else if(command.equals("move"))
             A.setCurrentRoom("R2");
@@ -75,18 +70,6 @@ public class GameEngine {
         this.result.setMessage(this.result.getMessage() + "-----------------------------------");
         return result.getMessage();
 
-    }
-    public String getVMap(String building){
-            if (building.equals("Building E")) {
-                return (
-                        "                            |Building E|                                       \n" +
-                                " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall] \n" +
-                                "       |                          |                        |\n" +
-                                " [Meditation Room] -------- [Student Lounge] ------  [  Campus Cafe  ] -----> Library");
-            }
-            else{
-                return ("You good");
-            }
     }
     //battle
     public String battleCommand(String command){
@@ -107,12 +90,6 @@ public class GameEngine {
     public int getTurn(){
         return this.combatEngine.getTurns();
     }
-    public String monsterUI(){
-        return "Your HP: " + A.getHealth() + "\n" +
-                A.getMonsterName()+"'s HP: " + combatEngine.getMonsterHealth() + "\n" +
-                "Commands: Attack, Heavy Attack, Defend, Dodge, Retreat \n" +
-                "--------------------------------\n" + "Action:";
-    }
     //getters
     public Player getPlayer(){
         return this.A;
@@ -124,5 +101,16 @@ public class GameEngine {
     public int getPlayerState(){
         return this.getPlayer().getCurrentState();
     }
-
+    public String getPlayerBuilding(){
+        return this.getPlayer().getBuilding();
+    }
+    public String getPlayerHealth(){
+        return A.getHealth();
+    }
+    public String getMonsterName(){
+        return A.getMonsterName();
+    }
+    public String getMonsterHealth(){
+        return combatEngine.getMonsterHealth();
+    }
 }

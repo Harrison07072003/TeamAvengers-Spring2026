@@ -129,6 +129,8 @@ public class Player extends Character{
         return null;
     }
     public String checkWeapon(){
+        if(this.equippedWeapon.getItemName().equals("Fists"))
+            return "There is no weapon equipped.";
         return this.equippedWeapon.toString();
     }
     public boolean equipWeapon(String weapon){

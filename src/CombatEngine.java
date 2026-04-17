@@ -35,15 +35,15 @@ public class CombatEngine {
     public String action(String command){
         String result = "";
         boolean defending = (turns % 3 == 0);
-        if(command.equals("check weapon")) {
+        if(command.equalsIgnoreCase("check weapon")) {
             result += player.checkWeapon() + "\n";
             turns--;
         }
-        else if(command.equals("help")) {
+        else if(command.equalsIgnoreCase("help")) {
             result += "help";
             turns--;
         }
-        else if(command.equals("attack")){
+        else if(command.equalsIgnoreCase("attack")){
             if(defending)
                 result += enemy.getName() + " is defending! Your attacks will be less effective.\n";
             enemy.setDefending(defending);
@@ -55,7 +55,7 @@ public class CombatEngine {
                     result += enemy.getName() + " launched forward! They did " + enemy.getDamage(player) + " points of damage\n";
             }
         }
-        else if(command.equals("heavy attack")){
+        else if(command.equalsIgnoreCase("heavy attack")){
             if(defending)
                 result += enemy.getName() + " is defending! Your attacks will be less effective.\n";
             enemy.setDefending(defending);
@@ -77,7 +77,7 @@ public class CombatEngine {
             else
                 result += "Your heavy attack missed!\n";
         }
-        else if(command.equals("defend")){
+        else if(command.equalsIgnoreCase("defend")){
             player.setDefending(true);
             result += "You brace yourself for the next attack.\n";
             if(!defending) {
@@ -88,7 +88,7 @@ public class CombatEngine {
                 result += "Both you and the enemy prepared yourselves and defended!\n";
             player.setDefending(false);
         }
-        else if(command.equals("dodge")){
+        else if(command.equalsIgnoreCase("dodge")){
             double dodgeChance = (Math.random()*100);
             if(dodgeChance >= 50 && !defending){
                 result += enemy.getName() + " missed!\n";
@@ -102,7 +102,7 @@ public class CombatEngine {
                 result += enemy.getName() + " did " + enemy.getDamage(player) + " points of HP\n";
             }
         }
-        else if(command.equals("retreat")){
+        else if(command.equalsIgnoreCase("retreat")){
             result += "You retreat from the battle, to the last room you were in.\n";
             retreated = true;
             player.retreat();

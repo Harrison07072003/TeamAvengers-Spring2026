@@ -6,15 +6,17 @@ public class View {
     public void display(String str){
         System.out.println(str);
     }
-    public void navUI(){}
-    /*
+    public void navUI(String RoomName){
+        System.out.println(RoomName +"\nCommands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help" +"\nEnter a command:");
+    }
+
     public void monsterUI(String health,String monster,String monsterHealth){
         System.out.println("Your HP: " + health + "\n" +
                            monster+"'s HP: " + monsterHealth + "\n" +
-                "Commands: Attack, Heavy Attack, Defend,Dodge, Retreat \n" +
+                "Commands: Attack, Heavy Attack, Defend, Dodge, Check Weapon, Retreat \n" +
                 "--------------------------------\n" + "Action:");
     }
-     */
+
     public void puzzleUI(){}
     public void navHelp(int state){
         if(state == 1)
@@ -24,9 +26,9 @@ public class View {
                 "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay\n----------------------------");
         else if(state == 2)
             System.out.println("Commands: \n" + "1.Attack - Attack the monster with a weapon\n" + "2.Heavy Attack - Attack a monster with more damage, but with a chance to miss\n"
-            +"3.Defend - Defend against an attack from a monster\n" + "4.Dodge - Chance to dodge monster attack\n" + "5.Retreat - Flee from the monster\n--------------------");
+            +"3.Defend - Defend against an attack from a monster\n" + "4.Dodge - Chance to dodge monster attack\n" +"5.Check Weapon - View the stats of the currently held weapon\n" + "6.Retreat - Flee from the monster\n--------------------");
     }
-    /*public void showMap(String building) {
+    public void showMap(String building) {
         if (building.equals("Building E")) {
             System.out.println(
                     "                            |Building E|                                       \n" +
@@ -38,7 +40,11 @@ public class View {
             System.out.println("You good");
         }
     }
+    public void showCredits(){
+        System.out.println("Teams Involved\n----------------\nCreative Team: Team Cobra\nDevelopment Team: Team Avengers\n" +
+                "\nDevelopers\n----------------\nTeam Manager:Jocelin Mendoza\nTechnical Lead:Harrison Allen\nTesting Lead:José Muñoz-Suastegui" +
+                "\nData Lead:Asliee Pena Cabrera\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo");
+    }
 
-     */
 
 }
