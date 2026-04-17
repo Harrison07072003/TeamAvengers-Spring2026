@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Room {
     //fields
@@ -6,7 +7,7 @@ public class Room {
     private String roomName;
     private String roomDescription;
     private String building;
-    private ArrayList<String> exits;
+    private HashMap<String, String> exits;
     private ArrayList<Item> inventory;
     private ArrayList<Monster> monsters;
     private Puzzle puzzle;
@@ -19,10 +20,11 @@ public class Room {
         this.roomName = roomName;
         this.roomDescription = roomDescription;
         this.building = building;
-        this.exits = new ArrayList<>();
+        this.exits = new HashMap<>();
         this.inventory = new ArrayList<>();
         this.monsters = new ArrayList<>();
         this.puzzle = null;
+        this.vendingMachine = null;
         this.requiresValidFlashlight = requiresValidFlashlight;
     }
 
@@ -43,7 +45,7 @@ public class Room {
         return building;
     }
 
-    public ArrayList<String> getExits() {
+    public HashMap<String, String> getExits() {
         return exits;
     }
 
@@ -67,43 +69,9 @@ public class Room {
         return vendingMachine;
     }
 
-
     //setters
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
-    }
-
-    public void setRoomName(String roomName) {
-        this.roomName = roomName;
-    }
-
-    public void setRoomDescription(String roomDescription) {
-        this.roomDescription = roomDescription;
-    }
-
-    public void setBuilding(String building) {
-        this.building = building;
-    }
-
-
-    public void setExits(ArrayList<String> exits) {
-        this.exits = exits;
-    }
-
-    public void setInventory(ArrayList<Item> inventory) {
-        this.inventory = inventory;
-    }
-
-    public void setMonster(ArrayList<Monster> monsters) {
-        this.monsters = monsters;
-    }
-
     public void setPuzzle(Puzzle puzzle) {
         this.puzzle = puzzle;
-    }
-
-    public void setRequiresValidFlashlight(boolean requiresValidFlashlight) {
-        this.requiresValidFlashlight = requiresValidFlashlight;
     }
 
     public void setVendingMachine(VendingMachine vendingMachine) {
@@ -112,21 +80,22 @@ public class Room {
 
 
     //methods
-    public boolean checkItem() {
+    public boolean hasItem() {
         return !inventory.isEmpty();
     }
 
-    public boolean checkMonster() {
+    public boolean hasMonster() {
         return !monsters.isEmpty();
     }
 
-    public boolean checkPuzzle() {
+    public boolean hasPuzzle() {
         return puzzle != null;
     }
 
-    public boolean checkVendingMachine() {
+    public boolean hasVendingMachine() {
         return vendingMachine != null;
     }
+
 
     public void addItem(Item item) {
         inventory.add(item);
@@ -134,6 +103,10 @@ public class Room {
 
     public void removeItem(Item item) {
         inventory.remove(item);
+    }
+
+    public void addMonster(Monster monster) {
+        monsters.add(monster);
     }
 
     public void removeMonster(Monster monster) {
@@ -144,8 +117,12 @@ public class Room {
         puzzle = null;
     }
 
-    public void addExit(String exit) {
-        exits.add(exit);
+    public void addExit(String direction, String roomId){
+        exits.put(direction, roomId);
     }
+
+
+
+
 
 }
