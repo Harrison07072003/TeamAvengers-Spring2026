@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList; //delete after test
 
 public class Player extends Character {
     private int vialCount;
@@ -6,6 +7,7 @@ public class Player extends Character {
     private String currentRoom;
     private Weapon equippedWeapon;
     private GameMap map;
+    private ArrayList<Item> inventory; // delete after test
 
     public Player(String id, int maxHP, int attack, int defense, GameMap map) {
         super(id, maxHP, attack, defense);
@@ -14,7 +16,12 @@ public class Player extends Character {
         this.currentRoom = "R1";
         this.equippedWeapon = null;
         this.map = map;
+        this.inventory = new ArrayList<>(); // delete after test
     }
+
+    public ArrayList<Item> getInventory() {
+        return inventory;
+    }// delete after test
 
     // getters and setters for my fields
     public int getVialCount() {
@@ -113,6 +120,29 @@ public class Player extends Character {
             System.out.println("You cannot escape yet.");
             System.out.println(vialCount + "/5 vials collected. 5/5 vials are required for the Cure in order to escape.");
         }
+    }
+
+
+    //delete after test
+    public void addItem(Item item) {
+        if (inventory.size() < capacity) {
+            inventory.add(item);
+        } else {
+            System.out.println("Inventory is full.");
+        }
+    }
+
+    public Item removeItem(String itemId) {
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).getId().equalsIgnoreCase(itemId)) {
+                return inventory.remove(i);
+            }
+        }
+        return null;
+    }
+
+    public void clearInventory() {
+        inventory.clear();
     }
 
 
