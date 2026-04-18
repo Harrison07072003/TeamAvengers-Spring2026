@@ -60,7 +60,7 @@ public class Player {
             }
 
             if (current.hasPuzzle()) {
-                result += "\nThere is a puzzle in this room: " + current.getPuzzle().getPuzzleId();
+                result += "\nThere is a puzzle in this room";
             }
             return result;
         }
