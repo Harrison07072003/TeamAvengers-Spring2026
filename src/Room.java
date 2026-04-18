@@ -7,7 +7,7 @@ public class Room {
     private String roomName;
     private String roomDescription;
     private String building;
-    private HashMap<String, String> exits;
+    private HashMap<Character, String> exits;
     private ArrayList<Item> inventory;
     private ArrayList<Monster> monsters;
     private Puzzle puzzle;
@@ -45,13 +45,13 @@ public class Room {
         return building;
     }
 
-    public HashMap<String, String> getExits() {
+    public HashMap<Character, String> getExits() {
         return exits;
     }
 
     public String getExit(String input) {
-        if (exits.containsKey(input)) {
-            return exits.get(input);
+        if (exits.containsKey((input).charAt(0))) {
+            return exits.get(input.charAt(0));
         }else if(exits.containsValue(input)){
             return input;
         }
@@ -126,7 +126,7 @@ public class Room {
         puzzle = null;
     }
 
-    public void addExit(String direction, String roomId){
+    public void addExit(Character direction, String roomId){
         exits.put(direction, roomId);
     }
 }
