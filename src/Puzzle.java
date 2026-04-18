@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Puzzle {
     private String puzzleId;
     private String puzzleName;
@@ -7,11 +9,11 @@ public class Puzzle {
     private String hint;
     private int attemptsRemaining;
     private boolean isSolved;
-    private Inventory puzzleInventory;
+    private ArrayList<String> rewards;
 
-    // Creates a puzzle object with all of its starting values
     public Puzzle(String puzzleId, String puzzleName, String question, String solution,
-                  String roomId, String hint, int attemptsRemaining, Inventory puzzleInventory) {
+                  String roomId, String hint, int attemptsRemaining,
+                  boolean isSolved, ArrayList<String> rewards) {
         this.puzzleId = puzzleId;
         this.puzzleName = puzzleName;
         this.question = question;
@@ -19,54 +21,43 @@ public class Puzzle {
         this.roomId = roomId;
         this.hint = hint;
         this.attemptsRemaining = attemptsRemaining;
-        this.isSolved = false;
-        this.puzzleInventory = puzzleInventory;
+        this.isSolved = isSolved;
+        this.rewards = (rewards != null) ? new ArrayList<>(rewards) : new ArrayList<>();
     }
 
-    // Returns the puzzle question so the player can access it
     public String accessPuzzle() {
         return question;
     }
 
-    // Checks if the player's answer is correct
     public boolean checkSolution(String answer) {
-        // Do not allow more attempts if the puzzle is already solved
-        // or if there are no attempts left
-        if (isSolved || attemptsRemaining <= 0) {
+        if (isSolved || attemptsRemaining <= 0 || answer == null) {
             return false;
         }
 
-        // If the answer matches the solution, mark puzzle as solved
-        if (answer.equalsIgnoreCase(solution)) {
+        if (solution.equalsIgnoreCase(answer.trim())) {
             setSolved();
             unlockProgress();
             return true;
         }
 
-        // If wrong, reduce remaining attempts
         decrementAttempts();
         return false;
     }
 
-    // Returns the hint for the puzzle
     public String giveHint() {
         return hint;
     }
 
-    // Lowers the amount of attempts left by 1
     public void decrementAttempts() {
         if (attemptsRemaining > 0) {
             attemptsRemaining--;
         }
     }
 
-    // Handles progress after solving the puzzle
     public void unlockProgress() {
-        // Business logic can be expanded here later
-        // Example: unlock a room, reveal item, open door
+        // Placeholder for future puzzle progression logic
     }
 
-    // Marks the puzzle as solved
     public void setSolved() {
         isSolved = true;
     }
@@ -103,7 +94,7 @@ public class Puzzle {
         return isSolved;
     }
 
-    public Inventory getPuzzleInventory() {
-        return puzzleInventory;
+    public ArrayList<String> getRewards() {
+        return new ArrayList<>(rewards);
     }
 }

@@ -1,24 +1,84 @@
-import java.util.Scanner;
-
 public class GameController {
-    //fields
-    Character A;
-    View v;
-    Scanner input;
-    //constructor
-    GameController() {
-        A = new Character("Player", 100, 10, 5);
-        v = new View();
-        input = new Scanner(System.in);
+    private RoomMap map;
+    private Player player;
+    private PuzzleView view;
+    private boolean isRunning;
+
+    public GameController() {
+        map = new RoomMap();
+        player = new Player();
+        view = new PuzzleView();
+        isRunning = true;
     }
-    //methods
-    public void run(){
-        while(true){
-            String command = input.nextLine();
-            if(command.equals("quit"))
+
+    public void run() {
+        map.generateRooms();
+        map.loadPuzzles("Puzzle");
+
+        view.showMessage("GGC Plague Puzzle Demo");
+        view.showMessage("Type a room ID with a puzzle: R1, R2, R4, R5, R8, R12, R13");
+        view.showMessage("Type quit to stop.\n");
+
+        while (isRunning) {
+            String roomId = view.getInput("Enter room ID: ");
+
+            if (roomId.equalsIgnoreCase("quit")) {
+                isRunning = false;
+                view.showMessage("Game ended.");
                 break;
-            else
-                v.display(A.getCharaterID());
+            }
+
+            if (!player.enterRoom(roomId, map)) {
+                view.showMessage("Room not found.\n");
+                continue;
+            }
+
+            Room currentRoom = player.getCurrentRoom(map);
+            view.showRoom(currentRoom);
+
+            if (!currentRoom.checkPuzzle()) {
+                view.showMessage("No puzzle in this room.\n");
+                continue;
+            }
+
+            boolean puzzleMenuRunning = true;
+
+            while (puzzleMenuRunning) {
+                view.puzzleUI(currentRoom);
+                String action = view.getInput("Action: ");
+
+                switch (action.toLowerCase()) {
+                    case "explore":
+                    case "explore puzzle":
+                        player.explorePuzzle(currentRoom, view);
+                        break;
+
+                    case "solve":
+                    case "solve puzzle":
+                        player.solvePuzzle(currentRoom, view);
+
+                        Puzzle puzzle = currentRoom.getPuzzle();
+                        puzzleMenuRunning = puzzle != null
+                                && !puzzle.isSolved()
+                                && puzzle.getAttemptsRemaining() > 0;
+                        break;
+
+                    case "ignore":
+                    case "ignore puzzle":
+                        player.ignorePuzzle(view);
+                        puzzleMenuRunning = false;
+                        break;
+
+                    default:
+                        view.showMessage("Invalid puzzle command.");
+                }
+            }
+
+            if (!currentRoom.getItems().isEmpty()) {
+                view.showMessage("Items currently in room: " + currentRoom.getItems());
+            }
+
+            view.showMessage("");
         }
     }
 }
