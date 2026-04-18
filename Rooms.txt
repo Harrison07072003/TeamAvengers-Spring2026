@@ -1,4 +1,4 @@
-# id | name | description | building | exits NSEW | requires flashlight
+# id | name | description | building | exits NESW | requires flashlight
 R1|Chemistry Lab|The air is thick with a sharp smell of chemicals. Pieces of glass appear to be on the floor. The lights are flickering. Some drawers of equipment are open, and tools are chaotically scattered.|H Building|0,R17,R19,0|false
 R2|Janitor's closet|A cramped supply room with cleaning chemicals and biohazard bags. Mops lean against the walls in a bucket of bleach. Brooms hanging on the wall. The janitor’s code is needed to bypass the locked door.|H Building|R15,0,0,R10|false
 R3|Library Lobby|This lobby now stands as a frozen snapshot of a panic evacuation. Books, laptops, and backpacks were left behind as students evacuated. Paper is scattered across the floor. Emergency alerts still flash on screens, and an eerie silence fills the room.|Library|0,R9,R14,R11|true
