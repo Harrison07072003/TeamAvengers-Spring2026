@@ -13,6 +13,7 @@ public class RoomMap {
     private String monstersFile;
     private String itemsFile;
     private String saveFile;
+    private String checkpointFile;
 
     public RoomMap() {
         rooms = new ArrayList<Room>();
@@ -22,6 +23,7 @@ public class RoomMap {
         monstersFile = "monsters.txt";
         itemsFile = "items.txt";
         saveFile = "saveGame.txt";
+        checkpointFile = "checkpoint.txt";
     }
 
     public void generateRooms() {
@@ -399,9 +401,120 @@ public class RoomMap {
         }
     }
 
-    public void checkpoint(Player player) {
-        saveGame(player);
-        System.out.println("Checkpoint created successfully.");
+    public void saveCheckpoint(Player player) {
+        try {
+            PrintWriter output = new PrintWriter(checkpointFile);
+
+            // PLAYER
+            output.println("PLAYER");
+            output.println(player.getCharaterID() + "," +
+                    player.getCurrentHP() + "," +
+                    player.getAttack() + "," +
+                    player.getDefense() + "," +
+                    player.getVialCount() + "," +
+                    player.getCurrentRoom());
+
+            // INVENTORY
+            output.println("INVENTORY");
+            for (Item item : player.getInventory()) {
+                output.println(item.toFileString());
+            }
+
+            // ROOMS
+            output.println("ROOMS");
+
+            for (Room room : rooms) {
+                output.println(room.getRoomId());
+
+                if (room.getPuzzle() != null) {
+                    output.println("PUZZLE|" + room.getPuzzle().getPuzzleId() + "|" + room.getPuzzle().isSolved());
+                } else {
+                    output.println("PUZZLE|none");
+                }
+
+                if (room.getMonster() != null) {
+                    output.println("MONSTER|" + room.getMonster().getCharacterId());
+                } else {
+                    output.println("MONSTER|none");
+                }
+
+                for (Item item : room.getItems()) {
+                    output.println("ITEM|" + item.toFileString());
+                }
+
+                output.println("ENDROOM");
+            }
+
+            output.close();
+        } catch (Exception e) {
+            System.out.println("Error creating checkpoint.");
+        }
+    }
+
+
+    public void loadCheckpoint(Player player) {
+        try {
+            Scanner input = new Scanner(new File(checkpointFile));
+
+            player.clearInventory();
+
+            for (Room r : rooms) {
+                r.clearItems();
+            }
+
+            String section = "";
+
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+
+                if (line.equals("PLAYER") || line.equals("INVENTORY") || line.equals("ROOMS")) {
+                    section = line;
+                    continue;
+                }
+
+                if (section.equals("PLAYER")) {
+                    String[] parts = line.split(",");
+                    player.setCharacterID(parts[0]);
+                    player.setCurrentHP(Integer.parseInt(parts[1]));
+                    player.setAttack(Integer.parseInt(parts[2]));
+                    player.setDefense(Integer.parseInt(parts[3]));
+                    player.setVialCount(Integer.parseInt(parts[4]));
+                    player.setCurrentRoom(parts[5]);
+                }
+
+                else if (section.equals("INVENTORY")) {
+                    player.addItem(Item.fromFileString(line));
+                }
+
+                else if (section.equals("ROOMS")) {
+                    if (line.equals("ENDROOM")) continue;
+
+                    Room room = getRoom(line);
+
+                    while (input.hasNextLine()) {
+                        String inner = input.nextLine().trim();
+
+                        if (inner.equals("ENDROOM")) break;
+
+                        if (inner.startsWith("PUZZLE")) {
+                            if (!inner.contains("none") && room.getPuzzle() != null) {
+                                String[] p = inner.split("\\|");
+                                room.getPuzzle().setSolved(Boolean.parseBoolean(p[2]));
+                            }
+                        }
+
+                        if (inner.startsWith("ITEM")) {
+                            String data = inner.substring(5);
+                            room.addItem(Item.fromFileString(data));
+                        }
+                    }
+                }
+            }
+
+            input.close();
+        } catch (Exception e) {
+            System.out.println("No checkpoint found.");
+        }
     }
 
     public ArrayList<Room> getRooms() {
