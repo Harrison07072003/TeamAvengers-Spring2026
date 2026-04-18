@@ -43,7 +43,7 @@ public class Room {
         return vendingMachine;
     }
 
-    public void setVendingMachine(VendingMachine vendingMachine) {
+    void attachVendingMachine(VendingMachine vendingMachine) {
         this.vendingMachine = vendingMachine;
     }
 }

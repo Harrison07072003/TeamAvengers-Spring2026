@@ -11,13 +11,19 @@ public class Item {
     private String item_Name;
     private String item_Description;
     private String item_type;
+    private String item_Location;
     private int value; // HP for consumables, attack for weapons, etc.
 
     public Item(String item_Id, String item_Name, String item_Description, String item_type, int value) {
+        this(item_Id, item_Name, item_Description, item_type, "", value);
+    }
+
+    public Item(String item_Id, String item_Name, String item_Description, String item_type, String item_Location,int value) {
         this.item_Id = item_Id;
         this.item_Name = item_Name;
         this.item_Description = item_Description;
         this.item_type = item_type;
+        this.item_Location = item_Location;
         this.value = value;
     }
 
@@ -36,6 +42,9 @@ public class Item {
     public String getItem_type() {
         return item_type;
     }
+    public String getItem_Location() {
+        return item_Location;
+    }
 
     public int getValue() {
         return value;
@@ -48,6 +57,7 @@ public class Item {
                 ", item_Name='" + item_Name + '\'' +
                 ", item_Description='" + item_Description + '\'' +
                 ", item_type='" + item_type + '\'' +
+                ", item_Location='" + item_Location + '\'' +
                 ", value=" + value +
                 '}';
     }
@@ -63,75 +73,89 @@ public class Item {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
-                items.add(parseItem(line));
+                Item item = parseItem(line);
+                if (item != null) {
+                    items.add(item);
+                }
             }
         }
         return items;
     }
 
     private static Item parseItem(String line) throws IOException {
-        String[] parts = line.split(",", -1);
+        String trimmedLine = line.trim();
+        if (trimmedLine.isEmpty() || trimmedLine.startsWith("#")) {
+            return null;
+        }
+
+        String[] parts = line.split("\\|", -1);
         for (int i = 0; i < parts.length; i++) {
             parts[i] = parts[i].trim();
         }
 
-        if (parts.length < 4 || parts.length > 5) {
+        if (parts.length >= 1 && "ID".equalsIgnoreCase(parts[0])) {
+            return null;
+        }
+
+        if (parts.length < 4 || parts.length > 6) {
             throw new IOException("Invalid item row: " + line);
         }
 
         String id = parts[0];
         String name = parts[1];
-        String desc;
-        String type;
+        String type = parts[2];
+        String desc = name;
+        String location = "";
         int val = 0;
 
         if (parts.length == 4) {
             if (isNumeric(parts[3])) {
-                // Format: ID, Name, Type, Value
-                desc = name;
-                type = parts[2];
                 val = Integer.parseInt(parts[3]);
             } else {
-                // Format: ID, Name, Type, Description
                 desc = parts[3];
-                type = parts[2];
-                val = 0;
             }
-        } else {
-            // Format: ID, Name, Type, Description, Value
-            desc = parts[3];
-            type = parts[2];
-            if (!parts[4].isEmpty()) {
+        } else if (parts.length == 5) {
+            if (isNumeric(parts[4])) {
+                location = parts[3];
                 val = Integer.parseInt(parts[4]);
+            } else {
+                desc = parts[3];
+                location = parts[4];
+            }
+        } else if (parts.length == 6) {
+            desc = parts[3];
+            location = parts[4];
+            if (!parts[5].isEmpty()) {
+                val = Integer.parseInt(parts[5]);
             }
         }
 
-        return createItem(id, name, desc, type, val);
+        return createItem(id, name, desc, type, location,val);
     }
 
-    private static Item createItem(String id, String name, String desc, String type, int value) {
+    private static Item createItem(String id, String name, String desc, String type, String location,int value) {
         switch (type.toLowerCase()) {
             case "consumable":
-                return new Consumable(id, name, desc, type, value);
+                return new Consumable(id, name, desc, type, location,value);
             case "weapon":
-                return new Weapon(id, name, desc, type, value);
+                return new Weapon(id, name, desc, type, location,value);
             case "tool":
             case "tools":
-                return new Tool(id, name, desc, type, value, inferUtilityType(name, desc));
+                return new Tool(id, name, desc, type, location,value, inferUtilityType(name, desc));
             case "quest":
-                return new QuestItem(id, name, desc, type, value);
+                return new QuestItem(id, name, desc, type, location,value);
             default:
-                return new Item(id, name, desc, type, value);
+                return new Item(id, name, desc, type, location,value);
         }
     }
 
     private static String inferUtilityType(String name, String description) {
         String combinedText = (name + " " + description).toLowerCase();
-        if (combinedText.contains("flashlight")) {
-            return "light";
-        }
         if (combinedText.contains("batter")) {
             return "power";
+        }
+        if (combinedText.contains("flashlight")) {
+            return "light";
         }
         if (combinedText.contains("backpack")) {
             return "carry";

@@ -157,7 +157,7 @@ public class GameController {
             (item1.equalsIgnoreCase("vital") && item2.equalsIgnoreCase("cure"))) {
             int count = 0;
             for (Item item : player.getInventory()) {
-                if (item.getItem_Name().equalsIgnoreCase("Cure Vital")) {
+                if (item.getItem_Name().toLowerCase().startsWith("cure vital")) {
                     count++;
                 }
             }
@@ -166,7 +166,7 @@ public class GameController {
                 int removed = 0;
                 for (int i = player.getInventory().size() - 1; i >= 0 && removed < 5; i--) {
                     Item item = player.getInventory().get(i);
-                    if (item.getItem_Name().equalsIgnoreCase("Cure Vital")) {
+                    if (item.getItem_Name().toLowerCase().startsWith("cure vital")) {
                         player.removeItem(item);
                         removed++;
                     }
