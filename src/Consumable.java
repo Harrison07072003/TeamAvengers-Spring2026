@@ -10,8 +10,17 @@ public class Consumable extends Item {
         return hpRestore;
     }
 
-    public void use() {
-        // Logic to consume the item and restore HP would go here
-        // For now, just a placeholder
+    public String use(Player player) {
+        if (player == null) {
+            return View.noPlayerForAction("consume", getItem_Name());
+        }
+
+        if (!player.getInventory().contains(this)) {
+            return View.itemNotInInventory(getItem_Name());
+        }
+
+        player.setHP(player.getHP() + hpRestore);
+        player.removeItem(this);
+        return View.consumedItem(getItem_Name(), hpRestore);
     }
 }

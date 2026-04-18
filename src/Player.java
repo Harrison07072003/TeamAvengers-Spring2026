@@ -1,40 +1,73 @@
 import java.util.ArrayList;
 
 public class Player extends Character {
-    private ArrayList<Item> inventory;
-    private int coins;
-    private Weapon equippedWeapon; // Changed to Weapon
+    private Weapon equippedWeapon;
     private int inventoryCapacity;
-    private int vialCount;
-    private int capacity; // Perhaps same as inventoryCapacity
     private String currentRoom;
-    private RoomMap gameMap; // Assuming GameMap class exists
-    private View view;
+    private boolean officeUnlocked;
+    private boolean plagueCured;
+    private final View view;
 
     public Player(String id, int maxHP, int attack, int defense, View view) {
         super(id, maxHP, attack, defense);
-        this.inventory = new ArrayList<>();
-        this.coins = 15; // Starting coins
+        setInventory(new ArrayList<>());
+        setCoins(15);
         this.equippedWeapon = null;
-        this.inventoryCapacity = 5; // add capacity start capacity  5 then increase by the backpack to 10
-        // backpack can be dropped decrases back to 5
+        this.inventoryCapacity = 5;
+        this.currentRoom = "";
+        this.officeUnlocked = false;
+        this.plagueCured = false;
         this.view = view;
     }
 
+    @Override
     public ArrayList<Item> getInventory() {
-        return inventory;
+        return super.getInventory();
     }
 
-    public void addItem(Item item) {
-        inventory.add(item);
+    public int getInventoryCapacity() {
+        return inventoryCapacity;
     }
 
-    public void removeItem(Item item) {
-        inventory.remove(item);
+    public void expandInventory(int newCapacity) {
+        if (newCapacity > inventoryCapacity) {
+            inventoryCapacity = newCapacity;
+        }
+    }
+
+    public boolean addItem(Item item) {
+        if (item == null || getInventory().size() >= inventoryCapacity) {
+            return false;
+        }
+
+        getInventory().add(item);
+        return true;
+    }
+
+    public boolean removeItem(Item item) {
+        if (item == null) {
+            return false;
+        }
+
+        boolean removed = getInventory().remove(item);
+        if (!removed) {
+            return false;
+        }
+
+        if (item == equippedWeapon) {
+            setATK(getATK() - equippedWeapon.getAtkIncrease());
+            equippedWeapon = null;
+        }
+
+        if ("backpack".equalsIgnoreCase(item.getItem_Name()) && inventoryCapacity > 5) {
+            inventoryCapacity = 5;
+        }
+
+        return true;
     }
 
     public boolean hasItem(String itemName) {
-        for (Item item : inventory) {
+        for (Item item : getInventory()) {
             if (item.getItem_Name().equalsIgnoreCase(itemName)) {
                 return true;
             }
@@ -43,7 +76,7 @@ public class Player extends Character {
     }
 
     public Item getItem(String itemName) {
-        for (Item item : inventory) {
+        for (Item item : getInventory()) {
             if (item.getItem_Name().equalsIgnoreCase(itemName)) {
                 return item;
             }
@@ -51,16 +84,24 @@ public class Player extends Character {
         return null;
     }
 
-    public int getCoins() {
-        return coins;
-    }
-
-    public void setCoins(int coins) {
-        this.coins = coins;
-    }
-
     public Weapon getEquippedWeapon() {
         return equippedWeapon;
+    }
+
+    public boolean isOfficeUnlocked() {
+        return officeUnlocked;
+    }
+
+    public void setOfficeUnlocked(boolean officeUnlocked) {
+        this.officeUnlocked = officeUnlocked;
+    }
+
+    public boolean isPlagueCured() {
+        return plagueCured;
+    }
+
+    public void setPlagueCured(boolean plagueCured) {
+        this.plagueCured = plagueCured;
     }
 
     public void setEquippedWeapon(Weapon equippedWeapon) {
@@ -68,9 +109,7 @@ public class Player extends Character {
     }
 
     public void pickUpItem(String itemName) {
-        // Placeholder: Assume item is available and add to inventory
         view.display("Picked up " + itemName);
-        // In a full implementation, this would interact with the room
     }
 
     public Item dropItem(String itemName) {
@@ -84,79 +123,128 @@ public class Player extends Character {
     }
 
     public void useItem(Item item) {
+        if (item == null) {
+            view.display("Item not found.");
+            return;
+        }
+
         if (item instanceof Consumable) {
-            Consumable consumable = (Consumable) item;
-            consumable.use();
-            setHP(getHP() + consumable.getHpRestore());
-            removeItem(item);
-            view.display("Consumed " + item.getItem_Name() + ", HP restored by " + consumable.getHpRestore());
+            view.display(((Consumable) item).use(this));
         } else if (item instanceof Tool) {
-            Tool tool = (Tool) item;
-            tool.use(this);
-            view.display("Used " + item.getItem_Name() + " (" + tool.getUtilityType() + ") on player");
+            view.display(((Tool) item).use(this));
         } else if (item instanceof Weapon) {
-            String msg = equipWeapon((Weapon) item);
-            view.display(msg);
+            view.display(((Weapon) item).use(this));
+        } else if (item instanceof QuestItem) {
+            view.display(((QuestItem) item).use(this));
         } else {
             view.display("Cannot use " + item.getItem_Name());
         }
     }
 
     public boolean storeItem(Item item) {
-        if (inventory.size() < inventoryCapacity) {
-            addItem(item);
+        if (addItem(item)) {
             view.display("Stored " + item.getItem_Name());
             return true;
-        } else {
-            view.display("Inventory full");
-            return false;
         }
+
+        view.display("Inventory full");
+        return false;
     }
 
     public String equipWeapon(Weapon weapon) {
-        if (hasItem(weapon.getItem_Name())) {
-            setEquippedWeapon(weapon);
-            setATK(getATK() + weapon.getAtkIncrease());
-            return "Equipped " + weapon.getItem_Name();
-        } else {
-            return "Weapon not in inventory";
+        if (weapon == null) {
+            return View.weaponNotFound();
         }
+
+        if (!hasItem(weapon.getItem_Name())) {
+            return View.weaponNotInInventory();
+        }
+
+        if (equippedWeapon == weapon) {
+            return View.weaponAlreadyEquipped(weapon.getItem_Name());
+        }
+
+        if (equippedWeapon != null) {
+            setATK(getATK() - equippedWeapon.getAtkIncrease());
+        }
+
+        setEquippedWeapon(weapon);
+        setATK(getATK() + weapon.getAtkIncrease());
+        return View.equippedWeapon(weapon.getItem_Name());
     }
 
-    public boolean buyFood() {
-        if (coins >= 4) {
-            coins -= 4;
-            Consumable food = new Consumable("food_id", "Food", "Edible food", "consumable", 10);
-            addItem(food);
-            view.display("Bought food");
-            return true;
-        } else {
+    public boolean buyFood(VendingMachine vendingMachine, String itemName) {
+        if (vendingMachine == null || !vendingMachine.buyItem(itemName)) {
+            view.display("That item is not available.");
+            return false;
+        }
+
+        if (getCoins() < vendingMachine.getCost()) {
             view.display("Not enough coins");
             return false;
         }
+
+        Consumable item = vendingMachine.dispenseItem(itemName);
+        if (item == null) {
+            view.display("That item is not available.");
+            return false;
+        }
+
+        if (!addItem(item)) {
+            view.display("Inventory full");
+            return false;
+        }
+
+        setCoins(getCoins() - vendingMachine.getCost());
+        view.display("Bought " + item.getItem_Name());
+        return true;
     }
 
     public void consumeFood() {
-        for (Item item : inventory) {
+        for (int i = 0; i < getInventory().size(); i++) {
+            Item item = getInventory().get(i);
             if (item instanceof Consumable) {
-                useItem(item);
-                break;
+                view.display(((Consumable) item).use(this));
+                return;
             }
         }
+
+        view.display("No consumable items available.");
     }
 
     public boolean combineItems() {
-        Item batteries = getItem("Batteries");
-        Item flashlight = getItem("Flashlight");
-        if (batteries != null && flashlight != null) {
-            removeItem(batteries);
-            removeItem(flashlight);
-            Tool poweredFlashlight = new Tool("combined_id", "Powered Flashlight", "Flashlight with batteries", "tool", 0, "light");
-            addItem(poweredFlashlight);
-            view.display("Combined Batteries and Flashlight into Powered Flashlight");
-            return true;
+        return combineItems("Batteries", "Flashlight") != null;
+    }
+
+    public Tool combineItems(String itemNameOne, String itemNameTwo) {
+        Item firstItem = getItem(itemNameOne);
+        Item secondItem = getItem(itemNameTwo);
+
+        if (firstItem == null || secondItem == null) {
+            return null;
         }
-        return false;
+
+        boolean isFlashlightCombo =
+                ("batteries".equalsIgnoreCase(firstItem.getItem_Name()) && "flashlight".equalsIgnoreCase(secondItem.getItem_Name())) ||
+                ("flashlight".equalsIgnoreCase(firstItem.getItem_Name()) && "batteries".equalsIgnoreCase(secondItem.getItem_Name()));
+
+        if (!isFlashlightCombo) {
+            return null;
+        }
+
+        removeItem(firstItem);
+        removeItem(secondItem);
+
+        Tool poweredFlashlight = new Tool(
+                "combined_id",
+                "Powered Flashlight",
+                "A flashlight with batteries, ready to use.",
+                "tool",
+                0,
+                "light"
+        );
+        addItem(poweredFlashlight);
+        return poweredFlashlight;
     }
 
     public boolean enterRoom(String room) {
@@ -168,7 +256,7 @@ public class Player extends Character {
 
     public String exploreRoom(Room room) {
         // Placeholder
-        return "Exploring room";
+        return View.exploringRoom();
     }
 
     public void startGame() {
@@ -183,7 +271,7 @@ public class Player extends Character {
 
     public void viewInventory() {
         view.display("Inventory:");
-        for (Item item : inventory) {
+        for (Item item : getInventory()) {
             view.display("- " + item.getItem_Name());
         }
     }

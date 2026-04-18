@@ -10,8 +10,11 @@ public class Weapon extends Item {
         return atkIncrease;
     }
 
-    public void use() {
-        // Logic to use the weapon would go here
-        // For now, just a placeholder
+    public String use(Player player) {
+        if (player == null) {
+            return View.noPlayerForAction("equip", getItem_Name());
+        }
+
+        return player.equipWeapon(this);
     }
 }

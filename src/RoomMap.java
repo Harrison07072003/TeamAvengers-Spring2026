@@ -1,19 +1,21 @@
-import java.util.List;
+import java.util.ArrayList;
 
 public class RoomMap {
     private Room currentRoom;
 
     public RoomMap() {
         currentRoom = new Room("Starting Room");
-        currentRoom.setHasVendingMachine(true); // Add vending machine
-        // Load items from file
+        currentRoom.setVendingMachine(
+                new VendingMachine("VM1", "Vending Machine", "Dispenses food for coins.", "tool", 0)
+        );
+
         try {
-            List<Item> items = Item.loadItemsFromFile("Item.txt");
+            ArrayList<Item> items = Item.loadItemsFromDefaultFile();
             for (Item item : items) {
                 currentRoom.addItem(item);
             }
         } catch (Exception e) {
-            // Handle error
+            throw new IllegalStateException("Unable to load the starting room items from Item.txt.", e);
         }
     }
 
