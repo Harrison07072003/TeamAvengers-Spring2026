@@ -65,7 +65,8 @@ public class GameController {
         //after battle
         if(!engine.monsterAlive()){
             view.display("You won the battle!");
-            view.display("You found a " + engine.getPlayer().getInventory().get(engine.getPlayer().getInventory().size() - 1).getItemName() + " on " + engine.getPlayer().getMonsterName() + "! You also found " + engine.getPlayer().getMonster().getCoins() +" coins");
+            view.display("You found a " + engine.getPlayer().getInventory().get(engine.getPlayer().getInventory().size() - 1).getItemName()
+                    + " on " + engine.getPlayer().getMonsterName() + "! You also found " + engine.getPlayer().getMonster().getCoins() +" coins");
         }
         else if(!engine.playerAlive()){
             view.display("You were defeated...");

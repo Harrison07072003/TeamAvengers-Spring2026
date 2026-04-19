@@ -3,7 +3,7 @@ public class GameEngine {
     private final Player A;
     private final CombatEngine combatEngine;
     private final RoomMap school;
-    private GameResult result;
+    private final GameResult result;
     //constructor
     public GameEngine(){
         this.school = new RoomMap();
@@ -59,6 +59,8 @@ public class GameEngine {
             else
                 this.result.setMessage("You don't have a " + itemName + " in your inventory.\n");
         }
+        else if(command.startsWith("examine "))
+            result.setMessage(A.examineItem(command.substring(8)) + "\n");
         else if(command.equals("move"))
             A.setCurrentRoom("R2");
         else if(command.equals("back"))
@@ -90,7 +92,7 @@ public class GameEngine {
     public int getTurn(){
         return this.combatEngine.getTurns();
     }
-    //getters
+    //getters and setters
     public Player getPlayer(){
         return this.A;
     }

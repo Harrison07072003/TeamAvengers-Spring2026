@@ -100,8 +100,11 @@ public class Player extends Character{
     public int getCurrentState(){
         return this.currentState;
     }
-    public void setState(int state){
-        this.currentState = state;
+    public int getAttackBonus(){
+        return this.equippedWeapon.getAttackBonus();
+    }
+    public String getBuilding(){
+        return this.getCurrentRoom(currentRoom).getBuilding();
     }
     public String getEquippedWeaponName(){
         return this.equippedWeapon.getItemName();
@@ -115,15 +118,13 @@ public class Player extends Character{
     public String getRoomID(){
         return this.currentRoom;
     }
+    public void setState(int state){
+        this.currentState = state;
+    }
     public void setCurrentRoom(String roomID){
         this.currentRoom = roomID;
     }
-    public int getAttackBonus(){
-        return this.equippedWeapon.getAttackBonus();
-    }
-    public String getBuilding(){
-        return this.getCurrentRoom(currentRoom).getBuilding();
-    }
+
     //item methods
     public Item dropItem(String item){
         return null;
@@ -141,6 +142,13 @@ public class Player extends Character{
             }
         }
         return false;
+    }
+    public String examineItem(String item){
+        for(int i = 0; i < this.getInventory().size();i++){
+            if(item.equalsIgnoreCase(this.getInventory().get(i).getItemName()))
+                return this.getInventory().get(i).toString();
+        }
+        return "You don't have that item";
     }
 
 }

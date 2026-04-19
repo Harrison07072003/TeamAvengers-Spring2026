@@ -1,5 +1,5 @@
 public class CombatEngine {
-    //fieldss
+    //fields
     Player player;
     Monster enemy;
     private int turns;
@@ -37,10 +37,6 @@ public class CombatEngine {
         boolean defending = (turns % 3 == 0);
         if(command.equalsIgnoreCase("check weapon")) {
             result += player.checkWeapon() + "\n";
-            turns--;
-        }
-        else if(command.equalsIgnoreCase("help")) {
-            result += "help";
             turns--;
         }
         else if(command.equalsIgnoreCase("attack")){
