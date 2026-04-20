@@ -101,7 +101,4 @@ public class View {
         return "Equipped " + itemName;
     }
 
-    public static String exploringRoom() {
-        return "Exploring room";
-    }
-}
+   }

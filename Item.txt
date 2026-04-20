@@ -1,17 +1,17 @@
 # ID|Name|Type|Description|Location|Value
 A1|Flashlight|tool|Used to see throughout the game. Needs batteries to stay powered| R17
-A2|Batteries|tool| Used to power the flashlight| R1, P3
-A3|Cure Vital 4| quest|Used to make a cure for the plague|R18, M1
-A3a|Cure Vital 3|quest|Used to make a cure for the plague|R7, M5
-A3b|Cure Vital 1|quest|Used to make a cure for the plague|R4, P1
-A3c|Cure Vital 2|quest|Used to make a cure for the plague|R5, P2
-A3d|Cure Vital 5|quest|Used to make a cure for the plague| R3
+A2|Batteries|tool| Used to power the flashlight| R1
+A3|Cure Vital 4| quest|Used to make a cure for the plague|R18
+A3a|Cure Vital 3|quest|Used to make a cure for the plague|R7
+A3b|Cure Vital 1|quest|Used to make a cure for the plague|R4
+A3c|Cure Vital 2|quest|Used to make a cure for the plague|R5
+A3d|Cure Vital 5|quest|Used to make a cure for the plague|R3
 A4|Vending Machine food| consumable|R5, R11, R19| 5
 A5|Normal food|consumable|R8| 7
-A7|Kitchen Knife|weapon| Sharp knife used for cutting and self-defense|R6, M2|20
-A8|Fork|weapon|A utensil used for eating and can be used as a weapon in emergencies|R8,M2|10
+A7|Kitchen Knife|weapon| Sharp knife used for cutting and self-defense|R6|20
+A8|Fork|weapon|A utensil used for eating and can be used as a weapon in emergencies|R8|10
 A9|Book|weapon|A worn-out book filled with ancient knowledge and secrets|R3|15
 A10|Backpack|tool|A sturdy backpack used for carrying items and supplies during the game|R16|15
 A11|Broom|weapon|A cleaning tool that can be used for sweeping and as a makeshift weapon|R2|15
-A12|Office Key|quest|A key that opens the office door|R1, P3
+A12|Office Key|quest|A key that opens the office door|R1
 A13|Cure|quest|A powerful remedy that can cure the plague|R16

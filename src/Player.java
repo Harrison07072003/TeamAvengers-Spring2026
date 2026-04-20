@@ -247,28 +247,6 @@ public class Player extends Character {
         return poweredFlashlight;
     }
 
-    public boolean enterRoom(String room) {
-        // Placeholder
-        view.display("Entering room " + room);
-        currentRoom = room;
-        return true;
-    }
-
-    public String exploreRoom(Room room) {
-        // Placeholder
-        return View.exploringRoom();
-    }
-
-    public void startGame() {
-        // Placeholder
-        view.display("Game started");
-    }
-
-    public void quitGame() {
-        // Placeholder
-        view.display("Game quit");
-    }
-
     public void viewInventory() {
         view.display("Inventory:");
         for (Item item : getInventory()) {
