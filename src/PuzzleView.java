@@ -9,16 +9,15 @@ public class PuzzleView {
 
     public void puzzleUI() {
         System.out.println("\n********************************");
-        System.out.println("[Explore Puzzle] - Read the riddle");
+        System.out.println("[Explore puzzles.txt] - Read the riddle");
         System.out.println("[Solve]          - Input an answer");
-        System.out.println("[Ignore Puzzle]  - Leave for later");
+        System.out.println("[Ignore puzzles.txt]  - Leave for later");
         System.out.println("********************************");
     }
 
     public void puzzleUI(Room room) {
         if (room != null && room.getPuzzle() != null) {
-            System.out.println("\nPuzzle in room " + room.getRoomId() + " (attempts: "
-                    + room.getPuzzle().getAttemptsRemaining() + ")");
+            System.out.println("\npuzzles.txt detected in room " + room.getRoomId());
         }
         puzzleUI();
     }
@@ -28,8 +27,6 @@ public class PuzzleView {
         System.out.println("PUZZLE: " + puzzle.getPuzzleName());
         System.out.println("==============================");
         System.out.println("Question: " + puzzle.getQuestion());
-        System.out.println("Hint: " + puzzle.getHint());
-        System.out.println("Attempts Remaining: " + puzzle.getAttemptsRemaining());
         System.out.println("==============================");
     }
 
@@ -57,7 +54,7 @@ public class PuzzleView {
 
     public void showIncorrectMessage(int attemptsRemaining) {
         System.out.println("Incorrect answer.");
-        System.out.println("Attempts Remaining: " + attemptsRemaining);
+        System.out.println("Attempts remaining: " + attemptsRemaining);
     }
 
     public void showPuzzleFailed() {

@@ -24,22 +24,28 @@ public class RoomMap {
 
     public void loadPuzzles(String fileName) {
         Path filePath = Paths.get(fileName);
+
         if (!Files.exists(filePath)) {
             filePath = Paths.get(".", fileName);
         }
+
         if (!Files.exists(filePath)) {
+            System.out.println("puzzles.txt file not found: " + fileName);
             return;
         }
 
         try {
             List<String> lines = Files.readAllLines(filePath);
+
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i).trim();
+
                 if (line.isEmpty()) {
                     continue;
                 }
 
                 String[] parts = line.split("\\|", -1);
+
                 if (parts.length < 9) {
                     continue;
                 }
@@ -81,8 +87,10 @@ public class RoomMap {
                     room.setPuzzle(puzzle);
                 }
             }
+
+            System.out.println("Puzzles loaded successfully.");
         } catch (IOException ex) {
-            // Keep game running even if puzzle file cannot be read.
+            System.out.println("Error reading puzzle file.");
         }
     }
 

@@ -52,6 +52,7 @@ public class Player {
 
         if (solved) {
             view.showCorrectMessage();
+
             for (String reward : puzzle.getRewards()) {
                 room.addItem(reward);
                 view.showReward(reward);
@@ -72,4 +73,3 @@ public class Player {
         }
     }
 }
-

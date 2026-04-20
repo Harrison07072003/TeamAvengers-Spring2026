@@ -13,9 +13,9 @@ public class GameController {
 
     public void run() {
         map.generateRooms();
-        map.loadPuzzles("Puzzle");
+        map.loadPuzzles("puzzles.txt");
 
-        view.showMessage("GGC Plague Puzzle Demo");
+        view.showMessage("GGC Plague puzzles.txt Demo");
         view.showMessage("Type a room ID with a puzzle: R1, R2, R4, R5, R8, R12, R13");
         view.showMessage("Type quit to stop.\n");
 
@@ -36,8 +36,13 @@ public class GameController {
             Room currentRoom = player.getCurrentRoom(map);
             view.showRoom(currentRoom);
 
-            if (!currentRoom.checkPuzzle()) {
+            if (currentRoom.getPuzzle() == null) {
                 view.showMessage("No puzzle in this room.\n");
+                continue;
+            }
+
+            if (currentRoom.getPuzzle().isSolved()) {
+                view.showMessage("This puzzle was already solved.\n");
                 continue;
             }
 
@@ -57,10 +62,9 @@ public class GameController {
                     case "solve puzzle":
                         player.solvePuzzle(currentRoom, view);
 
-                        Puzzle puzzle = currentRoom.getPuzzle();
-                        puzzleMenuRunning = puzzle != null
-                                && !puzzle.isSolved()
-                                && puzzle.getAttemptsRemaining() > 0;
+                        if (currentRoom.getPuzzle().isSolved()) {
+                            puzzleMenuRunning = false;
+                        }
                         break;
 
                     case "ignore":
