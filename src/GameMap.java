@@ -19,11 +19,9 @@ public class GameMap {
             Scanner scan = new Scanner(new File(filename));
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
-
                 if (line.isEmpty() || line.startsWith("#")) {
                     continue;
                 }
-
                 String[] parts = line.split("\\|");
 
                 //# id | name | description | building | exits NESW | requires flashlight
@@ -33,7 +31,7 @@ public class GameMap {
                 String[] exits = parts[4].split(",");
                 for (int i = 0; i < 4; i++) {
                     if (!exits[i].equals("0")) {
-                        room.addExit(compass.charAt(i), exits[i]);
+                        room.addExit(compass.substring(i,i+1), exits[i]);
                     }
                 }
                 rooms.put(roomId, room);
