@@ -207,6 +207,8 @@ public class Player extends Character{
             if (current.hasPuzzle()) {
                 result += "\nThere is a puzzle in this room";
             }
+
+            result+= "\nExits: " + current.getExits();
             return result;
         }
     }
