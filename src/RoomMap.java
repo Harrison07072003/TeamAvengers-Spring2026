@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-public class RoomMap implements GameMap {
+public class RoomMap  {
     //fields
     ArrayList<Room> rooms;
     //constructor
