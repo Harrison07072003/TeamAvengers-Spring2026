@@ -1,28 +1,30 @@
 import java.util.ArrayList;
 
 public class Puzzle {
-    private String puzzleId;
-    private String puzzleName;
-    private String question;
-    private String solution;
-    private String roomId;
-    private String hint;
-    private int attemptsRemaining;
-    private boolean isSolved;
-    private ArrayList<String> rewards;
+    private final String puzzleId;
+    private final String puzzleName;
+    private final String question;
+    private final String solution;
+    private final String roomId;
+    private final String successMessage;
+    private final String failureMessage;
+    private boolean solved;
+    private final ArrayList<String> inventory;
+    private int coins;
 
     public Puzzle(String puzzleId, String puzzleName, String question, String solution,
-                  String roomId, String hint, int attemptsRemaining,
-                  boolean isSolved, ArrayList<String> rewards) {
+                  String roomId, String successMessage, String failureMessage,
+                  ArrayList<String> inventory, int coins) {
         this.puzzleId = puzzleId;
         this.puzzleName = puzzleName;
         this.question = question;
         this.solution = solution;
         this.roomId = roomId;
-        this.hint = hint;
-        this.attemptsRemaining = attemptsRemaining;
-        this.isSolved = isSolved;
-        this.rewards = (rewards != null) ? new ArrayList<>(rewards) : new ArrayList<>();
+        this.successMessage = successMessage;
+        this.failureMessage = failureMessage;
+        this.solved = false;
+        this.inventory = (inventory == null) ? new ArrayList<>() : new ArrayList<>(inventory);
+        this.coins = coins;
     }
 
     public String accessPuzzle() {
@@ -30,36 +32,35 @@ public class Puzzle {
     }
 
     public boolean checkSolution(String answer) {
-        if (isSolved || attemptsRemaining <= 0 || answer == null) {
+        if (solved || answer == null) {
             return false;
         }
 
-        if (solution.equalsIgnoreCase(answer.trim())) {
-            setSolved();
-            unlockProgress();
+        String cleanedAnswer = normalize(answer);
+        String cleanedSolution = normalize(solution);
+
+        if (cleanedAnswer.equals(cleanedSolution)) {
+            solved = true;
             return true;
         }
 
-        decrementAttempts();
         return false;
     }
 
-    public String giveHint() {
-        return hint;
+    private String normalize(String text) {
+        return text.trim().toLowerCase().replaceAll("\\s+", " ");
     }
 
-    public void decrementAttempts() {
-        if (attemptsRemaining > 0) {
-            attemptsRemaining--;
-        }
+    public ArrayList<String> dropItems() {
+        ArrayList<String> droppedItems = new ArrayList<>(inventory);
+        inventory.clear();
+        return droppedItems;
     }
 
-    public void unlockProgress() {
-        // Placeholder for future puzzle progression logic
-    }
-
-    public void setSolved() {
-        isSolved = true;
+    public int dropCoins() {
+        int droppedCoins = coins;
+        coins = 0;
+        return droppedCoins;
     }
 
     public String getPuzzleId() {
@@ -82,19 +83,27 @@ public class Puzzle {
         return roomId;
     }
 
-    public String getHint() {
-        return hint;
+    public String getSuccessMessage() {
+        return successMessage;
     }
 
-    public int getAttemptsRemaining() {
-        return attemptsRemaining;
+    public String getFailureMessage() {
+        return failureMessage;
     }
 
     public boolean isSolved() {
-        return isSolved;
+        return solved;
     }
 
-    public ArrayList<String> getRewards() {
-        return new ArrayList<>(rewards);
+    public ArrayList<String> getInventory() {
+        return new ArrayList<>(inventory);
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setSolved(boolean solved) {
+        this.solved = solved;
     }
 }

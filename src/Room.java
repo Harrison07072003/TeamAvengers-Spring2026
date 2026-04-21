@@ -24,7 +24,7 @@ public class Room {
     }
 
     public boolean checkPuzzle() {
-        return puzzle != null && !puzzle.isSolved() && puzzle.getAttemptsRemaining() > 0;
+        return puzzle != null && !puzzle.isSolved();
     }
 
     public List<String> getItems() {
@@ -37,4 +37,3 @@ public class Room {
         }
     }
 }
-

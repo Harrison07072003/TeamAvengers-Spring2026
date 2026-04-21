@@ -16,13 +16,13 @@ public class RoomMap {
 
     public void generateRooms() {
         rooms.clear();
-        for (int i = 1; i <= 13; i++) {
+        for (int i = 1; i <= 20; i++) {
             String roomId = "R" + i;
             rooms.put(roomId, new Room(roomId));
         }
     }
 
-    public void loadPuzzles(String fileName) {
+    public boolean loadPuzzles(String fileName) {
         Path filePath = Paths.get(fileName);
 
         if (!Files.exists(filePath)) {
@@ -30,8 +30,7 @@ public class RoomMap {
         }
 
         if (!Files.exists(filePath)) {
-            System.out.println("puzzles.txt file not found: " + fileName);
-            return;
+            return false;
         }
 
         try {
@@ -50,51 +49,60 @@ public class RoomMap {
                     continue;
                 }
 
-                ArrayList<String> rewards = new ArrayList<>();
+                String puzzleId = parts[0].trim();
+                String puzzleName = parts[1].trim();
+                String question = parts[2].trim();
+                String solution = parts[3].trim();
+                String roomId = parts[4].trim();
+                String successMessage = parts[5].trim();
+                String failureMessage = parts[6].trim();
+
+                int coinReward = 0;
+                try {
+                    coinReward = Integer.parseInt(parts[7].trim());
+                } catch (NumberFormatException ignored) {
+                    coinReward = 0;
+                }
+
+                ArrayList<String> itemDrops = new ArrayList<>();
                 if (!parts[8].trim().isEmpty()) {
                     String[] rewardParts = parts[8].split(",");
                     for (String reward : rewardParts) {
                         String trimmed = reward.trim();
                         if (!trimmed.isEmpty()) {
-                            rewards.add(trimmed);
+                            itemDrops.add(trimmed);
                         }
                     }
                 }
 
-                int attemptsRemaining;
-                try {
-                    attemptsRemaining = Integer.parseInt(parts[6].trim());
-                } catch (NumberFormatException ex) {
-                    attemptsRemaining = 3;
-                }
-
-                boolean isSolved = Boolean.parseBoolean(parts[7].trim());
-
                 Puzzle puzzle = new Puzzle(
-                        parts[0].trim(),
-                        parts[1].trim(),
-                        parts[2].trim(),
-                        parts[3].trim(),
-                        parts[4].trim(),
-                        parts[5].trim(),
-                        attemptsRemaining,
-                        isSolved,
-                        rewards
+                        puzzleId,
+                        puzzleName,
+                        question,
+                        solution,
+                        roomId,
+                        successMessage,
+                        failureMessage,
+                        itemDrops,
+                        coinReward
                 );
 
-                Room room = rooms.get(puzzle.getRoomId());
+                Room room = rooms.get(roomId);
                 if (room != null) {
                     room.setPuzzle(puzzle);
                 }
             }
 
-            System.out.println("Puzzles loaded successfully.");
+            return true;
         } catch (IOException ex) {
-            System.out.println("Error reading puzzle file.");
+            return false;
         }
     }
 
     public Room getRoom(String roomId) {
-        return rooms.get(roomId);
+        if (roomId == null) {
+            return null;
+        }
+        return rooms.get(roomId.trim().toUpperCase());
     }
 }
