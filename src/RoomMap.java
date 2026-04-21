@@ -385,11 +385,4 @@ public class RoomMap {
             System.out.println("There are no checkpoints found.");
         }
     }
-
-
-
-
-
-
-
 }
