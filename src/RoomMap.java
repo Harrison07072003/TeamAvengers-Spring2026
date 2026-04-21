@@ -15,316 +15,159 @@ public class RoomMap {
     private String saveFile;
     private String checkpointFile;
 
-    public RoomMap() {
+    public RoomMap(String roomsf,String puzzles, String monsters, String items) {
         rooms = new ArrayList<Room>();
-
-        roomsFile = "rooms.txt";
-        puzzlesFile = "puzzles.txt";
-        monstersFile = "monsters.txt";
-        itemsFile = "items.txt";
+        roomsFile = roomsf;
+        puzzlesFile = puzzles;
+        monstersFile = monsters;
+        itemsFile = items;
         saveFile = "saveGame.txt";
         checkpointFile = "checkpoint.txt";
     }
 
     public void generateRooms() {
-        ArrayList<String> exitData = new ArrayList<String>();
-
+        Scanner input;
+        String roomId;
+        String roomName;
+        String roomDescription;
+        String building;
+        String[] exits;
+        boolean requiresFlashlight;
         try {
-            Scanner input = new Scanner(new File(roomsFile));
-
-            while (input.hasNextLine()) {
-                String line = input.nextLine().trim();
-
-                if (line.length() == 0 || line.startsWith("#")) {
-                    continue;
-                }
-
-                // format:
-                // roomId|roomName|description|exit1,exit2,exit3
-                String[] parts = line.split("\\|");
-
-                if (parts.length < 4) {
-                    System.out.println("Skipping bad room line: " + line);
-                    continue;
-                }
-
-                String roomId = parts[0].trim();
-                String roomName = parts[1].trim();
-                String description = parts[2].trim();
-                String exits = parts[3].trim();
-
-                // assumes Room constructor is Room(String id, String name, String description)
-                Room room = new Room(roomId, roomName, description);
-                rooms.add(room);
-
-                // save exit ids temporarily so we can connect rooms after all rooms are created
-                exitData.add(roomId + "|" + exits);
-            }
-
-            input.close();
-
-            // second pass: connect exits
-            for (int i = 0; i < exitData.size(); i++) {
-                String[] parts = exitData.get(i).split("\\|");
-
-                String roomId = parts[0].trim();
-                String exitsPart = parts[1].trim();
-
-                Room currentRoom = getRoom(roomId);
-
-                ArrayList<Room> exitRooms = new ArrayList<Room>();
-
-                if (exitsPart.length() > 0) {
-                    String[] exitIds = exitsPart.split(",");
-
-                    for (int j = 0; j < exitIds.length; j++) {
-                        String exitId = exitIds[j].trim();
-                        Room exitRoom = getRoom(exitId);
-
-                        if (exitRoom != null) {
-                            exitRooms.add(exitRoom);
-                        }
+            input = new Scanner(new File(roomsFile));
+            if(input.hasNextLine()){ input.hasNextLine();}
+            while(input.hasNextLine()){
+                String line = input.nextLine();
+                if(line.length() == 0){ continue; }
+                String[] values = line.split("\\|");
+                roomId = values[0];
+                roomName = values[1];
+                roomDescription = values[2];
+                building = values[3];
+                exits = values[4].split(",");
+                requiresFlashlight = Boolean.parseBoolean(values[5]);
+                Room room = new Room(roomId, roomName, roomDescription, building, requiresFlashlight);
+                String directions = {"N", "E", "S", "W"};
+                for(int i = 0; i < exits.length; i++){
+                    String exitRoom = exits[i].trim();
+                    if(!exitRoom.equals("0")){
+                        room.addExit(directions[i], exitRoom);
                     }
                 }
-
-                // assumes Room has setExits(ArrayList<Room>)
-                currentRoom.setExits(exitRooms);
+                rooms.add(room);
             }
-
-            System.out.println("Rooms loaded successfully.");
-        }
-        catch (FileNotFoundException e) {
+            input.close();
+        } catch (FileNotFoundException e) {
             System.out.println("Error: rooms.txt file not found.");
         }
     }
 
-    public void loadPuzzles() {
-        try {
-            Scanner input = new Scanner(new File(puzzlesFile));
-
-            while (input.hasNextLine()) {
-                String line = input.nextLine().trim();
-
-                if (line.length() == 0 || line.startsWith("#") || line.startsWith("puzzleId")) {
-                    continue;
-                }
-
-                // format:
-                // puzzleId|puzzleName|question|solution|roomId|hint|attemptsRemaining|isSolved|rewards
-                String[] parts = line.split("\\|");
-
-                if (parts.length < 9) {
-                    System.out.println("Skipping bad puzzle line: " + line);
-                    continue;
-                }
-
-                String puzzleId = parts[0].trim();
-                String puzzleName = parts[1].trim();
-                String question = parts[2].trim();
-                String solution = parts[3].trim();
-                String roomId = parts[4].trim();
-                String hint = parts[5].trim();
-                int attemptsRemaining = Integer.parseInt(parts[6].trim());
-                boolean isSolved = Boolean.parseBoolean(parts[7].trim());
-
-                // rewards are stored as ids for now
-                ArrayList<String> rewards = new ArrayList<String>();
-                String[] rewardParts = parts[8].split(",");
-
-                for (int i = 0; i < rewardParts.length; i++) {
-                    rewards.add(rewardParts[i].trim());
-                }
-
-                // assumes Puzzle constructor like this
-                Puzzle puzzle = new Puzzle(
-                        puzzleId,
-                        puzzleName,
-                        question,
-                        solution,
-                        roomId,
-                        hint,
-                        attemptsRemaining,
-                        isSolved,
-                        rewards
-                );
-
-                Room room = getRoom(roomId);
-
-                if (room != null) {
-                    // assumes Room has setPuzzle(Puzzle)
-                    room.setPuzzle(puzzle);
-                }
-            }
-
-            input.close();
-            System.out.println("Puzzles loaded successfully.");
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("puzzles.txt file not found.");
-        }
-    }
 
     public void spawnMonsters() {
+        Scanner input;
+        String monsterId;
+        String monsterName;
+        String monsterDescription;
+        int hp;
+        int attack;
+        int defense;
+        int coins;
+        String roomId;
+
         try {
-            Scanner input = new Scanner(new File(monstersFile));
-
-            while (input.hasNextLine()) {
-                String line = input.nextLine().trim();
-
-                if (line.length() == 0 || line.startsWith("#") || line.startsWith("(ID")) {
-                    continue;
-                }
-
-                // format:
-                // ID,Name,Description,HP,Attack,Defense,Coins,Room
-                String[] parts = line.split(",");
-
-                if (parts.length < 8) {
-                    System.out.println("Skipping bad monster line: " + line);
-                    continue;
-                }
-
-                String monsterId = parts[0].trim();
-                String monsterName = parts[1].trim();
-                String description = parts[2].trim();
-                int hp = Integer.parseInt(parts[3].trim());
-                int attack = Integer.parseInt(parts[4].trim());
-                int defense = Integer.parseInt(parts[5].trim());
-                int coins = Integer.parseInt(parts[6].trim());
-                String roomId = parts[7].trim();
-
-                // assumes Monster constructor like this
-                Monster monster = new Monster(
-                        monsterId,
-                        monsterName,
-                        description,
-                        hp,
-                        attack,
-                        defense,
-                        coins,
-                        roomId
-                );
-
+            input = new Scanner(new File(monstersFile));
+            if(input.hasNextLine()){ input.hasNextLine();}
+            while(input.hasNextLine()){
+                String line = input.nextLine();
+                if(line.length() == 0){ continue; }
+                String[] values = line.split(",");
+                monsterId = values[0];
+                monsterName = values[1];
+                monsterDescription = values[2];
+                hp = Integer.parseInt(values[3]);
+                attack = Integer.parseInt(values[4]);
+                defense = Integer.parseInt(values[5]);
+                coins = Integer.parseInt(values[6]);
+                roomId = values[7];
+                Monster monster = new Monster(monsterId, monsterName, monsterDescription, hp, attack, defense, coins, roomId);
                 Room room = getRoom(roomId);
-
                 if (room != null) {
-                    // assumes Room has setMonster(Monster)
-                    room.setMonster(monster);
+                    room.addMonster(monster);
                 }
             }
-
             input.close();
-            System.out.println("Monsters loaded successfully.");
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("monsters.txt file not found.");
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: monsters.txt file not found.");
         }
     }
+
+
+
+    public void loadPuzzles() {
+
+    }
+
+
 
     public void loadItems() {
-        try {
-            Scanner input = new Scanner(new File(itemsFile));
-
-            while (input.hasNextLine()) {
-                String line = input.nextLine().trim();
-
-                if (line.length() == 0 || line.startsWith("#")) {
-                    continue;
-                }
-
-                // format:
-                // itemId|itemName|category|description|attackBonus|healValue|roomId
-                String[] parts = line.split("\\|");
-
-                if (parts.length < 7) {
-                    System.out.println("Skipping bad item line: " + line);
-                    continue;
-                }
-
-                String itemId = parts[0].trim();
-                String itemName = parts[1].trim();
-                String category = parts[2].trim();
-                String description = parts[3].trim();
-                int attackBonus = Integer.parseInt(parts[4].trim());
-                int healValue = Integer.parseInt(parts[5].trim());
-                String roomId = parts[6].trim();
-
-                Item item = new Item(itemId, itemName, category, description, attackBonus, healValue);
-
-                Room room = getRoom(roomId);
-
-                if (room != null) {
-                    room.addItem(item);
-                } else {
-                    System.out.println("Room not found for item: " + itemId);
-                }
-            }
-
-            input.close();
-            System.out.println("Items loaded successfully.");
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("items.txt file not found.");
-        }
+        // need to separate per type of item
     }
+
+
 
     public Room getRoom(String roomId) {
         for (int i = 0; i < rooms.size(); i++) {
-            if (rooms.get(i).getRoomId().equalsIgnoreCase(roomId)) {
+            if (rooms.get(i).getRoomId().equals(roomId)) {
                 return rooms.get(i);
             }
         }
-
         return null;
     }
+
+
+
+
 
     public void saveGame(Player player) {
         try {
             PrintWriter output = new PrintWriter(saveFile);
-
             // PLAYER
             output.println("PLAYER");
-            output.println(player.getCharaterID() + "," +
+            output.println(
+                    player.getCharaterID() + "," +
                     player.getCurrentHP() + "," +
                     player.getAttack() + "," +
                     player.getDefense() + "," +
+                    player.getCoins() + "," +
                     player.getVialCount() + "," +
                     player.getCurrentRoom());
-
             // INVENTORY
             output.println("INVENTORY");
             for (Item item : player.getInventory()) {
                 output.println(item.toFileString());
             }
-
             // ROOMS
             output.println("ROOMS");
-
             for (Room room : rooms) {
-                output.println(room.getRoomId());
-
-                // puzzle
-                if (room.getPuzzle() != null) {
-                    output.println("PUZZLE|" + room.getPuzzle().getPuzzleId() + "|" + room.getPuzzle().isSolved());
-                } else {
-                    output.println("PUZZLE|none");
-                }
+                output.println("ROOM|" + room.getRoomId());
 
                 // monster
-                if (room.getMonster() != null) {
-                    output.println("MONSTER|" + room.getMonster().getCharacterId());
-                } else {
-                    output.println("MONSTER|none");
+                for (Monster monster : room.getMonster()) {
+                    output.println(
+                            "MONSTER|" +
+                                    monster.getCharaterID() + "," +
+                                    monster.getCurrentHP() + "," +
+                                    monster.isAlive()
+                    );
                 }
 
+
+                // puzzle
+
                 // items
-                for (Item item : room.getItems()) {
-                    output.println("ITEM|" + item.toFileString());
-                }
 
                 output.println("ENDROOM");
             }
-
             output.close();
             System.out.println("Game saved successfully.");
         } catch (Exception e) {
@@ -335,60 +178,76 @@ public class RoomMap {
 
 
     public void loadGame(Player player) {
+        Scanner input;
+        String section = "";
+        Room currentRoom = null;
         try {
-            Scanner input = new Scanner(new File(saveFile));
-
-            player.clearInventory();
-
-            for (Room r : rooms) {
-                r.clearItems();
+            File save = new File(saveFile);
+            File checkpoint = new File(checkpointFile);
+            if (!save.exists() && !checkpoint.exists()) {
+                System.out.println("There are no saved games or checkpoints found.");
+                return;
             }
+            File fileToLoad;
 
-            String section = "";
-
+            if (save.exists() && checkpoint.exists()) {
+                if (save.lastModified() >= checkpoint.lastModified()) {
+                    fileToLoad = save;
+                } else {
+                    fileToLoad = checkpoint;
+                }
+            } else if (save.exists()) {
+                fileToLoad = save;
+            } else {
+                fileToLoad = checkpoint;
+            }
+            input = new Scanner(fileToLoad);
             while (input.hasNextLine()) {
                 String line = input.nextLine().trim();
-
+                if (line.length() == 0) {
+                    continue;
+                }
                 if (line.equals("PLAYER") || line.equals("INVENTORY") || line.equals("ROOMS")) {
                     section = line;
                     continue;
                 }
-
                 if (section.equals("PLAYER")) {
-                    String[] parts = line.split(",");
-                    player.setCharacterID(parts[0]);
-                    player.setCurrentHP(Integer.parseInt(parts[1]));
-                    player.setAttack(Integer.parseInt(parts[2]));
-                    player.setDefense(Integer.parseInt(parts[3]));
-                    player.setVialCount(Integer.parseInt(parts[4]));
-                    player.setCurrentRoom(parts[5]);
+                    String[] values = line.split(",");
+                    player.setCurrentHP(Integer.parseInt(values[1].trim()));
+                    player.setAttack(Integer.parseInt(values[2].trim()));
+                    player.setDefense(Integer.parseInt(values[3].trim()));
+                    player.setCoins(Integer.parseInt(values[4].trim()));
+                    player.setVialCount(Integer.parseInt(values[5].trim()));
+                    player.setCurrentRoom(values[6].trim());
                 }
 
                 else if (section.equals("INVENTORY")) {
-                    player.addItem(Item.fromFileString(line));
+                    // add inventory loading here  when Item loading is finalized
                 }
 
                 else if (section.equals("ROOMS")) {
-                    if (line.equals("ENDROOM")) continue;
+                    if (line.startsWith("ROOM|")) {
+                        String roomId = line.split("\\|")[1].trim();
+                        currentRoom = getRoom(roomId);
+                    }
 
-                    Room room = getRoom(line);
+                    else if (line.startsWith("MONSTER|") && currentRoom != null) {
+                        String[] values = line.split("\\|")[1].split(",");
 
-                    while (input.hasNextLine()) {
-                        String inner = input.nextLine().trim();
+                        String monsterId = values[0].trim();
+                        int monsterHP = Integer.parseInt(values[1].trim());
+                        boolean alive = Boolean.parseBoolean(values[2].trim());
 
-                        if (inner.equals("ENDROOM")) break;
+                        Monster monster = getMonster(currentRoom, monsterId);
 
-                        if (inner.startsWith("PUZZLE")) {
-                            if (!inner.contains("none") && room.getPuzzle() != null) {
-                                String[] p = inner.split("\\|");
-                                room.getPuzzle().setSolved(Boolean.parseBoolean(p[2]));
-                            }
+                        if (monster != null) {
+                            monster.setCurrentHP(monsterHP);
+                            monster.setAlive(alive);
                         }
+                    }
 
-                        if (inner.startsWith("ITEM")) {
-                            String data = inner.substring(5);
-                            room.addItem(Item.fromFileString(data));
-                        }
+                    else if (line.equals("ENDROOM")) {
+                        currentRoom = null;
                     }
                 }
             }
@@ -396,10 +255,11 @@ public class RoomMap {
             input.close();
             System.out.println("Game loaded successfully.");
 
-        } catch (Exception e) {
-            System.out.println("No saved game found.");
+        } catch (FileNotFoundException e) {
+            System.out.println("There are no saved games or checkpoints found.");
         }
     }
+
 
     public void saveCheckpoint(Player player) {
         try {
@@ -407,12 +267,14 @@ public class RoomMap {
 
             // PLAYER
             output.println("PLAYER");
-            output.println(player.getCharaterID() + "," +
-                    player.getCurrentHP() + "," +
-                    player.getAttack() + "," +
-                    player.getDefense() + "," +
-                    player.getVialCount() + "," +
-                    player.getCurrentRoom());
+            output.println(
+                    player.getCharaterID() + "," +
+                            player.getCurrentHP() + "," +
+                            player.getAttack() + "," +
+                            player.getDefense() + "," +
+                            player.getCoins() + "," +
+                            player.getVialCount() + "," +
+                            player.getCurrentRoom());
 
             // INVENTORY
             output.println("INVENTORY");
@@ -422,50 +284,54 @@ public class RoomMap {
 
             // ROOMS
             output.println("ROOMS");
-
             for (Room room : rooms) {
-                output.println(room.getRoomId());
+                output.println("ROOM|" + room.getRoomId());
 
-                if (room.getPuzzle() != null) {
-                    output.println("PUZZLE|" + room.getPuzzle().getPuzzleId() + "|" + room.getPuzzle().isSolved());
-                } else {
-                    output.println("PUZZLE|none");
+                // monster
+                for (Monster monster : room.getMonster()) {
+                    output.println(
+                            "MONSTER|" +
+                                    monster.getCharaterID() + "," +
+                                    monster.getCurrentHP() + "," +
+                                    monster.isAlive()
+                    );
                 }
 
-                if (room.getMonster() != null) {
-                    output.println("MONSTER|" + room.getMonster().getCharacterId());
-                } else {
-                    output.println("MONSTER|none");
-                }
+                // puzzle
 
-                for (Item item : room.getItems()) {
-                    output.println("ITEM|" + item.toFileString());
-                }
+                // items
 
                 output.println("ENDROOM");
             }
-
             output.close();
+            System.out.println("Checkpoint saved successfully.");
         } catch (Exception e) {
-            System.out.println("Error creating checkpoint.");
+            System.out.println("Error saving checkpoint.");
         }
     }
 
 
     public void loadCheckpoint(Player player) {
+        Scanner input;
+        String section = "";
+        Room currentRoom = null;
+
         try {
-            Scanner input = new Scanner(new File(checkpointFile));
+            File checkpoint = new File(checkpointFile);
 
-            player.clearInventory();
-
-            for (Room r : rooms) {
-                r.clearItems();
+            if (!checkpoint.exists()) {
+                System.out.println("There are no checkpoints found.");
+                return;
             }
 
-            String section = "";
+            input = new Scanner(checkpoint);
 
             while (input.hasNextLine()) {
                 String line = input.nextLine().trim();
+
+                if (line.length() == 0) {
+                    continue;
+                }
 
                 if (line.equals("PLAYER") || line.equals("INVENTORY") || line.equals("ROOMS")) {
                     section = line;
@@ -473,51 +339,57 @@ public class RoomMap {
                 }
 
                 if (section.equals("PLAYER")) {
-                    String[] parts = line.split(",");
-                    player.setCharacterID(parts[0]);
-                    player.setCurrentHP(Integer.parseInt(parts[1]));
-                    player.setAttack(Integer.parseInt(parts[2]));
-                    player.setDefense(Integer.parseInt(parts[3]));
-                    player.setVialCount(Integer.parseInt(parts[4]));
-                    player.setCurrentRoom(parts[5]);
+                    String[] values = line.split(",");
+
+                    player.setCurrentHP(Integer.parseInt(values[1].trim()));
+                    player.setAttack(Integer.parseInt(values[2].trim()));
+                    player.setDefense(Integer.parseInt(values[3].trim()));
+                    player.setCoins(Integer.parseInt(values[4].trim()));
+                    player.setVialCount(Integer.parseInt(values[5].trim()));
+                    player.setCurrentRoom(values[6].trim());
                 }
 
                 else if (section.equals("INVENTORY")) {
-                    player.addItem(Item.fromFileString(line));
+                    // add inventory loading here later
                 }
 
                 else if (section.equals("ROOMS")) {
-                    if (line.equals("ENDROOM")) continue;
+                    if (line.startsWith("ROOM|")) {
+                        String roomId = line.split("\\|")[1].trim();
+                        currentRoom = getRoom(roomId);
+                    }
 
-                    Room room = getRoom(line);
+                    else if (line.startsWith("MONSTER|") && currentRoom != null) {
+                        String[] values = line.split("\\|")[1].split(",");
 
-                    while (input.hasNextLine()) {
-                        String inner = input.nextLine().trim();
+                        String monsterId = values[0].trim();
+                        int monsterHP = Integer.parseInt(values[1].trim());
+                        boolean alive = Boolean.parseBoolean(values[2].trim());
 
-                        if (inner.equals("ENDROOM")) break;
+                        Monster monster = getMonster(currentRoom, monsterId);
 
-                        if (inner.startsWith("PUZZLE")) {
-                            if (!inner.contains("none") && room.getPuzzle() != null) {
-                                String[] p = inner.split("\\|");
-                                room.getPuzzle().setSolved(Boolean.parseBoolean(p[2]));
-                            }
+                        if (monster != null) {
+                            monster.setCurrentHP(monsterHP);
+                            monster.setAlive(alive);
                         }
+                    }
 
-                        if (inner.startsWith("ITEM")) {
-                            String data = inner.substring(5);
-                            room.addItem(Item.fromFileString(data));
-                        }
+                    else if (line.equals("ENDROOM")) {
+                        currentRoom = null;
                     }
                 }
             }
-
             input.close();
-        } catch (Exception e) {
-            System.out.println("No checkpoint found.");
+            System.out.println("Checkpoint loaded successfully.");
+        } catch (FileNotFoundException e) {
+            System.out.println("There are no checkpoints found.");
         }
     }
 
-    public ArrayList<Room> getRooms() {
-        return rooms;
-    }
+
+
+
+
+
+
 }
