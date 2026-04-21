@@ -1,75 +1,63 @@
 public class GameEngine {
     private final RoomMap school;
     private final Player player;
-    private final CombatEngine combatEngine;
-    private final GameResult result;
 
     public GameEngine() {
         this.school = new RoomMap();
-        school.loadRooms("Rooms.txt");
-        school.loadItems("Item.txt");
-        school.loadPuzzles("puzzles.txt");
-        school.loadMonsters("Monsters.txt");
-        this.player = new Player("Player", 100, 18, 5, 15, "R1", school);
-        this.combatEngine = new CombatEngine(player);
-        this.result = new GameResult();
+        this.player = new Player();
+        this.school.generateRooms();
+        this.school.loadPuzzles("puzzles.txt");
+    }
+
+    public void test() {
+
     }
 
     public String navCommand(String command) {
-        result.resetMessage();
-        result.resetStatus();
-        if (command == null || command.isBlank()) {
-            return "Enter a command.";
+        if (command == null) {
+            return "Invalid Command\n-----------------------------------";
         }
 
-        String trimmed = command.trim();
-        String lower = trimmed.toLowerCase();
+        String cleaned = command.trim();
 
-        if (lower.equals("status")) {
-            result.setMessage("HP: " + player.getHealth() + "\nAttack: " + player.getAttack() + " | ATK Bonus: +" + player.getAttackBonus() +
-                    "\nDefense: " + player.getDefense() + "\nVials: " + player.getVials() + "/5\nCoins: " + player.getCoins() +
-                    "\nCurrent Weapon: " + player.getEquippedWeaponName());
-        } else if (lower.equals("inventory")) {
-            result.setMessage(player.getInventoryString());
-        } else if (lower.equals("inspect") || lower.equals("explore")) {
-            result.setMessage(player.exploreRoom());
-        } else if (lower.startsWith("equip ")) {
-            String itemName = trimmed.substring(6).trim();
-            result.setMessage(player.equipWeapon(itemName) ? "You equipped " + itemName + "." : "You do not have that weapon.");
-        } else if (lower.startsWith("examine ")) {
-            result.setMessage(player.examineItem(trimmed.substring(8).trim()));
-        } else if (lower.equals("n") || lower.equals("north") || lower.equals("e") || lower.equals("east")
-                || lower.equals("s") || lower.equals("south") || lower.equals("w") || lower.equals("west")
-                || lower.matches("r\\d+")) {
-            result.setMessage(player.enterRoom(trimmed));
-        } else {
-            result.setMessage("Invalid command.");
+        if (cleaned.equalsIgnoreCase("status")) {
+            return "Coins: " + player.getCoins() + "\n-----------------------------------";
         }
-        return result.getMessage();
+
+        if (cleaned.equalsIgnoreCase("inventory")) {
+            return "Inventory: " + player.getInventory() + "\n-----------------------------------";
+        }
+
+        Room room = school.getRoom(cleaned);
+        if (room != null) {
+            player.enterRoom(cleaned, school);
+            return "You entered room " + room.getRoomId() + "\n-----------------------------------";
+        }
+
+        return "Invalid Command\n-----------------------------------";
     }
 
     public String battleCommand(String command) {
-        return combatEngine.action(command);
+        return "Battle system not used in puzzle feature.";
     }
 
     public void resetCombat() {
-        combatEngine.resetEngine();
     }
 
     public boolean battleEnded() {
-        return combatEngine.isBattleOver();
+        return true;
     }
 
     public boolean playerAlive() {
-        return player.isAlive();
+        return true;
     }
 
     public boolean monsterAlive() {
-        return combatEngine.getMonsterAlive();
+        return false;
     }
 
     public int getTurn() {
-        return combatEngine.getTurns();
+        return 0;
     }
 
     public Player getPlayer() {
@@ -77,46 +65,30 @@ public class GameEngine {
     }
 
     public String getRoomName() {
-        return player.getRoomName();
+        Room room = player.getCurrentRoom(school);
+        if (room == null) {
+            return "No room selected";
+        }
+        return room.getRoomId();
     }
 
     public int getPlayerState() {
-        return player.getCurrentState();
+        return 0;
     }
 
     public String getPlayerBuilding() {
-        return player.getBuilding();
+        return "";
     }
 
     public String getPlayerHealth() {
-        return player.getHealth();
+        return "";
     }
 
     public String getMonsterName() {
-        return player.getMonsterName();
+        return "";
     }
 
     public String getMonsterHealth() {
-        return combatEngine.getMonsterHealth();
-    }
-
-    public boolean hasActivePuzzle() {
-        return player.hasActivePuzzle();
-    }
-
-    public boolean hasActiveMonster() {
-        return player.engageMonster();
-    }
-
-    public String explorePuzzle() {
-        return player.explorePuzzle();
-    }
-
-    public String solvePuzzle(String answer) {
-        return player.solvePuzzle(answer);
-    }
-
-    public String ignorePuzzle() {
-        return player.ignorePuzzle();
+        return "";
     }
 }

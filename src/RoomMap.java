@@ -64,13 +64,13 @@ public class RoomMap {
                     coinReward = 0;
                 }
 
-                ArrayList<String> itemDrops = new ArrayList<>();
+                ArrayList<Item> itemDrops = new ArrayList<>();
                 if (!parts[8].trim().isEmpty()) {
                     String[] rewardParts = parts[8].split(",");
                     for (String reward : rewardParts) {
                         String trimmed = reward.trim();
                         if (!trimmed.isEmpty()) {
-                            itemDrops.add(trimmed);
+                            itemDrops.add(new Item(trimmed, getItemName(trimmed)));
                         }
                     }
                 }
@@ -105,4 +105,23 @@ public class RoomMap {
         }
         return rooms.get(roomId.trim().toUpperCase());
     }
+    private String getItemName(String itemId) {
+        switch (itemId.toUpperCase()) {
+            case "A1": return "Flashlight";
+            case "A2": return "Batteries";
+            case "A3": return "Cure Vial";
+            case "A4": return "Vending Machine Food";
+            case "A5": return "Normal Food";
+            case "A6": return "Coins";
+            case "A7": return "Kitchen Knife";
+            case "A8": return "Fork";
+            case "A9": return "Book";
+            case "A10": return "Backpack";
+            case "A11": return "Broom";
+            case "A12": return "Office Key";
+            case "A13": return "Cure";
+            default: return itemId;
+        }
+    }
+
 }
