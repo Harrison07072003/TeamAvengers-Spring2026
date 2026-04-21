@@ -1,0 +1,2 @@
+(ID,Name,Description,HP,Attack,Defense,Coins,Room)
+M1,Slenderman,A tall faceless figure that silently stalks the player: "You can't hide.",100,20,20,0,R1

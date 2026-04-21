@@ -1,0 +1,2 @@
+PuzzleID|PuzzleName|Question?|Answer|Room||sm|fm|coins
+P1|Puzzle 1|What is the chemical symbol for water?|H2O|R2|GOOD JOB|BAD JOB|3

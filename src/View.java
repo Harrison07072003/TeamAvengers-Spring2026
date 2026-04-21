@@ -1,11 +1,9 @@
 public class View {
     //fields
     //constructor
-    public View(){
-
-    }
+    public View() {}
     //methods
-    public void display(String str){
-        System.out.println(str);
+    public void display(String message) {
+        System.out.println(message);
     }
 }

@@ -1,0 +1,4 @@
+# itemId|itemName|category|description|attackBonus|healValue|roomId
+A1|Flashlight|Tool|Used to see in dark rooms|0|0|R1
+A2|Food|Consumable|Restores health|0|5|R2
+A3|Knife|Weapon|A small weapon|10|0|R3

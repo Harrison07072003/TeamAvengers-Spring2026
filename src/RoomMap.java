@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -35,7 +34,7 @@ public class RoomMap {
         boolean requiresFlashlight;
         try {
             input = new Scanner(new File(roomsFile));
-            if(input.hasNextLine()){ input.hasNextLine();}
+            if(input.hasNextLine()){ input.nextLine();}
             while(input.hasNextLine()){
                 String line = input.nextLine();
                 if(line.length() == 0){ continue; }
@@ -47,7 +46,7 @@ public class RoomMap {
                 exits = values[4].split(",");
                 requiresFlashlight = Boolean.parseBoolean(values[5]);
                 Room room = new Room(roomId, roomName, roomDescription, building, requiresFlashlight);
-                String directions = {"N", "E", "S", "W"};
+                String[] directions = {"North", "East", "South", "West"};
                 for(int i = 0; i < exits.length; i++){
                     String exitRoom = exits[i].trim();
                     if(!exitRoom.equals("0")){
@@ -76,7 +75,7 @@ public class RoomMap {
 
         try {
             input = new Scanner(new File(monstersFile));
-            if(input.hasNextLine()){ input.hasNextLine();}
+            if(input.hasNextLine()){ input.nextLine();}
             while(input.hasNextLine()){
                 String line = input.nextLine();
                 if(line.length() == 0){ continue; }
@@ -89,11 +88,8 @@ public class RoomMap {
                 defense = Integer.parseInt(values[5]);
                 coins = Integer.parseInt(values[6]);
                 roomId = values[7];
-                Monster monster = new Monster(monsterId, monsterName, monsterDescription, hp, attack, defense, coins, roomId);
-                Room room = getRoom(roomId);
-                if (room != null) {
-                    room.addMonster(monster);
-                }
+                Monster villan = new Monster(monsterId, monsterName, monsterDescription, hp, attack, defense, coins, roomId);
+                rooms.get(Integer.parseInt(roomId.substring(1))-1).addMonster(villan);
             }
             input.close();
         } catch (FileNotFoundException e) {
@@ -104,6 +100,37 @@ public class RoomMap {
 
 
     public void loadPuzzles() {
+        Scanner input;
+        String puzzleId;
+        String puzzleName;
+        String question;
+        String answer;
+        String roomId;
+        String successMessage;
+        String failureMessage;
+        int coins;
+        try{
+            input = new Scanner(new File(puzzlesFile));
+            if(input.hasNextLine()){ input.nextLine();}
+            while(input.hasNextLine()){
+                String line = input.nextLine();
+                if(line.length() == 0){ continue; }
+                String[] values = line.split("\\|");
+                puzzleId = values[0];
+                puzzleName = values[1];
+                question = values[2];
+                answer = values[3];
+                roomId = values[4];
+                successMessage = values[5];
+                failureMessage = values[6];
+                coins = Integer.parseInt(values[7]);
+                Puzzle riddle = new Puzzle(puzzleId, puzzleName, question, answer, roomId, successMessage, failureMessage, coins);
+                rooms.get(Integer.parseInt(roomId.substring(1))-1).setPuzzle(riddle);
+            }
+            input.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: puzzles.txt file not found.");
+        }
 
     }
 
@@ -112,23 +139,21 @@ public class RoomMap {
     public void loadItems() {
         // need to separate per type of item
     }
-
-
-
-    public Room getRoom(String roomId) {
-        for (int i = 0; i < rooms.size(); i++) {
-            if (rooms.get(i).getRoomId().equals(roomId)) {
-                return rooms.get(i);
-            }
-        }
-        return null;
+    public ArrayList<Room> getRooms(){
+        return this.rooms;
+    }
+    public Room getRoom(String num){
+        int roomNumber = Integer.parseInt(num.substring(1));
+        return rooms.get(roomNumber-1);
     }
 
 
 
 
 
-    public void saveGame(Player player) {
+
+
+   /* public void saveGame(Player player) {
         try {
             PrintWriter output = new PrintWriter(saveFile);
             // PLAYER
@@ -385,4 +410,8 @@ public class RoomMap {
             System.out.println("There are no checkpoints found.");
         }
     }
+   }
+
+    */
+
 }
