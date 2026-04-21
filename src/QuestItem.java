@@ -5,7 +5,7 @@ public class QuestItem extends Item {
         super(item_Id, item_Name, item_Description, item_type, value);
         this.isQuestItem = true; // Assuming all instances are quest items
     }
-
+// only quest Item uses the use command also should be aware of view
     public boolean isQuestItem() {
         return isQuestItem;
     }
@@ -31,11 +31,11 @@ public class QuestItem extends Item {
             return View.officeDoorUnlocked();
         }
 
-        if (itemName.contains("cure vital")) {
+        if (itemName.contains("Cure Vital")) {
             return View.cureVitalHint();
         }
 
-        if (itemName.equals("cure")) {
+        if (itemName.equals("Cure")) {
             if (player.isPlagueCured()) {
                 return View.plagueAlreadyCured();
             }

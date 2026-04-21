@@ -7,7 +7,7 @@ public class Player extends Character {
     private boolean officeUnlocked;
     private boolean plagueCured;
     private final View view;
-
+    // player should not be aware of the view
     public Player(String id, int maxHP, int attack, int defense, View view) {
         super(id, maxHP, attack, defense);
         setInventory(new ArrayList<>());
@@ -121,7 +121,7 @@ public class Player extends Character {
         }
         return null;
     }
-
+// only for quest item
     public void useItem(Item item) {
         if (item == null) {
             view.display("Item not found.");

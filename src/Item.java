@@ -14,10 +14,6 @@ public class Item {
     private String item_Location;
     private int value; // HP for consumables, attack for weapons, etc.
 
-    public Item(String item_Id, String item_Name, String item_Description, String item_type, int value) {
-        this(item_Id, item_Name, item_Description, item_type, "", value);
-    }
-
     public Item(String item_Id, String item_Name, String item_Description, String item_type, String item_Location,int value) {
         this.item_Id = item_Id;
         this.item_Name = item_Name;
@@ -48,17 +44,5 @@ public class Item {
 
     public int getValue() {
         return value;
-    }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "item_Id='" + item_Id + '\'' +
-                ", item_Name='" + item_Name + '\'' +
-                ", item_Description='" + item_Description + '\'' +
-                ", item_type='" + item_type + '\'' +
-                ", item_Location='" + item_Location + '\'' +
-                ", value=" + value +
-                '}';
     }
 }

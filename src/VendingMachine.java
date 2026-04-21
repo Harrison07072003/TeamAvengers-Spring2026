@@ -1,11 +1,10 @@
 import java.util.ArrayList;
 
-public class VendingMachine extends Item {
+public class VendingMachine {
     private final ArrayList<Consumable> availableItems = new ArrayList<>();
     private final int cost = 4;
 
-    public VendingMachine(String item_Id, String item_Name, String item_Description, String item_type, int value) {
-        super(item_Id, item_Name, item_Description, item_type, value);
+    public VendingMachine(String item_Id, String item_Name, String item_Description, String item_type,String item_Location , int value) {
         availableItems.add(new Consumable("food_id", "Food", "Edible food that restores HP", "consumable", 10));
     }
 
