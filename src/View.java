@@ -29,22 +29,51 @@ public class View {
             +"3.Defend - Defend against an attack from a monster\n" + "4.Dodge - Chance to dodge monster attack\n" +"5.Check Weapon - View the stats of the currently held weapon\n" + "6.Retreat - Flee from the monster\n--------------------");
     }
     public void showMap(String building) {
-        if (building.equals("Building E")) {
+        if (building.equals("E Building")) {
             System.out.println(
-                    "                            |Building E|                                       \n" +
-                            " [   Game Room   ] -------- [   Kitchen    ] ------  [The Dining Hall] \n" +
-                            "       |                          |                        |\n" +
-                            " [Meditation Room] -------- [Student Lounge] ------  [  Campus Cafe  ] -----> Library");
-        }
-        else{
-            System.out.println("You good");
+                            "                         |Building E|\n" +
+                            " [Game Room] -------- [Kitchen] -------- [Dining Hall]\n" +
+                            "      |                    |                   |\n" +
+                            " [Meditation Room] --- [Student Lounge] --- [Campus Cafe] -----> Library"
+            );
+        } else if (building.equals("Library")) {
+            System.out.println(
+                            "Building E <------        |Library|\n" +
+                            "  [Study Room]                              -----[Server Room]-----> Parking Lot\n" +
+                            "         |                                  |            |\n" +
+                            "         -------[Library Lobby]----[Computer Classroom]  |\n" +
+                            "                          |                 |            |\n" +
+                            "[Electric Control Room]----                 ----[Malfunctioning Elevators]"
+            );
+        } else if (building.equals("H Building")) {
+            System.out.println(
+                            "Library<-----             |H Building|\n" +
+                            " [Chemistry Lab] ---- [Professor Office] ---- [Chemistry Lab 2]\n" +
+                            "        |                    |                      |\n" +
+                            "        |                    |            [Digital Media Lab]\n" +
+                            "        |                    |                      |\n" +
+                            " [Health Lab] -------- [Bathroom] -------- [Janitor's Closet]\n" +
+                            "        |\n" +
+                            "        |\n" +
+                            "Parking Lot"
+            );
+        } else if (building.equals("Parking Lot")) {
+            System.out.println(
+                            "                        H Building\n" +
+                            "                             ^\n" +
+                            "                             |\n" +
+                            "                              \n" +
+                                    "Library<------     |Parking Lot|"
+            );
+        } else {
+            System.out.println("Map unavailable.");
         }
     }
+}
     public void showCredits(){
         System.out.println("Teams Involved\n----------------\nCreative Team: Team Cobra\nDevelopment Team: Team Avengers\n" +
                 "\nDevelopers\n----------------\nTeam Manager:Jocelin Mendoza\nTechnical Lead:Harrison Allen\nTesting Lead:José Muñoz-Suastegui" +
                 "\nData Lead:Asliee Pena Cabrera\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo");
     }
-
 
 }
