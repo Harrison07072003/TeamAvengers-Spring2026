@@ -66,8 +66,8 @@ public class Player {
         boolean solved = puzzle.checkSolution(answer);
 
         if (solved) {
-            ArrayList<Item> droppedRewards = puzzle.dropRewards();
-            for (Item item : droppedRewards) {
+            ArrayList<Item> droppedItems = puzzle.dropItems();
+            for (Item item : droppedItems) {
                 acceptReward(item);
                 lastAcceptedRewards.add(item);
             }
