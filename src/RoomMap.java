@@ -9,9 +9,12 @@ import java.util.Map;
 
 public class RoomMap {
     private final Map<String, Room> rooms;
+    private final boolean puzzlesLoaded;
 
     public RoomMap() {
         this.rooms = new HashMap<>();
+        generateRooms();
+        this.puzzlesLoaded = loadPuzzles("puzzles.txt");
     }
 
     public void generateRooms() {
@@ -20,6 +23,10 @@ public class RoomMap {
             String roomId = "R" + i;
             rooms.put(roomId, new Room(roomId));
         }
+    }
+
+    public boolean isPuzzlesLoaded() {
+        return puzzlesLoaded;
     }
 
     public boolean loadPuzzles(String fileName) {
@@ -105,6 +112,7 @@ public class RoomMap {
         }
         return rooms.get(roomId.trim().toUpperCase());
     }
+
     private String getItemName(String itemId) {
         switch (itemId.toUpperCase()) {
             case "A1": return "Flashlight";
@@ -123,5 +131,4 @@ public class RoomMap {
             default: return itemId;
         }
     }
-
 }

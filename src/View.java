@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class View {
     public View() {
     }
@@ -33,15 +31,8 @@ public class View {
         System.out.println("You entered room: " + roomId);
     }
 
-    public void showReward(String itemName) {
-        System.out.println("Reward added to inventory: " + itemName);
-    }
-
-    public void showInventoryRewards(List<Item> items) {
-        if (items == null || items.isEmpty()) {
-            return;
-        }
-        System.out.println("Items received: " + items);
+    public void showReward(String rewardText) {
+        System.out.println("Rewards added to inventory: " + rewardText);
     }
 
     public void showCoinsEarned(int coins) {

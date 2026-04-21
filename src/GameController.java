@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameController {
@@ -19,9 +18,7 @@ public class GameController {
     }
 
     public void run() {
-        map.generateRooms();
-
-        if (!map.loadPuzzles("puzzles.txt")) {
+        if (!map.isPuzzlesLoaded()) {
             view.display("Could not load puzzles.txt.");
             view.display("Make sure puzzles.txt is inside your project folder.");
             return;
@@ -94,7 +91,15 @@ public class GameController {
 
                     if (player.solvePuzzle(currentRoom, answer)) {
                         view.display(currentRoom.getPuzzle().getSuccessMessage());
-                        givePuzzleRewards();
+
+                        if (!player.getLastRewardNames().isEmpty()) {
+                            view.showReward(String.join(", ", player.getLastRewardNames()));
+                        }
+
+                        if (player.getLastCoinsEarned() > 0) {
+                            view.showCoinsEarned(player.getLastCoinsEarned());
+                        }
+
                         puzzleMenuRunning = false;
                     } else {
                         view.display(currentRoom.getPuzzle().getFailureMessage());
@@ -111,22 +116,6 @@ public class GameController {
                 default:
                     view.display("Invalid puzzle command.");
             }
-        }
-    }
-
-    private void givePuzzleRewards() {
-        ArrayList<Item> droppedRewards = currentRoom.getPuzzle().dropRewards();
-
-        for (Item item : droppedRewards) {
-            if (player.acceptReward(item)) {
-                view.showReward(item.getItem_Name());
-            }
-        }
-
-        int droppedCoins = currentRoom.getPuzzle().dropCoins();
-        if (droppedCoins > 0) {
-            player.addCoins(droppedCoins);
-            view.showCoinsEarned(droppedCoins);
         }
     }
 }

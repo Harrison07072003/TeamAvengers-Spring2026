@@ -5,11 +5,15 @@ public class Player {
     private String currentRoomId;
     private int coins;
     private final ArrayList<Item> inventory;
+    private final ArrayList<Item> lastAcceptedRewards;
+    private int lastCoinsEarned;
 
     public Player() {
         currentRoomId = null;
         coins = 15;
         inventory = new ArrayList<>();
+        lastAcceptedRewards = new ArrayList<>();
+        lastCoinsEarned = 0;
     }
 
     public boolean enterRoom(String roomId, RoomMap map) {
@@ -51,10 +55,28 @@ public class Player {
     }
 
     public boolean solvePuzzle(Room room, String answer) {
+        lastAcceptedRewards.clear();
+        lastCoinsEarned = 0;
+
         if (room == null || room.getPuzzle() == null) {
             return false;
         }
-        return room.getPuzzle().checkSolution(answer);
+
+        Puzzle puzzle = room.getPuzzle();
+        boolean solved = puzzle.checkSolution(answer);
+
+        if (solved) {
+            ArrayList<Item> droppedRewards = puzzle.dropRewards();
+            for (Item item : droppedRewards) {
+                acceptReward(item);
+                lastAcceptedRewards.add(item);
+            }
+
+            lastCoinsEarned = puzzle.dropCoins();
+            addCoins(lastCoinsEarned);
+        }
+
+        return solved;
     }
 
     public boolean acceptReward(Item item) {
@@ -77,5 +99,17 @@ public class Player {
 
     public List<Item> getInventory() {
         return new ArrayList<>(inventory);
+    }
+
+    public List<String> getLastRewardNames() {
+        ArrayList<String> rewardNames = new ArrayList<>();
+        for (Item item : lastAcceptedRewards) {
+            rewardNames.add(item.getItem_Name());
+        }
+        return rewardNames;
+    }
+
+    public int getLastCoinsEarned() {
+        return lastCoinsEarned;
     }
 }
