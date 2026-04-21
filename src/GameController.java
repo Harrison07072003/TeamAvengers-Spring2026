@@ -1,135 +1,154 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameController {
-    private final RoomMap map;
-    private final Player player;
-    private final PuzzleView view;
+    private final View view;
     private final Scanner input;
     private boolean isRunning;
+    private final GameEngine engine;
 
-    public GameController() {
-        map = new RoomMap();
-        player = new Player();
-        view = new PuzzleView();
-        input = new Scanner(System.in);
-        isRunning = true;
+    GameController() {
+        this.view = new View();
+        this.input = new Scanner(System.in);
+        this.isRunning = true;
+        this.engine = new GameEngine();
     }
 
     public void run() {
-        map.generateRooms();
-
-        if (!map.loadPuzzles("puzzles.txt")) {
-            view.showMessage("Could not load puzzles.txt.");
-            view.showMessage("Make sure puzzles.txt is inside your project folder.");
-            return;
-        }
-
-        view.showMessage("GGC Plague Puzzle Demo");
-        view.showMessage("Type a room ID with a puzzle: R1, R2, R4, R5, R8, R12, R13");
-        view.showMessage("Type quit to stop.");
-        view.showMessage("");
-
         while (isRunning) {
-            view.showMessage("Enter room ID:");
-            String roomId = input.nextLine().trim();
+            view.navUI(engine.getRoomName());
+            String command = input.nextLine().trim();
+            String lower = command.toLowerCase();
 
-            if (roomId.equalsIgnoreCase("quit")) {
+            if (lower.equals("help")) {
+                view.navHelp(engine.getPlayerState());
+            } else if (lower.equals("map")) {
+                view.showMap(engine.getPlayerBuilding());
+            } else if (lower.equals("quit")) {
                 isRunning = false;
-                view.showMessage("Game ended.");
-                break;
-            }
-
-            if (!player.enterRoom(roomId, map)) {
-                view.showMessage("Room not found.");
-                view.showMessage("");
-                continue;
-            }
-
-            Room currentRoom = player.getCurrentRoom(map);
-            view.showRoom(currentRoom);
-
-            if (currentRoom == null) {
-                view.showMessage("");
-                continue;
-            }
-
-            if (!currentRoom.checkPuzzle()) {
-                if (currentRoom.getPuzzle() == null) {
-                    view.showMessage("No puzzle in this room.");
+            } else if (lower.equals("puzzle")) {
+                if (engine.hasActivePuzzle()) {
+                    puzzle();
                 } else {
-                    view.showMessage("This puzzle was already solved.");
+                    view.display("No active puzzle is in this room.");
                 }
-                view.showMessage("");
-                continue;
+            } else {
+                String result = engine.navCommand(command);
+                view.display(result);
+
+                if (engine.hasActivePuzzle() && (lower.equals("inspect") || lower.equals("explore"))) {
+                    view.showPuzzlePrompt();
+                }
+
+                if (engine.hasActiveMonster() && lower.equals("inspect")) {
+                    view.display("A monster is here. Type 'engage' to fight or press Enter to ignore.");
+                    String response = input.nextLine().trim();
+                    if (response.equalsIgnoreCase("engage")) {
+                        battle();
+                    } else {
+                        view.display("You decided not to engage.");
+                    }
+                }
             }
-
-            puzzle(currentRoom);
-
-            if (!currentRoom.getItems().isEmpty()) {
-                view.showRoomItems(currentRoom.getItems());
-            }
-
-            view.showMessage("Player coins: " + player.getCoins());
-            view.showMessage("");
         }
+        view.display("You have left the game.");
     }
 
-    public void puzzle(Room currentRoom) {
-        Puzzle currentPuzzle = currentRoom.getPuzzle();
-        boolean puzzleMenuRunning = true;
+    public void battle() {
+        engine.resetCombat();
+        while (!engine.battleEnded()) {
+            view.display("Turn: " + engine.getTurn());
+            view.monsterUI(engine.getPlayerHealth(), engine.getMonsterName(), engine.getMonsterHealth());
+            String command = input.nextLine().trim();
+            if (command.equalsIgnoreCase("help")) {
+                view.navHelp(2);
+            } else {
+                view.display(engine.battleCommand(command));
+            }
+        }
 
-        while (puzzleMenuRunning) {
-            view.puzzleUI(currentRoom.getRoomId());
+        if (!engine.monsterAlive()) {
+            view.display("You won the battle.");
+        } else if (!engine.playerAlive()) {
+            view.display("You were defeated.");
+            isRunning = false;
+        }
+        engine.getPlayer().setState(1);
+    }
+
+    public void puzzle() {
+        while (isRunning && engine.hasActivePuzzle()) {
+            view.puzzleUI();
             String action = input.nextLine().trim().toLowerCase();
 
             switch (action) {
                 case "explore":
                 case "explore puzzle":
-                    view.displayPuzzle(currentPuzzle);
-                    view.showMessage("Type Solve to answer or Ignore Puzzle to leave it for later.");
+                    view.display(engine.explorePuzzle());
                     break;
-
                 case "solve":
                 case "solve puzzle":
-                    view.displayPuzzle(currentPuzzle);
-                    view.showMessage("Enter your answer:");
+                    view.display("Enter your answer:");
                     String answer = input.nextLine().trim();
-
-                    if (currentPuzzle.checkSolution(answer)) {
-                        view.showCorrectMessage(currentPuzzle.getSuccessMessage());
-                        givePuzzleRewards(currentPuzzle, currentRoom);
-                        puzzleMenuRunning = false;
-                    } else {
-                        view.showIncorrectMessage(currentPuzzle.getFailureMessage());
-                        view.showMessage("Type Solve to try again or Ignore Puzzle to leave it for later.");
+                    view.display(engine.solvePuzzle(answer));
+                    if (!engine.hasActivePuzzle()) {
+                        return;
                     }
                     break;
-
                 case "ignore":
                 case "ignore puzzle":
-                    view.showMessage("You leave the puzzle for later.");
-                    puzzleMenuRunning = false;
+                    view.display(engine.ignorePuzzle());
+                    return;
+                case "help":
+                    view.navHelp(3);
                     break;
-
                 default:
-                    view.showMessage("Invalid puzzle command.");
+                    view.display("Invalid puzzle command.");
             }
         }
     }
 
-    private void givePuzzleRewards(Puzzle puzzle, Room currentRoom) {
-        ArrayList<String> droppedItems = puzzle.dropItems();
+    public void startGame() {
+        String[] title = new String[]{
+                "============================================",
+                "               GGC PLAGUE",
+                "    Escape the campus. Solve puzzles.",
+                "============================================"
+        };
 
-        for (String item : droppedItems) {
-            currentRoom.addItem(item);
-            view.showReward(item);
+        for (String line : title) {
+            view.display(line);
         }
+        view.display("");
+        view.display("Welcome to GGC Plague. Choose an option:");
 
-        int droppedCoins = puzzle.dropCoins();
-        if (droppedCoins > 0) {
-            player.addCoins(droppedCoins);
-            view.showCoinsEarned(droppedCoins);
+        boolean menuActive = true;
+        while (menuActive) {
+            view.display("[1] Start New Game");
+            view.display("[2] Credits");
+            view.display("[3] Quit");
+            view.display("Enter choice:");
+            String choice = input.nextLine().trim().toLowerCase();
+
+            switch (choice) {
+                case "1":
+                case "start":
+                case "new":
+                    run();
+                    menuActive = false;
+                    break;
+                case "2":
+                case "credits":
+                    view.showCredits();
+                    break;
+                case "3":
+                case "quit":
+                    view.display("Goodbye.");
+                    menuActive = false;
+                    isRunning = false;
+                    break;
+                default:
+                    view.display("Invalid option.");
+            }
         }
     }
 }

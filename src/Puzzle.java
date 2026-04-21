@@ -8,13 +8,18 @@ public class Puzzle {
     private final String roomId;
     private final String successMessage;
     private final String failureMessage;
+    private final ArrayList<Item> rewards;
+    private final int coinReward;
+    private int attemptsRemaining;
     private boolean solved;
-    private final ArrayList<String> inventory;
-    private int coins;
 
-    public Puzzle(String puzzleId, String puzzleName, String question, String solution,
-                  String roomId, String successMessage, String failureMessage,
-                  ArrayList<String> inventory, int coins) {
+    public Puzzle(String puzzleId, String puzzleName, String question, String solution, String roomId,
+                  String successMessage, String failureMessage, ArrayList<Item> rewards, int coinReward) {
+        this(puzzleId, puzzleName, question, solution, roomId, successMessage, failureMessage, rewards, coinReward, 3);
+    }
+
+    public Puzzle(String puzzleId, String puzzleName, String question, String solution, String roomId,
+                  String successMessage, String failureMessage, ArrayList<Item> rewards, int coinReward, int attemptsRemaining) {
         this.puzzleId = puzzleId;
         this.puzzleName = puzzleName;
         this.question = question;
@@ -22,9 +27,10 @@ public class Puzzle {
         this.roomId = roomId;
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
+        this.rewards = rewards == null ? new ArrayList<>() : new ArrayList<>(rewards);
+        this.coinReward = Math.max(0, coinReward);
+        this.attemptsRemaining = Math.max(1, attemptsRemaining);
         this.solved = false;
-        this.inventory = (inventory == null) ? new ArrayList<>() : new ArrayList<>(inventory);
-        this.coins = coins;
     }
 
     public String accessPuzzle() {
@@ -32,35 +38,27 @@ public class Puzzle {
     }
 
     public boolean checkSolution(String answer) {
-        if (solved || answer == null) {
+        if (solved || answer == null || attemptsRemaining <= 0) {
             return false;
         }
 
-        String cleanedAnswer = normalize(answer);
-        String cleanedSolution = normalize(solution);
-
-        if (cleanedAnswer.equals(cleanedSolution)) {
+        if (answer.trim().equalsIgnoreCase(solution.trim())) {
             solved = true;
             return true;
         }
 
+        attemptsRemaining--;
         return false;
     }
 
-    private String normalize(String text) {
-        return text.trim().toLowerCase().replaceAll("\\s+", " ");
-    }
-
-    public ArrayList<String> dropItems() {
-        ArrayList<String> droppedItems = new ArrayList<>(inventory);
-        inventory.clear();
-        return droppedItems;
+    public ArrayList<Item> dropRewards() {
+        ArrayList<Item> droppedRewards = new ArrayList<>(rewards);
+        rewards.clear();
+        return droppedRewards;
     }
 
     public int dropCoins() {
-        int droppedCoins = coins;
-        coins = 0;
-        return droppedCoins;
+        return coinReward;
     }
 
     public String getPuzzleId() {
@@ -95,15 +93,11 @@ public class Puzzle {
         return solved;
     }
 
-    public ArrayList<String> getInventory() {
-        return new ArrayList<>(inventory);
+    public int getAttemptsRemaining() {
+        return attemptsRemaining;
     }
 
-    public int getCoins() {
-        return coins;
-    }
-
-    public void setSolved(boolean solved) {
-        this.solved = solved;
+    public ArrayList<Item> getRewards() {
+        return new ArrayList<>(rewards);
     }
 }
