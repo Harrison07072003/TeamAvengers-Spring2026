@@ -29,7 +29,7 @@ public class View {
             +"3.Defend - Defend against an attack from a monster\n" + "4.Dodge - Chance to dodge monster attack\n" +"5.Check Weapon - View the stats of the currently held weapon\n" + "6.Retreat - Flee from the monster\n--------------------");
     }
     public void showMap(String building) {
-        if (building.equals("E Building")) {
+        if (building.equals("Building E")) {
             System.out.println(
                             "                         |Building E|\n" +
                             " [Game Room] -------- [Kitchen] -------- [Dining Hall]\n" +
@@ -38,16 +38,16 @@ public class View {
             );
         } else if (building.equals("Library")) {
             System.out.println(
-                            "Building E <------        |Library|\n" +
-                            "  [Study Room]                              -----[Server Room]-----> Parking Lot\n" +
-                            "         |                                  |            |\n" +
-                            "         -------[Library Lobby]----[Computer Classroom]  |\n" +
-                            "                          |                 |            |\n" +
+                            "                                |Library|\n" +
+                            " <----Building E [Study Room]                  [Server Room]-----> Parking Lot\n" +
+                            "                        |                            |            \n" +
+                            "                   [Library Lobby]----[Computer Classroom]  \n" +
+                            "                          |                 |            \n" +
                             "[Electric Control Room]----                 ----[Malfunctioning Elevators]"
             );
-        } else if (building.equals("H Building")) {
+        } else if (building.equals("Building H")) {
             System.out.println(
-                            "Library<-----             |H Building|\n" +
+                            "                         |H Building|\n" +
                             " [Chemistry Lab] ---- [Professor Office] ---- [Chemistry Lab 2]\n" +
                             "        |                    |                      |\n" +
                             "        |                    |            [Digital Media Lab]\n" +

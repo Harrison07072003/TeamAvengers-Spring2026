@@ -2,19 +2,21 @@
 import java.util.ArrayList;
 public class Player extends Character{
     //fields
+    private String previousRoom;
     private String currentRoom;
-    private final GameMap Map;
+    private final RoomMap Map;
     private Item equippedWeapon;
     private int vials;
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
     //constructor
-    public Player(String id, int maxHP, int attack, int defense, int coins,String roomID,GameMap map) {
+    public Player(String id, int maxHP, int attack, int defense, int coins,String roomID,RoomMap map) {
         super(id, maxHP, attack, defense,coins);
         this.currentRoom = roomID;
         this.Map = map;
         this.equippedWeapon = new Item("I0","Fists","test,",0);
         this.currentState = 1;
         this.vials = 0;
+        this.previousRoom = roomID;
     }
 
 
@@ -28,7 +30,8 @@ public class Player extends Character{
             monster.setCurrentHP(monster.getCurrentHP() - (int)damage);
             if (monster.getCurrentHP() <= 0) {
                 monster.setAlive(false);
-                this.getInventory().add(monster.dropItem(""));
+                if(!monster.getInventory().isEmpty())
+                    this.getInventory().add(monster.dropItem(""));
                 this.collectCoins(monster.getCoins());
             }
         }
@@ -43,7 +46,8 @@ public class Player extends Character{
                 monster.setCurrentHP(monster.getCurrentHP() - (int)heavyDamage);
                 if (monster.getCurrentHP() <= 0) {
                     monster.setAlive(false);
-                    this.getInventory().add(monster.dropItem(""));
+                    if(!monster.getInventory().isEmpty())
+                        this.getInventory().add(monster.dropItem(""));
                     this.collectCoins(monster.getCoins());
                 }
                 return true;
@@ -58,18 +62,14 @@ public class Player extends Character{
         if(this.getCurrentRoom(currentRoom).hasMonsters()) {
             Monster monster = this.getMonster();
             if (monster.isAlive()) {
-                return monster.getName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
+                return monster.getMonsterName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
                         + monster.getAttack() + "\nDefense: " + monster.getDefense();
             }
         }
         return "No Monsters detected";
     }
     public void retreat(){
-        //this.move();
-        int roomId = Integer.parseInt(this.getRoomID().substring(1)) - 1;
-        String room = "R" + roomId;
-        if(roomId >= 1)
-            this.setCurrentRoom(room);
+        this.enterRoom(this.previousRoom);
     }
     public boolean engageMonster() {
         return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
@@ -91,10 +91,10 @@ public class Player extends Character{
             return (int) damage;
     }
     public String getRoomName(){
-        return this.getCurrentRoom(currentRoom).getName();
+        return this.getCurrentRoom(currentRoom).getRoomName();
     }
     public String getMonsterName(){
-        return this.getMonster().getName();
+        return this.getMonster().getMonsterName();
     }
     public Monster getMonster(){
         return this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
@@ -153,44 +153,46 @@ public class Player extends Character{
         return "You don't have that item";
     }
 
-}
+
     //Command: Enter Room (move player)
+    //room methods
     public String enterRoom(String input) {
         if(input == null||input.trim().isEmpty()){
             return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
         }
-        Room current = map.getRoom(currentRoom);
+        Room current = this.getCurrentRoom(this.currentRoom);
         String userInput = input.trim().toUpperCase();
         String nextRoom = current.getExit(userInput);
         if (nextRoom == null) {
             return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
         }
-        currentRoom = nextRoom;
-        return "You have entered " + currentRoom;
+        this.previousRoom = this.currentRoom;
+        this.currentRoom = nextRoom;
+        return "You have entered " + this.getCurrentRoom(this.currentRoom).getRoomName() + ".";
     }
 
     public String exploreRoom() {
-        Room current = map.getRoom(currentRoom);
-        if(current.requiresValidFlashlight()&& !inventory.contains(getItem("Powered Flashlight"))){
+        Room current = this.getCurrentRoom(currentRoom);
+        if(current.requiresValidFlashlight()&& !this.getInventory().contains(getItem("Powered Flashlight"))){
             return "Functioning flashlight with batteries is needed to explore this room.";
         }
         else {
             String result = "You are currently in the " + current.getRoomName() + ": " + current.getRoomDescription();
             if (current.hasItem()) {
                 if (current.getInventory().size() == 1) {
-                    result += "\nThere is an item in this room: " + current.getInventory().get(0).getItem_Name();
+                    result += "\nThere is an item in this room: " + current.getInventory().get(0).getItemName();
                 }
                 if (current.getInventory().size() > 1) {
                     result += "\nThere are items in this room: ";
                     for (Item item : current.getInventory()) {
-                        result += "\n- " + item.getItem_Name();
+                        result += "\n- " + item.getItemName();
                     }
                 }
             }
             if (current.hasVendingMachine()) {
                 result += "\nThere is a vending machine in this room.";
             }
-            if (current.hasMonster()) {
+            if (current.hasMonsters()) {
                 if (current.getMonster().size() == 1) {
                     result += "\nThere is a monster in this room: " + current.getMonster().get(0).getMonsterName();
                 }
@@ -210,8 +212,8 @@ public class Player extends Character{
     }
 
     public Item getItem(String itemName) {
-        for (Item item : inventory) {
-            if (item.getItem_Name().equalsIgnoreCase(itemName)) {
+        for (Item item : this.getInventory()) {
+            if (item.getItemName().equalsIgnoreCase(itemName)) {
                 return item;
             }
         }

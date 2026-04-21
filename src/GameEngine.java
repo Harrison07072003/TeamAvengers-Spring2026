@@ -14,15 +14,24 @@ public class GameEngine {
     //methods
     //loads test data
     public void test(){
-        school.getRooms().add(new Room("R1","Dining Hall","Trays of food are scattered around, and some tables and chairs have been scattered.",new int[]{1,2,3,4},"Building E"));
-        school.getRooms().add(new Room("R2","Library","A quiet library filled with books.",new int[]{0,5,6,7},"Library"));
-        school.getRooms().add(new Room("R3","Chem Lab","A science lab that has chemicals to quell plague",new int[]{8,9,10,11},"Building H"));
+        school.getRooms().add(new Room("R1","Dining Hall","Trays of food are scattered around, and some tables and chairs have been scattered.","Building E",true));
+        school.getRooms().add(new Room("R2","Library","A quiet library filled with books.","Library",true));
+        school.getRooms().add(new Room("R3","Chem Lab","A science lab that has chemicals to quell plague","Building H",true));
+        school.getRooms().add(new Room("R4","Parking Lot","The parking lot, where the player can escape from the school.","Parking Lot",false));
+        school.getRooms().get(0).getExits().put("east","R2");
+        school.getRooms().get(1).getExits().put("west","R1");
+        school.getRooms().get(1).getExits().put("east","R3");
+        school.getRooms().get(2).getExits().put("west","R2");
+        school.getRooms().get(2).getExits().put("east","R4");
+        school.getRooms().get(3).getExits().put("west","R3");
         Monster m = new Monster("M1","Masked Man" ,"A scary monster", 75, 10, 3,2,"R1");
         Monster m2 = new Monster("M2","Porky" ,"A scarier monster", 100, 15, 5,5,"R2");
         Monster m3 = new Monster("M3","Takaya","Revolver wielding maniac",95,20,7,10,"R3");
+        Monster m4 = new Monster("M4","Final Boss","The final boss of the game",150,25,10,20,"R4");
         school.getRooms().get(0).getMonsters().add(m);
         school.getRooms().get(1).getMonsters().add(m2);
         school.getRooms().get(2).getMonsters().add(m3);
+        school.getRooms().get(3).getMonsters().add(m4);
         Item s = new Item("IO1","Sword", "A sharp sword",5);
         Item s2 = new Item("IO2","Shield", "A sturdy shield",100);
         Item s3 = new Item("IO3","Revolver","Crimson case",20);
@@ -61,12 +70,10 @@ public class GameEngine {
         }
         else if(command.startsWith("examine "))
             result.setMessage(A.examineItem(command.substring(8)) + "\n");
-        else if(command.equals("move"))
-            A.setCurrentRoom("R2");
-        else if(command.equals("back"))
-            A.setCurrentRoom("R1");
-        else if(command.equals("third"))
-            A.setCurrentRoom("R3");
+        else if(command.startsWith("enter "))
+            result.setMessage(A.enterRoom(command.substring(6)) + "\n");
+        else if(command.equals("explore"))
+            result.setMessage(A.exploreRoom() + "\n");
         else
             this.result.setMessage("Invalid Command\n");
         this.result.setMessage(this.result.getMessage() + "-----------------------------------");

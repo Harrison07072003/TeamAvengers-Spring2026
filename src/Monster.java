@@ -2,11 +2,11 @@ public class Monster extends Character{
     //fields
     private String monsterDescription;
     private String RoomID;
-    private String name;
+    private String monsterName;
     //constructor
     public Monster(String id,String Name,String description, int maxHP, int attack, int defense,int coins, String roomID) {
         super(id, maxHP, attack, defense,coins);
-        this.name = Name;
+        this.monsterName = Name;
         this.monsterDescription = description;
         this.RoomID = roomID;
     }
@@ -15,8 +15,8 @@ public class Monster extends Character{
     public String getMonsterDescription() {
         return this.monsterDescription;
     }
-    public String getName(){
-        return this.name;
+    public String getMonsterName(){
+        return this.monsterName;
     }
     public int getDamage(Player p){
         double damage = this.getAttack() - p.getDefense();
@@ -41,10 +41,19 @@ public class Monster extends Character{
     public Item dropItem(String item){
         Item drop = this.getInventory().get(0);
         if(!this.isAlive() && !this.getInventory().isEmpty()) {
-            this.getInventory().remove(0);
             return drop;
         }
         else
             return null;
+    }
+    public String getDropsString(){
+        String drop = "";
+        if(this.getInventory().isEmpty())
+            return "";
+        else
+            for(int i = 0; i < this.getInventory().size(); i++){
+                drop += this.getInventory().get(i).getItemName() + ",";
+            }
+        return drop.substring(0,drop.length()-1);
     }
 }

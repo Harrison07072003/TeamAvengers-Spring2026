@@ -41,19 +41,19 @@ public class CombatEngine {
         }
         else if(command.equalsIgnoreCase("attack")){
             if(defending)
-                result += enemy.getName() + " is defending! Your attacks will be less effective.\n";
+                result += enemy.getMonsterName() + " is defending! Your attacks will be less effective.\n";
             enemy.setDefending(defending);
             player.attack(enemy);
             result += "You did " + player.getDamage(enemy,false) + " points of damage\n";
             if(!defending) {
                 enemy.attack(player);
                 if(enemy.isAlive())
-                    result += enemy.getName() + " launched forward! They did " + enemy.getDamage(player) + " points of damage\n";
+                    result += enemy.getMonsterName() + " launched forward! They did " + enemy.getDamage(player) + " points of damage\n";
             }
         }
         else if(command.equalsIgnoreCase("heavy attack")){
             if(defending)
-                result += enemy.getName() + " is defending! Your attacks will be less effective.\n";
+                result += enemy.getMonsterName() + " is defending! Your attacks will be less effective.\n";
             enemy.setDefending(defending);
             boolean success = player.heavyAttack(enemy);
             if(success && !defending){
@@ -68,7 +68,7 @@ public class CombatEngine {
             else if(!success && !defending){
                 result += "Your heavy attack missed!\n";
                 enemy.attack(player);
-                result += enemy.getName() + " landed a blow dealing " + enemy.getDamage(player) + " points of damage\n";
+                result += enemy.getMonsterName() + " landed a blow dealing " + enemy.getDamage(player) + " points of damage\n";
             }
             else
                 result += "Your heavy attack missed!\n";
@@ -78,7 +78,7 @@ public class CombatEngine {
             result += "You brace yourself for the next attack.\n";
             if(!defending) {
                 enemy.attack(player);
-                result += enemy.getName() + " struck and knocked off " + enemy.getDamage(player) + " points of HP\n";
+                result += enemy.getMonsterName() + " struck and knocked off " + enemy.getDamage(player) + " points of HP\n";
             }
             else
                 result += "Both you and the enemy prepared yourselves and defended!\n";
@@ -87,15 +87,15 @@ public class CombatEngine {
         else if(command.equalsIgnoreCase("dodge")){
             double dodgeChance = (Math.random()*100);
             if(dodgeChance >= 50 && !defending){
-                result += enemy.getName() + " missed!\n";
+                result += enemy.getMonsterName() + " missed!\n";
             }
             else if(defending){
-                result += "The dodge was wasted " + enemy.getName() +" didn't strike.\n";
+                result += "The dodge was wasted " + enemy.getMonsterName() +" didn't strike.\n";
             }
             else{
                 result += "You failed to dodge the enemy's strike.\n";
                 enemy.attack(player);
-                result += enemy.getName() + " did " + enemy.getDamage(player) + " points of HP\n";
+                result += enemy.getMonsterName() + " did " + enemy.getDamage(player) + " points of HP\n";
             }
         }
         else if(command.equalsIgnoreCase("retreat")){
