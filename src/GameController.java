@@ -1,22 +1,36 @@
 import java.util.Scanner;
 
 public class GameController {
+
     private final RoomMap map;
     private final Player player;
     private final View view;
-    private boolean isRunning;
     private final Scanner input;
+    private boolean isRunning;
 
     public GameController() {
         view = new View();
-        player = new Player("Player", 100, 10, 5, view);
-        map = new RoomMap();
+        player = new Player("Player", 100, 10, 5);
         input = new Scanner(System.in);
         isRunning = true;
+
+        map = new RoomMap(); // assuming you initialize rooms elsewhere
     }
 
+    //  MAIN LOOP
+    public void start() {
+        while (isRunning) {
+            view.display("\nEnter command:");
+            String command = input.nextLine();
+            processCommand(command);
+        }
+    }
+
+    //  COMMAND PROCESSOR
+
     private void processCommand(String command) {
-        if (command.isEmpty()) {
+
+        if (command == null || command.isEmpty()) {
             view.display("Enter a command.");
             return;
         }
@@ -26,196 +40,208 @@ public class GameController {
         String arg = parts.length > 1 ? parts[1] : "";
 
         switch (cmd) {
+
             case "inventory":
                 showInventory();
                 break;
-                case "drop":
+
+            case "drop":
                 dropItem(arg);
                 break;
+
             case "use":
                 useItem(arg);
                 break;
+
             case "pick":
                 pickUpItem(arg);
                 break;
+
             case "store":
-                storeItem(arg);
+                pickUpItem(arg);
                 break;
+
             case "combine":
                 combineItems(arg);
                 break;
+
             case "buy":
-                if (arg.equalsIgnoreCase("food")) {
-                    buyFood();
-                } else {
-                    view.display("Invalid buy command.");
-                }
+                buyFood();
                 break;
+
             case "consume":
                 consumeItem(arg);
                 break;
+
             case "equip":
                 equipWeapon(arg);
                 break;
+
             default:
                 view.display("Unknown command.");
         }
     }
 
+    // ACTIONS
+
     private void dropItem(String itemName) {
+
         if (itemName.isEmpty()) {
-            view.display("Please specify an item to drop.");
+            view.display("Specify item to drop.");
             return;
         }
 
         Item item = player.getItem(itemName);
-        if (item != null) {
-            player.removeItem(item);
-            map.getCurrentRoom().addItem(item);
-            view.display("Dropped " + itemName + ".");
-        } else {
-            view.display("You don't have " + itemName + " in your inventory.");
+
+        if (item == null) {
+            view.display("You don't have that item.");
+            return;
         }
+
+        player.removeItem(item);
+        map.getCurrentRoom().addItem(item);
+
+        view.display("Dropped " + item.getItem_Name());
     }
-// move all blow to player
+
     private void useItem(String itemName) {
+
         if (itemName.isEmpty()) {
-            view.display("Please specify an item to use.");
+            view.display("Specify item to use.");
             return;
         }
 
         Item item = player.getItem(itemName);
-        if (item != null) {
-            player.useItem(item);
-        } else {
-            view.display("Item not found in inventory.");
+
+        if (item == null) {
+            view.display("Item not found.");
+            return;
+        }
+
+        if (!player.useItem(item)) {
+            view.display("You can't use that item.");
         }
     }
 
     private void pickUpItem(String itemName) {
+
         if (itemName.isEmpty()) {
-            view.display("Please specify an item to pick up.");
+            view.display("Specify item to pick up.");
             return;
         }
 
-        Room currentRoom = map.getCurrentRoom();
-        Item item = currentRoom.findItem(itemName);
-        if (item != null) {
-            if (!player.addItem(item)) {
-                view.display("Inventory full. Use or drop an item before picking up another.");
-                return;
-            }
+        Room room = map.getCurrentRoom();
+        Item item = room.findItem(itemName);
 
-            currentRoom.removeItem(item);
-            view.display("Picked up " + itemName + ": " + item.getItem_Description());
-        } else {
-            view.display("No " + itemName + " in the room.");
+        if (item == null) {
+            view.display("Item not in room.");
+            return;
         }
+
+        if (!player.addItem(item)) {
+            view.display("Inventory full.");
+            return;
+        }
+
+        room.removeItem(item);
+        view.display("Picked up " + item.getItem_Name());
     }
 
-    private void storeItem(String itemName) {
-        pickUpItem(itemName);
-    }
-    // move to player
+    // ================= COMBINE =================
+    // ALL logic now belongs in Player
+
     private void combineItems(String args) {
+
         String[] parts = args.split(" ", 2);
+
         if (parts.length < 2) {
-            view.display("Please specify two items to combine.");
-            return;
-        }
-        String item1 = parts[0];
-        String item2 = parts[1];
-
-        // Special case for Cure Vital
-        if ((item1.equalsIgnoreCase("cure") && item2.equalsIgnoreCase("vital")) ||
-                (item1.equalsIgnoreCase("vital") && item2.equalsIgnoreCase("cure"))) {
-            int count = 0;
-            for (Item item : player.getInventory()) {
-                if (item.getItem_Name().toLowerCase().startsWith("cure vital")) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                // Remove 5 vials
-                int removed = 0;
-                for (int i = player.getInventory().size() - 1; i >= 0 && removed < 5; i--) {
-                    Item item = player.getInventory().get(i);
-                    if (item.getItem_Name().toLowerCase().startsWith("cure vital")) {
-                        player.removeItem(item);
-                        removed++;
-                    }
-                }
-                // Add cure
-                QuestItem cure = new QuestItem("A13", "Cure", "A powerful remedy that can cure the plague", "quest", 0);
-                player.addItem(cure);
-                view.display("Combined 5 Cure Vital vials into the Cure!");
-            } else {
-                view.display("You need at least 5 Cure Vital vials to create the Cure. You have " + count + ".");
-            }
+            view.display("Specify two items.");
             return;
         }
 
-        Tool combinedItem = player.combineItems(item1, item2);
-        if (combinedItem == null) {
-            view.display("These items cannot be combined.");
-            return;
-        }
+        Tool result = player.combineItems(parts[0], parts[1]);
 
-        view.display("Combined into " + combinedItem.getItem_Name() + ".");
+        if (result == null) {
+            view.display("Cannot combine these items.");
+        } else {
+            view.display("Created " + result.getItem_Name());
+        }
     }
+
+    // ================= BUY =================
 
     private void buyFood() {
+
         Room room = map.getCurrentRoom();
+
         if (!room.hasVendingMachine()) {
-            view.display("No vending machine in this room.");
+            view.display("No vending machine here.");
             return;
         }
 
-        player.buyFood(room.getVendingMachine(), "food");
+        boolean success = player.buyFood(room.getVendingMachine(), "food");
+
+        if (success) {
+            view.display("Food purchased.");
+        } else {
+            view.display("Purchase failed.");
+        }
     }
+
+    // ================= CONSUME =================
 
     private void consumeItem(String itemName) {
-        if (itemName.isEmpty()) {
-            view.display("Please specify an item to consume.");
-            return;
-        }
 
         Item item = player.getItem(itemName);
-        if (item instanceof Consumable) {
-            player.useItem(item);
-        } else if (item != null) {
-            view.display(itemName + " is not consumable.");
-        } else {
-            view.display("You do not have any consumable items.");
+
+        if (item == null) {
+            view.display("Item not found.");
+            return;
         }
+
+        if (!(item instanceof Consumable)) {
+            view.display("Not consumable.");
+            return;
+        }
+
+        player.useItem(item);
+        player.removeItem(item);
+        view.display("Consumed " + item.getItem_Name());
     }
+
+    //  EQUIP
 
     private void equipWeapon(String weaponName) {
-        if (weaponName.isEmpty()) {
-            view.display("Please specify a weapon to equip.");
-            return;
-        }
 
         Item item = player.getItem(weaponName);
-        if (item instanceof Weapon) {
-            view.display(player.equipWeapon((Weapon) item));
-        } else if (item != null) {
-            view.display(weaponName + " is not a weapon.");
-        } else {
-            view.display("No weapon available.");
-        }
-    }
 
-    private void showInventory() {
-        if (player.getInventory().isEmpty()) {
-            view.display("Your inventory is empty.");
+        if (!(item instanceof Weapon)) {
+            view.display("Not a weapon.");
             return;
         }
 
-        view.display("Inventory (" + player.getInventory().size() + "/" + player.getInventoryCapacity() + "):");
-        for (Item item : player.getInventory()) {
-            view.display("- " + item.getItem_Name() + " [" + item.getItem_type() + "]");
+        boolean result = player.equipWeapon((Weapon) item);
+
+        if (result) {
+            view.display("Equipped " + item.getItem_Name());
+        } else {
+            view.display("Cannot equip weapon.");
         }
     }
 
+    // INVENTORY
+
+    private void showInventory() {
+
+        if (player.getInventory().isEmpty()) {
+            view.display("Inventory empty.");
+            return;
+        }
+
+        view.display("Inventory:");
+
+        for (Item item : player.getInventory()) {
+            view.display("- " + item.getItem_Name() + " [" + item.getItem_Type() + "]");
+        }
+    }
 }

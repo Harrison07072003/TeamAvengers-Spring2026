@@ -1,50 +1,40 @@
 public class QuestItem extends Item {
-    private boolean isQuestItem;
 
-    public QuestItem(String item_Id, String item_Name, String item_Description, String item_type, int value) {
-        super(item_Id, item_Name, item_Description, item_type, value);
-        this.isQuestItem = true; // Assuming all instances are quest items
-    }
-// only quest Item uses the use command also should be aware of view
-    public boolean isQuestItem() {
-        return isQuestItem;
+    private String questType; // office_key, cure_vital, cure
+
+    public QuestItem(String id, String name, String description,
+                     String location, String questType) {
+        super(id, name, "quest", description, location, 0);
+        this.questType = questType.toLowerCase();
     }
 
-    public String use(Player player) {
-        if (player == null) {
-            return View.noPlayerForAction("use", getItem_Name());
+    public String getQuestType() {
+        return questType;
+    }
+
+    public boolean use(Player player) {
+
+        if (player == null) return false;
+
+        switch (questType) {
+
+            case "office_key":
+                if (player.isOfficeUnlocked()) return false;
+                player.setOfficeUnlocked(true);
+                player.removeItem(this);
+                return true;
+
+            case "cure":
+                if (player.isPlagueCured()) return false;
+                player.setPlagueCured(true);
+                player.removeItem(this);
+                return true;
+
+            case "cure_vital":
+                return true; // hint item only
+
+            default:
+                return false;
         }
-
-        if (!player.getInventory().contains(this)) {
-            return View.itemNotInInventory(getItem_Name());
-        }
-
-        String itemName = getItem_Name().toLowerCase();
-
-        if (itemName.contains("office key")) {
-            if (player.isOfficeUnlocked()) {
-                return View.officeDoorAlreadyUnlocked();
-            }
-
-            player.setOfficeUnlocked(true);
-            player.removeItem(this);
-            return View.officeDoorUnlocked();
-        }
-
-        if (itemName.contains("Cure Vital")) {
-            return View.cureVitalHint();
-        }
-
-        if (itemName.equals("Cure")) {
-            if (player.isPlagueCured()) {
-                return View.plagueAlreadyCured();
-            }
-
-            player.setPlagueCured(true);
-            player.removeItem(this);
-            return View.plagueCured();
-        }
-
-        return View.usedQuestItem(getItem_Name());
     }
 }
