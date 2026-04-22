@@ -30,13 +30,11 @@ public class GameController {
             if (command.equalsIgnoreCase("solve puzzle")) {
                 view.display("Enter your answer:");
                 String answer = input.nextLine().trim();
-                String result = engine.solvePuzzle(answer);
-                view.display(result);
-                continue;
+                command = "solve puzzle " + answer;
             }
 
-            String result = engine.handleCommand(command);
-            view.display(result);
+            GameResult result = engine.puzzleCommand(command);
+            view.display(result.getMessage());
         }
     }
 }

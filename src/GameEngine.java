@@ -1,7 +1,16 @@
+import java.util.ArrayList;
+
 public class GameEngine {
     private final Puzzle puzzle;
+    private final Player player;
 
     public GameEngine() {
+        this.player = new Player();
+
+        ArrayList<Item> rewards = new ArrayList<>();
+        rewards.add(new Item("A2", "Batteries", "Powers a flashlight"));
+        rewards.add(new Item("A12", "Office Key", "Opens a locked office"));
+
         this.puzzle = new Puzzle(
                 "P1",
                 "Puzzle 1",
@@ -9,61 +18,62 @@ public class GameEngine {
                 "Water",
                 "Nice job. You solved the puzzle.",
                 "That is not correct. Try again.",
-                "Batteries and Office Key",
+                rewards,
                 2
         );
     }
 
-    public String handleCommand(String command) {
+    public GameResult puzzleCommand(String command) {
         if (command == null || command.isBlank()) {
-            return "Invalid command.";
+            return new GameResult("Invalid command.", false);
         }
 
-        String cleaned = command.trim().toLowerCase();
+        String cleaned = command.trim();
 
-        switch (cleaned) {
-            case "help":
-                return """
-                       Commands:
-                       explore puzzle
-                       solve puzzle
-                       ignore puzzle
-                       status
-                       quit
-                       """;
-
-            case "explore puzzle":
-                if (puzzle.isSolved()) {
-                    return "This puzzle was already solved.";
-                }
-                return "Puzzle: " + puzzle.getPuzzleName() + "\nQuestion: " + puzzle.accessPuzzle();
-
-            case "ignore puzzle":
-                return "You leave the puzzle for later.";
-
-            case "status":
-                return "Solved: " + puzzle.isSolved()
-                        + "\nReward: " + puzzle.getReward()
-                        + "\nCoins: " + puzzle.getCoins();
-
-            default:
-                return "Invalid command. Type help to see commands.";
-        }
-    }
-
-    public String solvePuzzle(String answer) {
-        if (puzzle.isSolved()) {
-            return "This puzzle was already solved.";
+        if (cleaned.equalsIgnoreCase("help")) {
+            return new GameResult(
+                    "Commands:\n" +
+                            "explore puzzle\n" +
+                            "solve puzzle <answer>\n" +
+                            "ignore puzzle\n" +
+                            "status\n" +
+                            "quit",
+                    false
+            );
         }
 
-        boolean solved = puzzle.checkSolution(answer);
-
-        if (!solved) {
-            return puzzle.getFailureMessage();
+        if (cleaned.equalsIgnoreCase("explore puzzle")) {
+            return new GameResult(player.explorePuzzle(puzzle), false);
         }
 
-        return puzzle.getSuccessMessage()
-                + "\nReward earned: " + puzzle.getReward()
-                + "\nCoins earned: " + puzzle.getCoins();
+        if (cleaned.equalsIgnoreCase("ignore puzzle")) {
+            return new GameResult(player.ignorePuzzle(), true);
+        }
+
+        if (cleaned.equalsIgnoreCase("status")) {
+            return new GameResult(
+                    "Solved: " + puzzle.isSolved() +
+                            "\nInventory: " + player.getInventoryString() +
+                            "\nCoins: " + player.getCoins(),
+                    false
+            );
+        }
+
+        if (cleaned.toLowerCase().startsWith("solve puzzle ")) {
+            boolean solved = player.solvePuzzle(puzzle, cleaned.substring(13).trim());
+
+            if (!solved) {
+                return new GameResult(puzzle.getFailureMessage(), false);
+            }
+
+            return new GameResult(
+                    puzzle.getSuccessMessage() +
+                            "\nInventory: " + player.getInventoryString() +
+                            "\nCoins: " + player.getCoins(),
+                    true
+            );
+        }
+
+        return new GameResult("Invalid command. Type help to see commands.", false);
     }
 }
