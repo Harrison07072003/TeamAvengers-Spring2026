@@ -1,8 +1,8 @@
-puzzleId|puzzleName|question|solution|roomId|successMessage|failureMessage|coinReward|dropItemIds
-P1|Puzzle 1|What's between 5 and 8?|67|R4|Congratulations! You found a cure vial for solving the puzzle!|Try again later.|0|A3
-P2|Puzzle 2|What is Mario's brother's name?|Luigi|R5|Congratulations! You found a cure vial for solving the puzzle!|Adios, brother.|0|A3
-P3|Puzzle 3|What is the liquid form of frozen H2O?|Water|R1|Wow, you're so smart! You found some batteries and an office key.|Take chemistry again.|0|A2,A12
-P4|Puzzle 4|To find the code, count the legs of a spider, 2 stools, 1 table, and the janitor himself.|8442|R2|It's a little dirty here. You found a broom.|Hint: It's a 4-digit code.|0|A11
-P5|Puzzle 5|What's between rack A and rack C?|Rack B|R12|Nice. Job. You received 2 coins and 1 piece of food.|It's very simple.|2|A5
-P6|Puzzle 6|How many letters are in hamburger and milkshake?|18|R8|Hope you're hungry. You received 3 pieces of food.|You can come back later to try again.|0|A5,A5,A5
+puzzleId|puzzleName|question|solution|roomId|successMessage|failureMessage|coins
+P1|Puzzle 1|What's between 5 and 8?|67|R4|Congratulations! You found a cure vial for solving the puzzle!|Try again later.|0
+P2|Puzzle 2|What is Mario's brother's name?|Luigi|R5|Congratulations! You found a cure vial for solving the puzzle!|Adios, brother.|0
+P3|Puzzle 3|What is the liquid form of frozen H2O?|Water|R1|Wow, you're so smart! You found some batteries and an office key.|Take chemistry again.|0
+P4|Puzzle 4|To find the code, count the legs of a spider, 2 stools, 1 table, and the janitor himself.|8442|R2|It's a little dirty here. You found a broom.|Hint: It's a 4-digit code.|0
+P5|Puzzle 5|What's between rack A and rack C?|Rack B|R12|Nice. Job. You received 2 coins and 1 piece of food.|It's very simple.|2
+P6|Puzzle 6|How many letters are in hamburger and milkshake?|18|R8|Hope you're hungry. You received 3 pieces of food.|You can come back later to try again.|0
 P7|Puzzle 7|What does HP stand for?|Health point|R13|Hope your HP is full. You have found 3 coins.|Try again. >.<|3|

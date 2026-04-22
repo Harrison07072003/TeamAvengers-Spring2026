@@ -3,67 +3,46 @@ import java.util.ArrayList;
 public class Player extends Character {
     private final ArrayList<Item> inventory;
     private int coins;
+    private String currentRoom;
 
-    public Player() {
-        super("PLAYER", 100, 10, 5);
+    public Player(String roomId){
+        super("player", 100, 10, 5);
+        this.currentRoom = roomId;
         this.inventory = new ArrayList<>();
         this.coins = 0;
     }
 
-    public String explorePuzzle(Puzzle puzzle) {
-        if (puzzle == null) {
-            return "No puzzle found.";
+    public String explorePuzzle() {
+        String result = "";
+        if (this.currentRoom.hasPuzzle()) {
+            Puzzle puzzle = this.currentRoom.getPuzzle();
+            result += puzzle.getPuzzleName() + ": " + puzzle.getQuestion() + " Would you like to solve or ignore?";
+            return "no puzzle detected";
         }
-        if (puzzle.isSolved()) {
-            return "This puzzle was already solved.";
-        }
-        return "Puzzle: " + puzzle.getPuzzleName() + "\nQuestion: " + puzzle.accessPuzzle();
+        return result;
     }
 
-    public String ignorePuzzle() {
-        return "You leave the puzzle for later.";
-    }
 
-    public boolean solvePuzzle(Puzzle puzzle, String answer) {
-        if (puzzle == null) {
-            return false;
-        }
-        boolean solved = puzzle.checkSolution(answer);
-        if (solved) {
-            acceptRewards(puzzle.dropRewards());
-            addCoins(puzzle.dropCoins());
-        }
-        return solved;
-    }
-
-    public void acceptRewards(ArrayList<Item> rewards) {
-        if (rewards != null) {
-            inventory.addAll(rewards);
-        }
-    }
-
-    public void addCoins(int amount) {
-        if (amount > 0) {
-            coins += amount;
-        }
-    }
-
-    public int getCoins() {
-        return coins;
-    }
-
-    public String getInventoryString() {
-        if (inventory.isEmpty()) {
-            return "No rewards collected yet.";
-        }
-
-        StringBuilder items = new StringBuilder();
-        for (int i = 0; i < inventory.size(); i++) {
-            items.append(inventory.get(i).getItemName());
-            if (i < inventory.size() - 1) {
-                items.append(", ");
+    public String solvePuzzle(String answer){
+            Puzzle puzzle = this.currentRoom.getPuzzle();
+            String result = "";
+            if (puzzle.checkSolution(answer)){
+                result += puzzle.getSuccessMessage();
+                if(puzzle.getCoins()>0) {
+                    coins +=puzzle.getCoins();
+                    result+= puzzle.getCoins() + " coins earned.";
+                }
+                if(puzzle.getInventory().size()>0) {
+                    for (int i=0; i<puzzle.getInventory().size(); i++){
+                        result+= puzzle.getInventory().get(i).getItemName() + " dropped.";
+                    }
+                }
+                return result;
             }
+            return puzzle.getFailureMessage();
         }
-        return items.toString();
     }
-}
+    public Room getCurrentRoom(){
+
+    }
+

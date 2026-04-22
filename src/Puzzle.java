@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class Puzzle {
+    //fields
     private final String puzzleId;
     private final String puzzleName;
     private final String question;
@@ -11,9 +12,9 @@ public class Puzzle {
     private int coins;
     private boolean solved;
 
+    //constructor
     public Puzzle(String puzzleId, String puzzleName, String question, String solution,
-                  String successMessage, String failureMessage,
-                  ArrayList<Item> rewards, int coins) {
+                  String successMessage, String failureMessage, int coins) {
         this.puzzleId = puzzleId;
         this.puzzleName = puzzleName;
         this.question = question;
@@ -24,42 +25,21 @@ public class Puzzle {
         this.coins = coins;
         this.solved = false;
     }
+    // getters
+    public String getPuzzleId() {
+        return puzzleId;
 
-    public String accessPuzzle() {
+    }
+    public String getPuzzleName() {
+        return puzzleName;
+    }
+
+    public String getQuestion(){
         return question;
     }
 
-    public boolean checkSolution(String answer) {
-        if (answer == null || solved) {
-            return false;
-        }
-
-        if (answer.trim().equalsIgnoreCase(solution.trim())) {
-            solved = true;
-            return true;
-        }
-
-        return false;
-    }
-
-    public ArrayList<Item> dropRewards() {
-        ArrayList<Item> droppedRewards = new ArrayList<>(inventory);
-        inventory.clear();
-        return droppedRewards;
-    }
-
-    public int dropCoins() {
-        int droppedCoins = coins;
-        coins = 0;
-        return droppedCoins;
-    }
-
-    public String getPuzzleId() {
-        return puzzleId;
-    }
-
-    public String getPuzzleName() {
-        return puzzleName;
+    public String getSolution(){
+        return solution;
     }
 
     public String getSuccessMessage() {
@@ -70,7 +50,50 @@ public class Puzzle {
         return failureMessage;
     }
 
+    public ArrayList<Item> getInventory() {
+        return inventory;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public boolean getSolved() {
+        return solved;
+    }
+
+    //setter
+    public void setSolved(boolean solved) {
+        this.solved = solved;
+    }
+
+    //solved
+    //methods
+    public ArrayList<Item> dropItems() {
+        ArrayList <Item> items = new ArrayList<>();
+        if(this.solved) {
+            for(int i = 0; i < inventory.size(); i++) {
+                items.add(inventory.get(i));
+            }
+        }
+        return items;
+    }
+
+
+    public boolean checkSolution(String answer) {
+        if (answer == null || solved) {
+            return false;
+        }
+
+        if (answer.trim().equalsIgnoreCase(solution)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean isSolved() {
         return solved;
     }
+
 }
