@@ -1,19 +1,16 @@
 PLAYER
-P1,100,5,5,0,r3
-INVENTORY
-A2|Food|Consumable|Restores health|0|5
-A3|Knife|Weapon|A small weapon|10|0
+Player,100,10,5,0,0,R1
 ROOMS
-R1
-PUZZLE|P1|false
-MONSTER|none
+ROOM|R1
+MONSTER|M1,20,true
 ENDROOM
-R2
-PUZZLE|none
-MONSTER|none
+ROOM|R2
 ENDROOM
-R3
-PUZZLE|none
-MONSTER|none
-ITEM|A1|Flashlight|Tool|Used to see in dark rooms|0|0
+ROOM|R3
+ENDROOM
+ROOM|R4
+ENDROOM
+ROOM|R5
+ENDROOM
+ROOM|R6
 ENDROOM
