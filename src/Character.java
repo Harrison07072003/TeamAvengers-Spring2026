@@ -74,4 +74,8 @@ public class Character {
         }
         return (inventoryString.substring(0, inventoryString.length() - 2));
     }
+
+    public void setMaxHP(int i) {
+        this.maxHP = i;
+    }
 }

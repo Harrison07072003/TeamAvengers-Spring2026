@@ -325,7 +325,8 @@ public class RoomMap {
                     monster.getDefense() + "," +
                     monster.getCoins() + "," +
                     monster.getRoomID() + "," +
-                    monster.isAlive());
+                    monster.isAlive() + "," +
+                    monster.getMaxHP());
             for (Item item : monster.getInventory()) {
                 output.println("Monster ITEM|" + monster.getCharaterID() + "|" + item.toFileString());
             }
@@ -415,6 +416,7 @@ public class RoomMap {
                     Integer.parseInt(monsterValues[3]), Integer.parseInt(monsterValues[4]),
                     Integer.parseInt(monsterValues[5]), Integer.parseInt(monsterValues[6]), monsterValues[7]);
             monster.setAlive(Boolean.parseBoolean(monsterValues[8]));
+            monster.setMaxHP(Integer.parseInt(monsterValues[9]));
             rooms.get(rooms.size() - 1).addMonster(monster);
         } else if (line.startsWith("VENDING MACHINE|")) {
             String vendingData = line.split("\\|")[1].trim();
