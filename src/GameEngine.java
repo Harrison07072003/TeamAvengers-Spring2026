@@ -38,6 +38,7 @@ public class GameEngine {
         m.getInventory().add(s);
         m2.getInventory().add(s2);
         m3.getInventory().add(s3);
+        A.getInventory().add(new Item("104,","Powered Flashlight","A flashlight that can be used to explore dark rooms",10));
     }
 
     //navigation
