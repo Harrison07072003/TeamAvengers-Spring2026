@@ -8,6 +8,7 @@ public class Player extends Character {
     private RoomMap map;
     private int coins;
 
+
     public Player(String id, int maxHP, int attack, int defense,int coins, RoomMap map) {
         super(id, maxHP, attack, defense,coins);
         this.vialCount = 0;
@@ -107,4 +108,18 @@ public class Player extends Character {
         return coins;
     }
 
+public Item getItem(String itemId) {
+        for (Item item : this.getInventory()) {
+            if (item.getItemName().equalsIgnoreCase(itemId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public boolean EscapeGame(){
+        if (currentRoom.equals("R2") && this.getInventory().contains(getItem("Cure")))
+            return true;
+        return false;
+    }
 }

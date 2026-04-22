@@ -139,20 +139,15 @@ public class GameController {
                     v.display("Vending Machine items: " + A.getCurrentRoomData().getVendingMachine().getLocation());
             }
             else if(command.equals("quit")){
-                v.display("Do you want to quit the game? (yes/no)");
-                String response = input.nextLine();
-                if (response.equalsIgnoreCase("yes")) {
-                    v.display("Do you want to save the game before quitting? (yes/no)");
-                    String saveResponse = input.nextLine();
-                    if (saveResponse.equalsIgnoreCase("yes")) {
-                        school.saveGame(A);
-                        v.display("Game saved.");
-                    } else {                        v.display("Game not saved.");
-                    }
+                this.quitGame();
+            }
+            else if(command.equals("escape")){
+                if(A.EscapeGame()){
+                    v.display("Congratulations! You have escaped the school!");
                     isRunning = false;
-                    v.display("Exiting game.");
-                } else {
-                    v.display("Continuing game.");
+                }
+                else{
+                    v.display("You must be in the escape room (R20) to escape the game and have all 5 vials combined.");
                 }
             }
             else if(command.equals("reset")) {
@@ -164,6 +159,11 @@ public class GameController {
                 } else {
                     v.display("Game not reset.");
                 }
+            }
+            else if(command.equals("finish")){
+                A.setCurrentRoom("R2");
+                A.getInventory().add(new Consumable("c1", "Cure", "The cure for the virus","Consumable",0,"R2","R2", 0));
+
             }
             else
                 v.display("Invalid command. Try again.");
@@ -184,4 +184,25 @@ public class GameController {
         String response = input.nextLine();
         this.run(response);
     }
+
+    public void quitGame() {
+            v.display("Do you want to quit the game? (yes/no)");
+            String response = input.nextLine();
+            if (response.equalsIgnoreCase("yes")) {
+                v.display("Do you want to save the game before quitting? (yes/no)");
+                String saveResponse = input.nextLine();
+                if (saveResponse.equalsIgnoreCase("yes")) {
+                    school.saveGame(A);
+                    v.display("Game saved.");
+                } else {
+                    v.display("Game not saved.");
+                }
+                isRunning = false;
+                v.display("Exiting game.");
+            } else {
+                v.display("Continuing game.");
+            }
+    }
+
+
 }
