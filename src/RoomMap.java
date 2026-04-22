@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
+import java.sql.Timestamp;
 
 public class RoomMap {
     // fields
@@ -15,6 +16,7 @@ public class RoomMap {
     private String itemsFile;
     private String saveFile;
     private String checkpointFile;
+    private String actualLoadFile;
 
     public RoomMap(String roomsf,String puzzles, String monsters, String items) {
         rooms = new ArrayList<>();
@@ -23,7 +25,7 @@ public class RoomMap {
         monstersFile = monsters;
         itemsFile = items;
         saveFile = "saveFile.txt";
-        checkpointFile = "";
+        checkpointFile = "checkpointFile.txt";
     }
 
     public void generateRooms() {
@@ -229,6 +231,8 @@ public class RoomMap {
 
     public void saveGame(Player player) {
         try (PrintWriter output = new PrintWriter(saveFile)) {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            output.println("Current Timestamp: " + timestamp);
             savePlayerSection(output, player);
             savePlayerInventorySection(output, player);
             saveRoomsSection(output);
@@ -238,13 +242,45 @@ public class RoomMap {
         }
     }
 
+
+    public void setActualLoadFile(String save,String checkpoint) {
+        File file1 = new File(save);
+        File file2 = new File(checkpoint);
+        if(!file1.exists() && !file2.exists()){
+            return;
+        }
+        if(file1.exists() && file2.exists()){
+            if(file1.lastModified() > file2.lastModified()){
+                actualLoadFile = save;
+            }
+            else{
+                actualLoadFile = checkpoint;
+            }
+        }
+        else if(file1.exists()){
+            actualLoadFile = save;
+        }
+        else{
+            actualLoadFile = checkpoint;
+        }
+
+
+    }
+
     public void loadGame(Player player) {
-        File save = new File(saveFile);
+        this.setActualLoadFile(saveFile,checkpointFile);
+        if (actualLoadFile == null || actualLoadFile.isEmpty()) {
+            System.out.println("No saved game found.");
+            return;
+        }
+        rooms.clear();
+        player.getInventory().clear();
+        File save = new File(actualLoadFile);
         if (!save.exists()) {
             System.out.println("No saved game found.");
             return;
         }
-
+        //compare timestamps and load most recent
         try (Scanner input = new Scanner(save)) {
             String section = "";
             while (input.hasNextLine()) {
@@ -449,13 +485,15 @@ public class RoomMap {
     }
 
     public void checkpoint(Player player) {
-        try (PrintWriter output = new PrintWriter(saveFile)) {
+        try (PrintWriter output = new PrintWriter(checkpointFile)) {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            output.println("Current Timestamp: " + timestamp);
             savePlayerSection(output, player);
             savePlayerInventorySection(output, player);
             saveRoomsSection(output);
-            System.out.println("Game saved successfully.");
+            System.out.println("Checkpoint saved successfully.");
         } catch (Exception e) {
-            System.out.println("Error saving game.");
+            System.out.println("Error saving checkpoint.");
         }
     }
 

@@ -30,6 +30,10 @@ public class GameController {
             if(command.equals("help")){
                 v.display("Available commands: move, back, take, drop, inventory, status, set, set3, monsterstatus, attack, save, load, explore, examine, monsters, puzzles, inspect, puzzle, vending, v, quit, reset");
             }
+            else if(command.equals("checkpoint")){
+                v.display("Checkpoint reached! Your progress has been saved.");
+                school.checkpoint(A);
+            }
             else if(command.equals("move")){
                 A.setCurrentRoom("R2");
             }
