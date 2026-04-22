@@ -5,7 +5,4 @@ public class QuestItem extends Item{
         super(itemId, itemName, category, description, value,roomLocation, location,price);
     }
     //methods
-        public String toFileString() {
-            return getItemId() + "|" + getItemName() + "|" + getCategory() + "|" + getDescription() + "|" + getValue();
-        }
 }

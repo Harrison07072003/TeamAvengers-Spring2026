@@ -1,2 +1,3 @@
 (ID,Name,Description,HP,Attack,Defense,Coins,Room)
 M1,Slenderman,A tall faceless figure that silently stalks the player: "You can't hide.",100,20,20,0,R1
+M2,The Rake,A pale humanoid creature with razor-sharp claws and glowing red eyes. It emits a chilling growl that echoes through the darkness.,80,15,10,0,R2

@@ -64,4 +64,14 @@ public class Character {
     public void setCharacterID(String trim) {
         this.charaterID = trim;
     }
+    public String getInventoryString() {
+        String inventoryString = "";
+        if (this.inventory.isEmpty()) {
+            return "Your Inventory is Empty";
+        }
+        for (Item item : this.getInventory()) {
+            inventoryString += item.getItemName() + ", ";
+        }
+        return (inventoryString.substring(0, inventoryString.length() - 2));
+    }
 }

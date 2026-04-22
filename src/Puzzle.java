@@ -58,4 +58,10 @@ public class Puzzle {
     public ArrayList<Item> getRewards() {
         return this.rewards;
     }
+    public String toFileString() {
+        return this.puzzleId + "," + this.puzzleName + "," + this.question + "," + this.solution + "," + this.roomId + "," + this.successMessage + "," + this.failureMessage + "," + this.coins;
+    }
+    public String getRewardsFileString() {
+        return this.rewards.get(0).toFileString();
+    }
 }

@@ -30,4 +30,8 @@ public class VendingMachine {
     public String getVendingId() {
         return this.vendingID;
     }
+
+    public HashMap<Item, Integer> getItemsForSale() {
+        return itemsForSale;
+    }
 }

@@ -25,6 +25,9 @@ public class Monster extends Character{
     public int getCoins(){
         return coins;
     }
+    public String fileString(){
+        return this.getCharaterID() + "," + this.getMonsterName() + "," + this.getMonsterDescription() + "," + this.getMaxHP() + "," + this.getAttack() + "," + this.getDefense() + "," + this.getCoins() + "," + this.getRoomID();
+    }
 
 
 }

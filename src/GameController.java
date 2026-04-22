@@ -27,11 +27,34 @@ public class GameController {
             v.display("Current Room: " + A.getCurrentRoom());
             v.display("Enter a command (type 'quit' to exit): ");
             String command = input.nextLine();
-            if(command.equals("move")){
+            if(command.equals("help")){
+                v.display("Available commands: move, back, take, drop, inventory, status, set, set3, monsterstatus, attack, save, load, explore, examine, monsters, puzzles, inspect, puzzle, vending, v, quit, reset");
+            }
+            else if(command.equals("move")){
                 A.setCurrentRoom("R2");
             }
             else if(command.equals("back")){
                 A.setCurrentRoom("R1");
+            }
+            else if(command.equals("take")){
+                A.getInventory().add(new Consumable("c1", "Health Potion", "Restores 20 HP","Consumable",10,"R1","R1", 20));
+            }
+            else if(command.equals("drop")){
+                if(A.getInventory().isEmpty())
+                    v.display("Your inventory is empty. Nothing to drop.");
+                else
+                    A.getInventory().remove(0);
+            }
+            else if(command.equals("inventory")){
+                v.display("Inventory: " + A.getInventoryString());
+            }
+            else if(command.equals("equip")){
+                Weapon w = new Weapon("w1", "Sword", "A sharp blade","Weapon",10,"R1","R1", 5);
+                A.getInventory().add(w);
+                A.setEquippedWeapon(w);
+            }
+            else if(command.equals("unequip")){
+                A.setEquippedWeapon(new Weapon("none", "None", "No weapon equipped","Weapon",0,"R1","R1", 0));
             }
             else if(command.equals("status")){
                 v.display("HP: " + A.getCurrentHP() + "/" + A.getMaxHP());
@@ -39,6 +62,7 @@ public class GameController {
                 v.display("Defense: " + A.getDefense());
                 v.display("Vials: " + A.getVialCount() + "/" + A.getCapacity());
                 v.display("Coins: " + A.getCoins());
+                v.display(A.getEquippedWeapon().toString());
             }
             else if(command.equals("set"))
                 A.setCurrentHP(50);
@@ -72,8 +96,13 @@ public class GameController {
             else if(command.equals("monsters")){
                 if(A.getCurrentRoomData().getMonster().isEmpty())
                     v.display("No monsters in this room.");
-                else
-                    v.display("Monster items: " + A.getCurrentRoomData().getMonster().getFirst().getInventory().getFirst().getItemName());
+                else {
+                    Monster m = A.getCurrentRoomData().getMonster().getFirst();
+                    if(m.getInventory().size() > 0)
+                        v.display("Monster: " + m.getMonsterName() + ", Item: " + m.getInventory().get(0).getItemName());
+                    else
+                        v.display("Monster: " + m.getMonsterName() + ", No item.");
+                }
             }
             else if(command.equals("puzzles")){
                 if(A.getCurrentRoomData().getPuzzle() == null)

@@ -29,7 +29,7 @@ public abstract class Item {
     }
 
     public String getItemName() {
-        return itemName;
+        return this.itemName;
     }
 
     public String getCategory() {
@@ -53,21 +53,10 @@ public abstract class Item {
         return price;
     }
     public String toFileString() {
-        return itemId + "|" + itemName + "|" + category + "|" + description + "|" + value;
-    }
-   /* public static Item fromFileString(String line) {
-        String[] parts = line.split("\\|");
-        return new Item(
-                parts[0].trim(),
-                parts[1].trim(),
-                parts[2].trim(),
-                parts[3].trim(),
-                Integer.parseInt(parts[4].trim()),
-                Integer.parseInt(parts[5].trim())
-        );
+        return this.itemId + "," + this.itemName + "," + this.category + "," + this.description + "," + this.value + "," + this.roomLocation + "," + this.location + "," + this.price;
     }
 
-    */
+
 
     public String toString() {
         return itemId + " - " + itemName + " (" + category + ")";
