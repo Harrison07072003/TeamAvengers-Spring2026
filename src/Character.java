@@ -43,4 +43,25 @@ public class Character {
     public boolean isAlive() {
         return this.alive;
     }
+    public void setCurrentHP(int currentHP) {
+        this.currentHP = currentHP;
+    }
+
+    public void setAttack(int i) {
+        this.attack = i;
+    }
+    public void setDefense(int i) {
+        this.defense = i;
+    }
+    public void setCoins(int coins) {
+        this.coins = coins;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public void setCharacterID(String trim) {
+        this.charaterID = trim;
+    }
 }

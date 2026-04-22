@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,8 +21,8 @@ public class RoomMap {
         puzzlesFile = puzzles;
         monstersFile = monsters;
         itemsFile = items;
-        saveFile = "saveGame.txt";
-        checkpointFile = "checkpoint.txt";
+        saveFile = "savegame.txt";
+        checkpointFile = "";
     }
 
     public void generateRooms() {
@@ -231,91 +232,59 @@ public class RoomMap {
 
 
 
-   /* public void saveGame(Player player) {
+   public void saveGame(Player player){
+        PrintWriter output;
         try {
-            PrintWriter output = new PrintWriter(saveFile);
+            output = new PrintWriter(saveFile);
             // PLAYER
             output.println("PLAYER");
-            output.println(
-                    player.getCharaterID() + "," +
+            output.println(player.getCharaterID() + "," +
                     player.getCurrentHP() + "," +
                     player.getAttack() + "," +
                     player.getDefense() + "," +
                     player.getCoins() + "," +
                     player.getVialCount() + "," +
                     player.getCurrentRoom());
-            // INVENTORY
-            output.println("INVENTORY");
-            for (Item item : player.getInventory()) {
-                output.println(item.toFileString());
-            }
-            // ROOMS
             output.println("ROOMS");
-            for (Room room : rooms) {
+            for(Room room : rooms) {
                 output.println("ROOM|" + room.getRoomId());
-
-                // monster
-                for (Monster monster : room.getMonster()) {
-                    output.println(
-                            "MONSTER|" +
-                                    monster.getCharaterID() + "," +
-                                    monster.getCurrentHP() + "," +
-                                    monster.isAlive()
-                    );
+                for(Monster monster : room.getMonster()) {
+                    output.println("MONSTER|" + monster.getCharaterID() + "," + monster.getCurrentHP() + "," + monster.isAlive());
                 }
-
-
-                // puzzle
-
-                // items
-
                 output.println("ENDROOM");
             }
             output.close();
-            System.out.println("Game saved successfully.");
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println("Error saving game.");
         }
-    }
+   }
 
-
-
-    public void loadGame(Player player) {
+   public void loadGame(Player player){
         Scanner input;
         String section = "";
-        Room currentRoom = null;
         try {
             File save = new File(saveFile);
-            File checkpoint = new File(checkpointFile);
-            if (!save.exists() && !checkpoint.exists()) {
-                System.out.println("There are no saved games or checkpoints found.");
+            if (!save.exists()) {
+                System.out.println("No saved game found.");
                 return;
             }
-            File fileToLoad;
-
-            if (save.exists() && checkpoint.exists()) {
-                if (save.lastModified() >= checkpoint.lastModified()) {
-                    fileToLoad = save;
-                } else {
-                    fileToLoad = checkpoint;
-                }
-            } else if (save.exists()) {
-                fileToLoad = save;
-            } else {
-                fileToLoad = checkpoint;
-            }
-            input = new Scanner(fileToLoad);
+            input = new Scanner(save);
             while (input.hasNextLine()) {
                 String line = input.nextLine().trim();
                 if (line.length() == 0) {
                     continue;
                 }
-                if (line.equals("PLAYER") || line.equals("INVENTORY") || line.equals("ROOMS")) {
-                    section = line;
+                if (line.equals("PLAYER")) {
+                    section = "PLAYER";
+                    continue;
+                }
+                else if (line.equals("ROOMS")) {
+                    section = "ROOMS";
                     continue;
                 }
                 if (section.equals("PLAYER")) {
                     String[] values = line.split(",");
+                    player.setCharacterID(values[0].trim());
                     player.setCurrentHP(Integer.parseInt(values[1].trim()));
                     player.setAttack(Integer.parseInt(values[2].trim()));
                     player.setDefense(Integer.parseInt(values[3].trim()));
@@ -323,47 +292,33 @@ public class RoomMap {
                     player.setVialCount(Integer.parseInt(values[5].trim()));
                     player.setCurrentRoom(values[6].trim());
                 }
-
-                else if (section.equals("INVENTORY")) {
-                    // add inventory loading here  when Item loading is finalized
-                }
-
                 else if (section.equals("ROOMS")) {
                     if (line.startsWith("ROOM|")) {
                         String roomId = line.split("\\|")[1].trim();
-                        currentRoom = getRoom(roomId);
                     }
-
-                    else if (line.startsWith("MONSTER|") && currentRoom != null) {
+                    else if (line.startsWith("MONSTER|")) {
                         String[] values = line.split("\\|")[1].split(",");
-
                         String monsterId = values[0].trim();
                         int monsterHP = Integer.parseInt(values[1].trim());
                         boolean alive = Boolean.parseBoolean(values[2].trim());
-
-                        Monster monster = getMonster(currentRoom, monsterId);
-
-                        if (monster != null) {
-                            monster.setCurrentHP(monsterHP);
-                            monster.setAlive(alive);
+                        for(Room room : rooms) {
+                            for(Monster monster : room.getMonster()) {
+                                if(monster.getCharaterID().equals(monsterId)) {
+                                    monster.setCurrentHP(monsterHP);
+                                    monster.setAlive(alive);
+                                }
+                            }
                         }
-                    }
-
-                    else if (line.equals("ENDROOM")) {
-                        currentRoom = null;
                     }
                 }
             }
-
             input.close();
-            System.out.println("Game loaded successfully.");
-
         } catch (FileNotFoundException e) {
-            System.out.println("There are no saved games or checkpoints found.");
+            System.out.println("No saved game found.");
         }
-    }
+   }
 
-
+/*
     public void saveCheckpoint(Player player) {
         try {
             PrintWriter output = new PrintWriter(checkpointFile);

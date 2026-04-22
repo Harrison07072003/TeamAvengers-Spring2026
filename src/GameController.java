@@ -13,7 +13,7 @@ public class GameController {
         input = new Scanner(System.in);
         isRunning = true;
         school = new RoomMap("rooms.txt", "puzzles.txt", "monsters.txt", "items.txt");
-        A = new Player("Player", 100, 10, 5,10,school);
+        A = new Player("U1", 100, 10, 5,10,school);
     }
     //methods
     public void run(){
@@ -32,6 +32,33 @@ public class GameController {
             else if(command.equals("back")){
                 A.setCurrentRoom("R1");
             }
+            else if(command.equals("status")){
+                v.display("HP: " + A.getCurrentHP() + "/" + A.getMaxHP());
+                v.display("Attack: " + A.getAttack());
+                v.display("Defense: " + A.getDefense());
+                v.display("Vials: " + A.getVialCount() + "/" + A.getCapacity());
+                v.display("Coins: " + A.getCoins());
+            }
+            else if(command.equals("set"))
+                A.setCurrentHP(50);
+            else if(command.equals("set3"))
+                A.setCurrentHP(100);
+            else if(command.equals("monsterstatus"))
+                if(A.getCurrentRoomData().getMonster().isEmpty())
+                    v.display("No monsters in this room.");
+                else
+                    v.display("Monster HP: " + A.getCurrentRoomData().getMonster().getFirst().getCurrentHP() + "/" + A.getCurrentRoomData().getMonster().getFirst().getMaxHP());
+            else if(command.equals("attack"))
+                if(A.getCurrentRoomData().getMonster().isEmpty())
+                    v.display("No monsters to attack in this room.");
+                else {
+                    v.display("You attack the monster!");
+                    A.getCurrentRoomData().getMonster().getFirst().setCurrentHP(20);
+                }
+            else if(command.equals("save"))
+                school.saveGame(A);
+            else if(command.equals("load"))
+                school.loadGame(A);
             else if(command.equals("explore")){
                 v.display(A.getMap().getRoom(A.getCurrentRoom()).getDescription());
             }
