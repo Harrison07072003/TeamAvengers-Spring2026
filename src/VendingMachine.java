@@ -26,4 +26,8 @@ public class VendingMachine {
         }
         return sb.toString();
     }
+
+    public String getVendingId() {
+        return this.vendingID;
+    }
 }
