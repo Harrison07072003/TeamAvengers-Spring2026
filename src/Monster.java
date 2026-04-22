@@ -3,6 +3,7 @@ public class Monster extends Character{
     private String monsterDescription;
     private String RoomID;
     private String monsterName;
+    private int coins;
     //constructor
     public Monster(String id,String Name,String description, int maxHP, int attack, int defense,int coins, String roomID) {
         super(id, maxHP, attack, defense,coins);
@@ -18,5 +19,12 @@ public class Monster extends Character{
     public String getMonsterName(){
         return this.monsterName;
     }
+    public String getRoomID() {
+            return RoomID;
+    }
+    public int getCoins(){
+        return coins;
+    }
+
 
 }

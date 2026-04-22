@@ -21,7 +21,7 @@ public class RoomMap {
         puzzlesFile = puzzles;
         monstersFile = monsters;
         itemsFile = items;
-        saveFile = "saveFile.txt";
+        saveFile = "savegame.txt";
         checkpointFile = "";
     }
 
@@ -240,24 +240,87 @@ public class RoomMap {
             output.println("PLAYER");
             output.println(player.getCharaterID() + "," +
                     player.getCurrentHP() + "," +
+                    player.getMaxHP() + "," +
                     player.getAttack() + "," +
                     player.getDefense() + "," +
                     player.getCoins() + "," +
-                    player.getVialCount() + "," +
-                    player.getCurrentRoom());
+                    player.getCurrentRoom() + "," +
+                    player.getVialCount() + "," );
+
+            output.println("PLAYER INVENTORY");
+            for(Item item : player.getInventory()) {
+                output.println("Player ITEM| " + item.toFileString());
+            }
+            if(player.getEquippedWeapon() != null) {
+                output.println("EQUIPPED| " + player.getEquippedWeapon().getId());
+            } else {
+                output.println("EQUIPPED| none");
+            }
+
+            //Rooms
             output.println("ROOMS");
             for(Room room : rooms) {
                 output.println("ROOM|" + room.getRoomId());
-                for(Monster monster : room.getMonster()) {
-                    output.println("MONSTER|" + monster.getCharaterID() + "," + monster.getCurrentHP() + "," + monster.isAlive());
+
+                if(room.getPuzzle() != null) {
+                    output.println("PUZZLE|" + room.getPuzzle().getPuzzleId() + "," + room.getPuzzle().isSolved());
+                } else {
+                    output.println("PUZZLE|none");
                 }
+
+                for(Monster monster : room.getMonster()) {
+                    output.println("MONSTER|" +
+                            monster.getCharaterID() + "," +
+                            monster.getCurrentHP() + "," +
+                            monster.getMaxHP() + "," +
+                            monster.getAttack() + "," +
+                            monster.getDefense() + "," +
+                            monster.getCoins() + "," +
+                            monster.getMonsterDescription() + "," +
+                            monster.getRoomID() + "," +
+                            monster.getMonsterName() + "," +
+                            monster.isAlive());
+                    for(Item item : monster.getInventory()) {
+                        output.println("Monster ITEM|" + monster.getCharaterID() + "|" + item.toFileString());
+                    }
+                }
+
+                /*if (room.getVendingMachine() != null) {
+                    output.println("VENDING MACHINE|" + room.getVendingMachine().getVendingId());
+                    for(Item item : room.getVendingMachine().getItemList()){
+                        output.println("VendingMachine ITEM :" + item.toFileString());
+                    }
+                } else {
+                    output.println("VENDING MACHINE|none");
+
+                }
+
+                 */
+
+                //items
+              /*  for(Item item : room.getInventory()){
+                    output.println("Room ITEM|" + item.toFileString());
+                }
+                if(room.getpuzzle() != null) {
+                    for(Item item : room.getPuzzle().getRewards()) {
+                        output.println("Puzzle ITEM|" + item.toFileString());
+                    }
+
+                }
+
+               */
+
+
                 output.println("ENDROOM");
             }
             output.close();
+            System.out.println("Game saved successfully.");
         }catch (Exception e) {
             System.out.println("Error saving game.");
         }
    }
+
+
 
    public void loadGame(Player player){
         Scanner input;
@@ -316,10 +379,6 @@ public class RoomMap {
         } catch (FileNotFoundException e) {
             System.out.println("No saved game found.");
         }
-   }
-   public boolean saveFileExists() {
-        File save = new File(saveFile);
-        return save.exists();
    }
 
 /*
