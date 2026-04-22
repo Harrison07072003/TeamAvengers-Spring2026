@@ -1,41 +1,27 @@
 public class View {
-    public View() {
+
+    public void showTitle() {
+        System.out.println("====================================");
+        System.out.println("         GGC PLAGUE PUZZLE");
+        System.out.println("====================================");
     }
 
-    public void display(String str) {
-        System.out.println(str);
-    }
-
-    public void puzzleUI(String roomId) {
+    public void showHelp() {
+        System.out.println("Commands:");
+        System.out.println("explore puzzle");
+        System.out.println("solve puzzle");
+        System.out.println("ignore puzzle");
+        System.out.println("status");
+        System.out.println("quit");
         System.out.println();
-        System.out.println("************************************");
-        System.out.println("PUZZLE DETECTED IN [" + roomId + "]");
-        System.out.println("************************************");
-        System.out.println("[Explore Puzzle] - Read the riddle");
-        System.out.println("[Solve Puzzle]   - Input an answer");
-        System.out.println("[Ignore Puzzle]  - Leave for later");
-        System.out.println("************************************");
-        System.out.print("Action: ");
     }
 
-    public void showPuzzle(String puzzleName, String question) {
+    public void showPrompt() {
+        System.out.print("Enter command: ");
+    }
+
+    public void display(String message) {
+        System.out.println(message);
         System.out.println();
-        System.out.println("==============================");
-        System.out.println("PUZZLE: " + puzzleName);
-        System.out.println("==============================");
-        System.out.println("Question: " + question);
-        System.out.println("==============================");
-    }
-
-    public void showRoomEntered(String roomId) {
-        System.out.println("You entered room: " + roomId);
-    }
-
-    public void showReward(String rewardText) {
-        System.out.println("Rewards added to inventory: " + rewardText);
-    }
-
-    public void showCoinsEarned(int coins) {
-        System.out.println("Coins earned: " + coins);
     }
 }

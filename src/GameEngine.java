@@ -1,94 +1,69 @@
 public class GameEngine {
-    private final RoomMap school;
-    private final Player player;
+    private final Puzzle puzzle;
 
     public GameEngine() {
-        this.school = new RoomMap();
-        this.player = new Player();
-        this.school.generateRooms();
-        this.school.loadPuzzles("puzzles.txt");
+        this.puzzle = new Puzzle(
+                "P1",
+                "Puzzle 1",
+                "What is the liquid form of frozen H2O?",
+                "Water",
+                "Nice job. You solved the puzzle.",
+                "That is not correct. Try again.",
+                "Batteries and Office Key",
+                2
+        );
     }
 
-    public void test() {
-
-    }
-
-    public String navCommand(String command) {
-        if (command == null) {
-            return "Invalid Command\n-----------------------------------";
+    public String handleCommand(String command) {
+        if (command == null || command.isBlank()) {
+            return "Invalid command.";
         }
 
-        String cleaned = command.trim();
+        String cleaned = command.trim().toLowerCase();
 
-        if (cleaned.equalsIgnoreCase("status")) {
-            return "Coins: " + player.getCoins() + "\n-----------------------------------";
+        switch (cleaned) {
+            case "help":
+                return """
+                       Commands:
+                       explore puzzle
+                       solve puzzle
+                       ignore puzzle
+                       status
+                       quit
+                       """;
+
+            case "explore puzzle":
+                if (puzzle.isSolved()) {
+                    return "This puzzle was already solved.";
+                }
+                return "Puzzle: " + puzzle.getPuzzleName() + "\nQuestion: " + puzzle.accessPuzzle();
+
+            case "ignore puzzle":
+                return "You leave the puzzle for later.";
+
+            case "status":
+                return "Solved: " + puzzle.isSolved()
+                        + "\nReward: " + puzzle.getReward()
+                        + "\nCoins: " + puzzle.getCoins();
+
+            default:
+                return "Invalid command. Type help to see commands.";
+        }
+    }
+
+    public String solvePuzzle(String answer) {
+        if (puzzle.isSolved()) {
+            return "This puzzle was already solved.";
         }
 
-        if (cleaned.equalsIgnoreCase("inventory")) {
-            return "Inventory: " + player.getInventory() + "\n-----------------------------------";
+        boolean solved = puzzle.checkSolution(answer);
+
+        if (!solved) {
+            return puzzle.getFailureMessage();
         }
 
-        Room room = school.getRoom(cleaned);
-        if (room != null) {
-            player.enterRoom(cleaned, school);
-            return "You entered room " + room.getRoomId() + "\n-----------------------------------";
-        }
-
-        return "Invalid Command\n-----------------------------------";
-    }
-
-    public String battleCommand(String command) {
-        return "Battle system not used in puzzle feature.";
-    }
-
-    public void resetCombat() {
-    }
-
-    public boolean battleEnded() {
-        return true;
-    }
-
-    public boolean playerAlive() {
-        return true;
-    }
-
-    public boolean monsterAlive() {
-        return false;
-    }
-
-    public int getTurn() {
-        return 0;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public String getRoomName() {
-        Room room = player.getCurrentRoom(school);
-        if (room == null) {
-            return "No room selected";
-        }
-        return room.getRoomId();
-    }
-
-    public int getPlayerState() {
-        return 0;
-    }
-
-    public String getPlayerBuilding() {
-        return "";
-    }
-
-    public String getPlayerHealth() {
-        return "";
-    }
-
-    public String getMonsterName() {
-        return "";
-    }
-
-    public String getMonsterHealth() {
-        return "";
+        return puzzle.getSuccessMessage()
+                + "\nReward earned: " + puzzle.getReward()
+                + "\nCoins earned: " + puzzle.getCoins();
     }
 }
