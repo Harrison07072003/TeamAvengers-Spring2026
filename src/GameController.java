@@ -16,12 +16,13 @@ public class GameController {
         A = new Player("U1", 100, 10, 5,10,school);
     }
     //methods
-    public void run(){
-        school.generateRooms();
-        school.spawnMonsters();
-        school.loadPuzzles();
-        school.putVendingMachines();
-        school.loadItems();
+    public void run(String answer){
+        if(answer.equals("new")){
+            this.resetGame();
+        }
+        else{
+            school.loadGame(A);
+        }
         while(isRunning){
             v.display("Current Room: " + A.getCurrentRoom());
             v.display("Enter a command (type 'quit' to exit): ");
@@ -104,10 +105,50 @@ public class GameController {
                 else
                     v.display("Vending Machine items: " + A.getCurrentRoomData().getVendingMachine().getLocation());
             }
-            else if(command.equals("quit"))
-                isRunning = false;
+            else if(command.equals("quit")){
+                v.display("Do you want to quit the game? (yes/no)");
+                String response = input.nextLine();
+                if (response.equalsIgnoreCase("yes")) {
+                    v.display("Do you want to save the game before quitting? (yes/no)");
+                    String saveResponse = input.nextLine();
+                    if (saveResponse.equalsIgnoreCase("yes")) {
+                        school.saveGame(A);
+                        v.display("Game saved.");
+                    } else {                        v.display("Game not saved.");
+                    }
+                    isRunning = false;
+                    v.display("Exiting game.");
+                } else {
+                    v.display("Continuing game.");
+                }
+            }
+            else if(command.equals("reset")) {
+                v.display("Do you want to reset the game? (yes/no)");
+                String response = input.nextLine();
+                if (response.equalsIgnoreCase("yes")) {
+                    this.resetGame();
+                    v.display("Game reset.");
+                } else {
+                    v.display("Game not reset.");
+                }
+            }
             else
                 v.display("Invalid command. Try again.");
         }
+    }
+
+    public void resetGame(){
+        A.resetPlayer();
+        school.generateRooms();
+        school.spawnMonsters();
+        school.loadPuzzles();
+        school.putVendingMachines();
+        school.loadItems();
+    }
+    public void startGame(){
+        v.display("Welcome to the game! You are a student trapped in a school filled with monsters and puzzles. Your goal is to escape the school by solving puzzles, defeating monsters, and collecting items. Good luck!");
+        v.display("Do you want to start new game or load a saved game? (new/load)");
+        String response = input.nextLine();
+        this.run(response);
     }
 }

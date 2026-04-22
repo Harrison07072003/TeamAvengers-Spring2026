@@ -21,7 +21,7 @@ public class RoomMap {
         puzzlesFile = puzzles;
         monstersFile = monsters;
         itemsFile = items;
-        saveFile = "savegame.txt";
+        saveFile = "saveFile.txt";
         checkpointFile = "";
     }
 
@@ -316,6 +316,10 @@ public class RoomMap {
         } catch (FileNotFoundException e) {
             System.out.println("No saved game found.");
         }
+   }
+   public boolean saveFileExists() {
+        File save = new File(saveFile);
+        return save.exists();
    }
 
 /*

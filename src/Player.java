@@ -66,15 +66,20 @@ public class Player extends Character {
     //  Start Game
 
 
-
     // Quit
     public void quitGame() {
         System.out.println("Exiting game.");
 
     }
 
-
-
+    //reset
+    public void resetPlayer() {
+        this.setAlive(true);
+        this.setCurrentHP(this.getMaxHP());
+        this.setVialCount(0);
+        this.setEquippedWeapon(null);
+        this.clearInventory();
+    }
 
     //delete after test
     public void addItem(Item item) {
@@ -101,6 +106,5 @@ public class Player extends Character {
     public int getCoins(){
         return coins;
     }
-
 
 }
