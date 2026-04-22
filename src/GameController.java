@@ -20,6 +20,8 @@ public class GameController {
         school.generateRooms();
         school.spawnMonsters();
         school.loadPuzzles();
+        school.putVendingMachines();
+        school.loadItems();
         while(isRunning){
             v.display("Current Room: " + A.getCurrentRoom());
             v.display("Enter a command (type 'quit' to exit): ");
@@ -33,8 +35,23 @@ public class GameController {
             else if(command.equals("explore")){
                 v.display(A.getMap().getRoom(A.getCurrentRoom()).getDescription());
             }
+            else if(command.equals("examine")){
+                if(A.getCurrentRoomData().getInventory().isEmpty())
+                    v.display("No items in this room.");
+                else
+                    v.display("Item: " + A.getCurrentRoomData().getInventory().get(0).getItemName());
+            }
             else if(command.equals("monsters")){
-                v.display("Available monsters: " + A.getCurrentRoomData().getMonster().size());
+                if(A.getCurrentRoomData().getMonster().isEmpty())
+                    v.display("No monsters in this room.");
+                else
+                    v.display("Monster items: " + A.getCurrentRoomData().getMonster().getFirst().getInventory().getFirst().getItemName());
+            }
+            else if(command.equals("puzzles")){
+                if(A.getCurrentRoomData().getPuzzle() == null)
+                    v.display("No puzzle in this room.");
+                else
+                    v.display("Puzzle item: " + A.getCurrentRoomData().getPuzzle().getRewards().get(0).getItemName());
             }
             else if(command.equals("inspect")){
                 if(A.getCurrentRoomData().getMonster().isEmpty())
@@ -47,6 +64,18 @@ public class GameController {
                     v.display("No puzzle in this room.");
                 else
                     v.display(A.getCurrentRoomData().getPuzzle().getQuestion());
+            }
+            else if(command.equals("vending")){
+                if(A.getCurrentRoomData().getVendingMachine() == null)
+                    v.display("No vending machine in this room.");
+                else
+                    v.display("Vending Machine items: " + A.getCurrentRoomData().getVendingMachine().getItemList());
+            }
+            else if(command.equals("v")){
+                if(A.getCurrentRoomData().getVendingMachine() == null)
+                    v.display("No vending machine in this room.");
+                else
+                    v.display("Vending Machine items: " + A.getCurrentRoomData().getVendingMachine().getLocation());
             }
             else if(command.equals("quit"))
                 isRunning = false;

@@ -9,7 +9,7 @@ public class Puzzle {
     private String successMessage;
     private String failureMessage;
     private boolean solved;
-    private ArrayList<String> rewards;
+    private ArrayList<Item> rewards;
     private int coins;
 
     public Puzzle(String puzzleId, String puzzleName, String question, String solution, String roomId, String
@@ -55,7 +55,7 @@ public class Puzzle {
         this.solved = solved;
     }
 
-    public ArrayList<String> getRewards() {
-        return rewards;
+    public ArrayList<Item> getRewards() {
+        return this.rewards;
     }
 }

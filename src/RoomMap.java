@@ -15,7 +15,7 @@ public class RoomMap {
     private String checkpointFile;
 
     public RoomMap(String roomsf,String puzzles, String monsters, String items) {
-        rooms = new ArrayList<Room>();
+        rooms = new ArrayList<>();
         roomsFile = roomsf;
         puzzlesFile = puzzles;
         monstersFile = monsters;
@@ -98,7 +98,6 @@ public class RoomMap {
     }
 
 
-
     public void loadPuzzles() {
         Scanner input;
         String puzzleId;
@@ -134,17 +133,96 @@ public class RoomMap {
 
     }
 
-
-
+    public void putVendingMachines() {
+        Scanner input;
+        String vendingId;
+        String roomId;
+        try{
+            input = new Scanner(new File("vendingmachines.txt"));
+            if(input.hasNextLine()){ input.nextLine();}
+            while(input.hasNextLine()){
+                String line = input.nextLine();
+                if(line.length() == 0){ continue; }
+                String[] values = line.split(",");
+                vendingId = values[0];
+                roomId = values[1];
+                VendingMachine vm = new VendingMachine(vendingId,roomId);
+                rooms.get(Integer.parseInt(roomId.substring(1))-1).setVendingMachine(vm);
+            }
+            input.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: vendingmachines.txt file not found.");
+        }
+    }
     public void loadItems() {
         // need to separate per type of item
+        Scanner input;
+        String itemId;
+        String itemName;
+        String itemDescription;
+        String category;
+        String roomLocation;
+        String location;
+        int value;
+        int price;
+        try{
+            input = new Scanner(new File(itemsFile));
+            if(input.hasNextLine()){ input.nextLine();}
+            while(input.hasNextLine()) {
+                String line = input.nextLine();
+                if (line.length() == 0) {
+                    continue;
+                }
+                String[] values = line.split("\\|");
+                itemId = values[0];
+                itemName = values[1];
+                itemDescription = values[2];
+                category = values[3];
+                value = Integer.parseInt(values[4]);
+                roomLocation = values[5];
+                location = values[6];
+                price = Integer.parseInt(values[7]);
+                Item item = returnItem(itemId, itemName, itemDescription, category, value, roomLocation,location,price);
+                if(location.startsWith("R")){
+                    rooms.get(Integer.parseInt(location.substring(1))-1).addItem(item);
+                }
+                if(location.startsWith("M")) {
+                    rooms.get(Integer.parseInt(roomLocation.substring(1))-1).getMonster().getFirst().getInventory().add(item);
+                    }
+                if(location.startsWith("P")){
+                    rooms.get(Integer.parseInt(roomLocation.substring(1))-1).getPuzzle().getRewards().add(item);
+                }
+                if(location.startsWith("V")){
+                    rooms.get(Integer.parseInt(roomLocation.substring(1))-1).getVendingMachine().addItem(item,price);
+                }
+            }
+            input.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: items.txt file not found.");
+        }
     }
+
     public ArrayList<Room> getRooms(){
         return this.rooms;
     }
     public Room getRoom(String num){
         int roomNumber = Integer.parseInt(num.substring(1));
         return rooms.get(roomNumber-1);
+    }
+    private Item returnItem(String itemId, String itemName, String itemDescription, String category, int value, String roomLocation,String location,int price){
+        if(category.equals("Weapon")){
+            return new Weapon (itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+        }
+        else if(category.equals("Tool")){
+            return new Tool (itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+        }
+        else if(category.equals("Consumable")){
+            return new Consumable (itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+        }
+        else if(category.equals("QuestItem")){
+            return new QuestItem(itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+        }
+        return null;
     }
 
 
