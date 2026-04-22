@@ -29,7 +29,6 @@ public class GameController {
     //  COMMAND PROCESSOR
 
     private void processCommand(String command) {
-
         if (command == null || command.isEmpty()) {
             view.display("Enter a command.");
             return;
@@ -40,78 +39,57 @@ public class GameController {
         String arg = parts.length > 1 ? parts[1] : "";
 
         switch (cmd) {
-
-            case "inventory":
-                showInventory();
-                break;
-
-            case "drop":
-                dropItem(arg);
-                break;
-
-            case "use":
-                useItem(arg);
-                break;
-
+            case "inventory": showInventory();
+            break;
+            case "drop": dropItem(arg);
+            break;
+            case "use": useItem(arg);
+            break;
             case "pick":
-                pickUpItem(arg);
-                break;
-
-            case "store":
-                pickUpItem(arg);
-                break;
-
-            case "combine":
-                combineItems(arg);
-                break;
-
-            case "buy":
-                buyFood();
-                break;
-
-            case "consume":
-                consumeItem(arg);
-                break;
-
-            case "equip":
-                equipWeapon(arg);
-                break;
-
-            default:
-                view.display("Unknown command.");
+            case "store": pickUpItem(arg);
+            break;
+            case "combine": combineItems(arg);
+            break;
+            case "buy": buyFood();
+            break;
+            case "consume": consumeItem(arg);
+            break;
+            case "equip": equipWeapon(arg);
+            break;
+            default: view.display("Unknown command.");
         }
+    }
+    private Room getCurrentRoom() {
+        return map.getRoom(Player.getroomLocation());
     }
 
     // ACTIONS
 
-    private void dropItem(String itemName) {
+    private void dropItem(String Name) {
 
-        if (itemName.isEmpty()) {
+        if (Name.isEmpty()) {
             view.display("Specify item to drop.");
             return;
         }
 
-        Item item = player.getItem(itemName);
+        Item item = player.dropItem(Name);
 
         if (item == null) {
             view.display("You don't have that item.");
             return;
         }
 
-        player.removeItem(item);
-        map.getCurrentRoom().addItem(item);
-
-        view.display("Dropped " + item.getItem_Name());
+        getCurrentRoom().addItem(item);
+        view.display("Dropped " + item.getName());
     }
 
     private void useItem(String itemName) {
+        Item item = player.getItem(itemName);
 
         if (itemName.isEmpty()) {
             view.display("Specify item to use.");
             return;
         }
-
-        Item item = player.getItem(itemName);
 
         if (item == null) {
             view.display("Item not found.");
@@ -125,12 +103,8 @@ public class GameController {
 
     private void pickUpItem(String itemName) {
 
-        if (itemName.isEmpty()) {
-            view.display("Specify item to pick up.");
-            return;
-        }
+        Room room = getCurrentRoom();
 
-        Room room = map.getCurrentRoom();
         Item item = room.findItem(itemName);
 
         if (item == null) {
@@ -144,11 +118,10 @@ public class GameController {
         }
 
         room.removeItem(item);
-        view.display("Picked up " + item.getItem_Name());
+        view.display("Picked up " + item.getName());
     }
 
-    // ================= COMBINE =================
-    // ALL logic now belongs in Player
+    // COMBINE
 
     private void combineItems(String args) {
 
@@ -164,31 +137,28 @@ public class GameController {
         if (result == null) {
             view.display("Cannot combine these items.");
         } else {
-            view.display("Created " + result.getItem_Name());
+            view.display("Created " + result.getName());
         }
     }
 
-    // ================= BUY =================
+    // BUY
 
     private void buyFood() {
 
-        Room room = map.getCurrentRoom();
+        Room room = getCurrentRoom();
 
         if (!room.hasVendingMachine()) {
             view.display("No vending machine here.");
             return;
         }
-
-        boolean success = player.buyFood(room.getVendingMachine(), "food");
-
-        if (success) {
+        if (player.buyFood(room.getVendingMachine(), "food")) {
             view.display("Food purchased.");
         } else {
             view.display("Purchase failed.");
         }
     }
 
-    // ================= CONSUME =================
+    //  CONSUME
 
     private void consumeItem(String itemName) {
 
@@ -206,7 +176,7 @@ public class GameController {
 
         player.useItem(item);
         player.removeItem(item);
-        view.display("Consumed " + item.getItem_Name());
+        view.display("Consumed " + item.getName());
     }
 
     //  EQUIP
@@ -223,7 +193,7 @@ public class GameController {
         boolean result = player.equipWeapon((Weapon) item);
 
         if (result) {
-            view.display("Equipped " + item.getItem_Name());
+            view.display("Equipped " + item.getName());
         } else {
             view.display("Cannot equip weapon.");
         }
@@ -232,16 +202,6 @@ public class GameController {
     // INVENTORY
 
     private void showInventory() {
-
-        if (player.getInventory().isEmpty()) {
-            view.display("Inventory empty.");
-            return;
-        }
-
-        view.display("Inventory:");
-
-        for (Item item : player.getInventory()) {
-            view.display("- " + item.getItem_Name() + " [" + item.getItem_Type() + "]");
-        }
+        player.showInventory(view);
     }
 }

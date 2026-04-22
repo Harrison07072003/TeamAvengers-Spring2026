@@ -1,46 +1,37 @@
-import java.util.ArrayList;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class VendingMachine {
-    private final ArrayList<Consumable> availableItems = new ArrayList<>();
-    private final int cost = 4;
+    private String location;
+    private final Map<Item,Integer> stock = new HashMap<>();
 
-    public VendingMachine(String item_Id, String item_Name, String item_type, String item_Description, String item_Location , int value) {
-        availableItems.add(new Consumable("food_id", "Food", "consumable","Edible food that restores HP" , "R5, R11, R19",10));
+    public VendingMachine(String location) {
+        this.location = location;
     }
-
-    public int getCost() {
-        return cost;
+    // ADD ITEM
+    public void addItem(Item item, int quantity) {
+        if (item == null || quantity <= 0) return;
+        stock.put(item, stock.getOrDefault(item, 0) + quantity);
     }
-
-    public boolean buyItem(String itemName) {
-        if (itemName == null) {
-            return false;
-        }
-
-        for (Consumable item : availableItems) {
-            if (item.getItem_Name().equalsIgnoreCase(itemName)) {
-                return true;
-            }
-        }
-
-        return false;
+    // GETTERS
+    public String getlocation() {
+        return location;
     }
-
-    public Consumable dispenseItem(String itemName) {
+    public Map<Item,Integer> getStock() {
+        return stock;
+    }
+    //DISPENSE ITEM
+    public Item dispenseItem(String itemName) {
         if (itemName == null) {
             return null;
         }
-
-        for (Consumable template : availableItems) {
-            if (template.getItem_Name().equalsIgnoreCase(itemName)) {
-                return new Consumable(
-                        template.getItem_Id() + "_" + System.nanoTime(),
-                        template.getItem_Name(),
-                        template.getItem_type(),
-                        template.getItem_Description(),
-                        template.getItem_Location(),
-                        template.getHpRestore()
-                );
+        for (Item item : stock.keySet()) {
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                int qty = stock.get(item);
+                if(qty > 0) return null;
+                stock.put(item, qty - 1);
+                return item;
             }
         }
 

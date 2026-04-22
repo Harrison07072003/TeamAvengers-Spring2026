@@ -81,4 +81,5 @@ public class Character {
     public void setCoins(int coins) {
         this.coins = coins;
     }
+
 }

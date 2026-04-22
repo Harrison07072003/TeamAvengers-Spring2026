@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Player extends Character {
 
     private Weapon equippedWeapon;
-    private int inventoryCapacity;
+    private int inventoryCapacity = 5;
     private String currentRoom;
     private boolean officeUnlocked;
     private boolean plagueCured;
@@ -11,16 +11,9 @@ public class Player extends Character {
     public Player(String id, int maxHP, int attack, int defense) {
         super(id, maxHP, attack, defense);
         setInventory(new ArrayList<>());
-        setCoins(15);
-
-        this.equippedWeapon = null;
-        this.inventoryCapacity = 5;
-        this.currentRoom = "";
-        this.officeUnlocked = false;
-        this.plagueCured = false;
     }
 
-    // ================= INVENTORY =================
+    //  INVENTORY
 
     public boolean addItem(Item item) {
         if (item == null || getInventory().size() >= inventoryCapacity) {
@@ -28,7 +21,29 @@ public class Player extends Character {
         }
         return getInventory().add(item);
     }
+    public Item getItem(String itemName) {
+        for (Item i : getInventory()) {
+            if (i.getName().equalsIgnoreCase(itemName)) {
+                return i;
+            }
+        }
+        return null;
+    }
+    public Item dropItem(String itemName) {
 
+        if (itemName == null || itemName.isEmpty()) {
+            return null;
+        }
+
+        Item item = getItem(itemName);
+
+        if (item == null) {
+            return null;
+        }
+
+        removeItem(item);
+        return item;
+    }
     public boolean removeItem(Item item) {
         if (item == null) return false;
 
@@ -48,16 +63,7 @@ public class Player extends Character {
         return true;
     }
 
-    public Item getItem(String itemName) {
-        if (itemName == null) return null;
 
-        for (Item item : getInventory()) {
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                return item;
-            }
-        }
-        return null;
-    }
 
     public boolean hasItem(String itemName) {
         return getItem(itemName) != null;
@@ -67,13 +73,18 @@ public class Player extends Character {
         return addItem(item);
     }
 
-    public Item dropItem(String itemName) {
-        Item item = getItem(itemName);
-        if (item != null) {
-            removeItem(item);
-            return item;
+    public void showInventory(View view) {
+
+        if (getInventory().isEmpty()) {
+            view.display("Inventory empty.");
+            return;
         }
-        return null;
+
+        view.display("Inventory:");
+
+        for (Item item : getInventory()) {
+            view.display("- " + item.getName() + " [" + item.getType() + "]");
+        }
     }
 
     // ================= QUEST ITEMS ONLY =================
@@ -108,7 +119,7 @@ public class Player extends Character {
 
     // CONSUMABLES
 
-    public boolean consumeFood() {
+    /*public boolean consumeFood() {
         for (Item item : getInventory()) {
             if (item instanceof Consumable) {
                 ((Consumable) item).getHpRestore();
@@ -118,20 +129,23 @@ public class Player extends Character {
         }
         return false;
     }
-
+        */
     // VENDING
 
     public boolean buyFood(VendingMachine vendingMachine, String itemName) {
-        if (vendingMachine == null) return false;
+        if (vendingMachine == null || itemName == null) return false;
 
-        if (getCoins() < vendingMachine.getCost()) return false;
-
-        Consumable item = vendingMachine.dispenseItem(itemName);
-        if (item == null) return false;
-
-        if (!addItem(item)) return false;
-
-        setCoins(getCoins() - vendingMachine.getCost());
+        if(getCoins() < 4){
+            return false;
+        }
+        Item item = vendingMachine.dispenseItem(itemName);
+        if (item == null) {
+            return false;
+        }
+        if(!addItem(item)){
+            return false;
+        }
+        setCoins(getCoins() - 4);
         return true;
     }
 
@@ -145,10 +159,10 @@ public class Player extends Character {
         if (firstItem == null || secondItem == null) return null;
 
         boolean isFlashlightCombo =
-                ("flashlight".equalsIgnoreCase(firstItem.getItem_Name()) &&
-                        "batteries".equalsIgnoreCase(secondItem.getItem_Name())) ||
-                        ("flashlight".equalsIgnoreCase(secondItem.getItem_Name()) &&
-                                "batteries".equalsIgnoreCase(firstItem.getItem_Name()));
+                ("flashlight".equalsIgnoreCase(firstItem.getName()) &&
+                        "batteries".equalsIgnoreCase(secondItem.getName())) ||
+                        ("flashlight".equalsIgnoreCase(secondItem.getName()) &&
+                                "batteries".equalsIgnoreCase(firstItem.getName()));
 
         if (isFlashlightCombo) {
 
@@ -161,6 +175,7 @@ public class Player extends Character {
                     "tool",
                     "A flashlight with batteries, ready to use.",
                     "R17",
+                    getroomLocation(),
                     0,
                     "Light" );
             addItem(poweredFlashlight);
@@ -188,7 +203,7 @@ public class Player extends Character {
         this.plagueCured = plagueCured;
     }
 
-    public String getCurrentRoom() {
+    public Room getCurrentRoom() {
         return currentRoom;
     }
 

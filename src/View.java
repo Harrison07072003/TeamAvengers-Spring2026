@@ -1,104 +1,84 @@
 public class View {
     //fields
     //constructor
-    public View(){
-
+    public View() {
     }
+
     //methods
-    public void display(String str){
+    public void display(String str) {
         System.out.println(str);
     }
 
-    public void displayStatus(int health, int attack, int defense, int vials, int coins) {
-        System.out.println("Health: " + health);
-        System.out.println("Attack: " + attack);
-        System.out.println("Defense: " + defense);
-        System.out.println("Vials: " + vials);
-        System.out.println("Coins: " + coins);
+    public void navUI(String RoomName) {
+        System.out.println(RoomName + "\nCommands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help" + "\nEnter a command:");
     }
 
-    public static String noPlayerForAction(String action, String itemName) {
-        return "No player available to " + action + " " + itemName + ".";
+    public void monsterUI(String health, String monster, String monsterHealth) {
+        System.out.println("Your HP: " + health + "\n" +
+                monster + "'s HP: " + monsterHealth + "\n" +
+                "Commands: Attack, Heavy Attack, Defend, Dodge, Check Weapon, Retreat \n" +
+                "--------------------------------\n" + "Action:");
     }
 
-    public static String itemNotInInventory(String itemName) {
-        return itemName + " is not in your inventory.";
+    public void puzzleUI() {
     }
 
-    public static String consumedItem(String itemName, int hpRestore) {
-        return "Consumed " + itemName + ", HP restored by " + hpRestore + ".";
+    public void navHelp(int state) {
+        if (state == 1)
+            System.out.println("Commands: \n" + "1.Status - Display current HP,stats,vial count, and money count\n" + "2.Inventory - View collected items" +
+                    "\n" + "3.Help - Show a list of available commands\n" + "4.Checkpoint - Saves checkpoint\n" + "5.Show map - Displays the map and the player's location\n"
+                    + "6.Escape - Escape the school(only usable with all vials)\n" + "7.Save Game - Saves gameplay\n" + "8.Load Game - Loads saved game or checkpoint\n" +
+                    "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay\n----------------------------");
+        else if (state == 2)
+            System.out.println("Commands: \n" + "1.Attack - Attack the monster with a weapon\n" + "2.Heavy Attack - Attack a monster with more damage, but with a chance to miss\n"
+                    + "3.Defend - Defend against an attack from a monster\n" + "4.Dodge - Chance to dodge monster attack\n" + "5.Check Weapon - View the stats of the currently held weapon\n" + "6.Retreat - Flee from the monster\n--------------------");
     }
 
-    public static String officeDoorAlreadyUnlocked() {
-        return "The office door is already unlocked.";
+    public void showMap(String building) {
+        if (building.equals("Building E")) {
+            System.out.println(
+                    "                         |Building E|\n" +
+                            " [Game Room] -------- [Kitchen] -------- [Dining Hall]\n" +
+                            "      |                    |                   |\n" +
+                            " [Meditation Room] --- [Student Lounge] --- [Campus Cafe] -----> Library"
+            );
+        } else if (building.equals("Library")) {
+            System.out.println(
+                    "                                |Library|\n" +
+                            " <----Building E [Study Room]                  [Server Room]-----> Parking Lot\n" +
+                            "                        |                            |            \n" +
+                            "                   [Library Lobby]----[Computer Classroom]  \n" +
+                            "                          |                 |            \n" +
+                            "[Electric Control Room]----                 ----[Malfunctioning Elevators]"
+            );
+        } else if (building.equals("Building H")) {
+            System.out.println(
+                    "                         |H Building|\n" +
+                            " [Chemistry Lab] ---- [Professor Office] ---- [Chemistry Lab 2]\n" +
+                            "        |                    |                      |\n" +
+                            "        |                    |            [Digital Media Lab]\n" +
+                            "        |                    |                      |\n" +
+                            " [Health Lab] -------- [Bathroom] -------- [Janitor's Closet]\n" +
+                            "        |\n" +
+                            "        |\n" +
+                            "Parking Lot"
+            );
+        } else if (building.equals("Parking Lot")) {
+            System.out.println(
+                    "                        H Building\n" +
+                            "                             ^\n" +
+                            "                             |\n" +
+                            "                              \n" +
+                            "Library<------     |Parking Lot|"
+            );
+        } else {
+            System.out.println("Map unavailable.");
+        }
     }
 
-    public static String officeDoorUnlocked() {
-        return "You used the Office Key and unlocked the office door.";
+    public void showCredits() {
+        System.out.println("Teams Involved\n----------------\nCreative Team: Team Cobra\nDevelopment Team: Team Avengers\n" +
+                "\nDevelopers\n----------------\nTeam Manager:Jocelin Mendoza\nTechnical Lead:Harrison Allen\nTesting Lead:José Muñoz-Suastegui" +
+                "\nData Lead:Asliee Pena Cabrera\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo");
     }
-
-    public static String cureVitalHint() {
-        return "Cure Vital is a quest ingredient. Keep it until you are ready to make the cure.";
-    }
-
-    public static String plagueAlreadyCured() {
-        return "The plague has already been cured.";
-    }
-
-    public static String plagueCured() {
-        return "You used the Cure and cured the plague.";
-    }
-
-    public static String usedQuestItem(String itemName) {
-        return "Used quest item: " + itemName + ".";
-    }
-
-    public static String inventoryCapacityAlreadyIncreased(String itemName) {
-        return itemName + " is already increasing your inventory capacity.";
-    }
-
-    public static String inventoryCapacityIncreased(String itemName, int capacity) {
-        return "Used " + itemName + ". Inventory capacity increased to " + capacity + ".";
-    }
-
-    public static String flashlightRequired(String itemName) {
-        return "You need a Flashlight before using " + itemName + ".";
-    }
-
-    public static String flashlightPowered(String itemName) {
-        return "You used " + itemName + " to power the Flashlight.";
-    }
-
-    public static String flashlightNeedsBatteries() {
-        return "The Flashlight has no batteries. Combine it with Batteries first.";
-    }
-
-    public static String litArea(String itemName) {
-        return "You turned on " + itemName + " and lit the area.";
-    }
-
-    public static String unlockToolNotConfigured(String itemName) {
-        return itemName + " can unlock something, but it is not configured as a tool in this build.";
-    }
-
-    public static String usedItem(String itemName) {
-        return "Used " + itemName + ".";
-    }
-
-    public static String weaponNotFound() {
-        return "Weapon not found";
-    }
-
-    public static String weaponNotInInventory() {
-        return "Weapon not in inventory";
-    }
-
-    public static String weaponAlreadyEquipped(String itemName) {
-        return itemName + " is already equipped";
-    }
-
-    public static String equippedWeapon(String itemName) {
-        return "Equipped " + itemName;
-    }
-
-   }
+}
