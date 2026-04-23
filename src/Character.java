@@ -34,6 +34,11 @@ public abstract class Character {
     public int getDefense() {
         return this.defense;
     }
+    public void setAttack(int i) {
+        this.attack = i;
+    }
+    public void setDefense(int i) {
+        this.defense = i;
     public int getCurrentHP() {
         return currentHP;
     }
@@ -52,6 +57,11 @@ public abstract class Character {
     public void setCoins(int coins) {
         this.coins = coins;
     }
+
+
+    public void setCharacterID(String trim) {
+        this.charaterID = trim;
+    }
     public String getInventoryString() {
         int i = 1;
         String inventoryString = "";
@@ -63,6 +73,9 @@ public abstract class Character {
             i++;
         }
         return inventoryString.substring(0,inventoryString.length()-1);
+    }
+     public void setMaxHP(int i) {
+        this.maxHP = i;
     }
     public boolean isAlive() {
         return this.alive;

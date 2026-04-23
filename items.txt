@@ -1,0 +1,5 @@
+# itemId|itemName|description|category|value|roomlocationID|physicalLocationID|Price
+A1|Flashlight|Used to see in dark rooms|Tool|0|R1|R1|0
+A4|Sword|Increases attack by 10|Weapon|10|R1|M0|0
+A5|Key|Opens locked doors|QuestItem|0|R2|P1|0
+A6|Food|Restores 20 health|Consumable|20|R2|V1|3

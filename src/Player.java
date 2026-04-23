@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 public class Player extends Character{
     //fields
@@ -8,6 +7,7 @@ public class Player extends Character{
     private Item equippedWeapon;
     private int vials;
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
+    private int capacity;
     //constructor
     public Player(String id, int maxHP, int attack, int defense, int coins,String roomID,RoomMap map) {
         super(id, maxHP, attack, defense,coins);
@@ -21,6 +21,29 @@ public class Player extends Character{
 
 
     //methods
+    // getters and setters for my fields
+     public RoomMap getMap() {
+        return map;
+    }
+
+    public void setMap(RoomMap map) {
+        this.map = map;
+    }
+    public int getVialCount() {
+        return vialCount;
+    }
+
+    public void setVialCount(int vialCount) {
+        this.vialCount = vialCount;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
     //monster methods
     public void attack(Monster monster){
         if(monster.isAlive()) {
@@ -216,9 +239,54 @@ public class Player extends Character{
     public Item getItem(String itemName) {
         for (Item item : this.getInventory()) {
             if (item.getItemName().equalsIgnoreCase(itemName)) {
+
                 return item;
             }
         }
         return null;
+    }
+        //reset
+    public void resetPlayer() {
+        this.setAlive(true);
+        this.setCurrentHP(this.getMaxHP());
+        this.setVialCount(0);
+        this.setEquippedWeapon(null);
+        this.clearInventory();
+    }
+
+    //delete after test
+    public void addItem(Item item) {
+        if (this.getInventory().size() < capacity) {
+            this.getInventory().add(item);
+        } else {
+            System.out.println("Inventory is full.");
+        }
+    }
+
+    public Item removeItem(String itemId) {
+        for (int i = 0; i < this.getInventory().size(); i++) {
+            if (this.getInventory().get(i).getId().equalsIgnoreCase(itemId)) {
+                return this.getInventory().remove(i);
+            }
+        }
+        return null;
+    }
+
+    public void clearInventory() {
+        this.getInventory().clear();
+    }
+
+    public int getCoins(){
+        return coins;
+    }
+
+public Item getItem(String itemId) {
+        for (Item item : this.getInventory()) {
+            if (item.getItemName().equalsIgnoreCase(itemId)) {
+
+    public boolean EscapeGame(){
+        if (currentRoom.equals("R2") && this.getInventory().contains(getItem("Cure")))
+            return true;
+        return false;
     }
 }

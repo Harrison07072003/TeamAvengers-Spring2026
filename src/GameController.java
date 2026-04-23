@@ -79,7 +79,7 @@ public class GameController {
 
     }
     //starts game
-    public void startGame(){
+   /* public void startGame(){
         // New simple, bold console title screen (GGC PLAGUE)
         String[] title = new String[]{
             "====================================================",
@@ -137,5 +137,40 @@ public class GameController {
                     view.display("Invalid option. Please enter 1, 2, or 3 (or start/load/quit). ");
             }
         }
+        */
+
+    public void resetGame(){
+        A.resetPlayer();
+        school.generateRooms();
+        school.spawnMonsters();
+        school.loadPuzzles();
+        school.putVendingMachines();
+        school.loadItems();
     }
+    public void startGame(){
+        v.display("Welcome to the game! You are a student trapped in a school filled with monsters and puzzles. Your goal is to escape the school by solving puzzles, defeating monsters, and collecting items. Good luck!");
+        v.display("Do you want to start new game or load a saved game? (new/load)");
+        String response = input.nextLine();
+        this.run(response);
+    }
+
+    public void quitGame() {
+            v.display("Do you want to quit the game? (yes/no)");
+            String response = input.nextLine();
+            if (response.equalsIgnoreCase("yes")) {
+                v.display("Do you want to save the game before quitting? (yes/no)");
+                String saveResponse = input.nextLine();
+                if (saveResponse.equalsIgnoreCase("yes")) {
+                    school.saveGame(A);
+                    v.display("Game saved.");
+                } else {
+                    v.display("Game not saved.");
+                }
+                isRunning = false;
+                v.display("Exiting game.");
+            } else {
+                v.display("Continuing game.");
+            }
+
+
 }

@@ -56,4 +56,7 @@ public class Monster extends Character{
             }
         return drop.substring(0,drop.length()-1);
     }
+   public String fileString(){
+        return this.getCharaterID() + "," + this.getMonsterName() + "," + this.getMonsterDescription() + "," + this.getMaxHP() + "," + this.getAttack() + "," + this.getDefense() + "," + this.getCoins() + "," + this.getRoomID();
+    }
 }

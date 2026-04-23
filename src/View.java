@@ -3,8 +3,8 @@ public class View {
     //constructor
     public View(){}
     //methods
-    public void display(String str){
-        System.out.println(str);
+    public void display(String message) {
+        System.out.println(message);
     }
     public void navUI(String RoomName){
         System.out.println(RoomName +"\nCommands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help" +"\nEnter a command:");

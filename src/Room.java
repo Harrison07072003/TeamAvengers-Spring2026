@@ -133,9 +133,19 @@ public class Room {
         puzzle = null;
     }
 
-
-
     public void addExit(String direction, String roomId){
-        this.exits.put(direction, roomId);
+        exits.put(direction, roomId);
     }
+    public void addPuzzle(Puzzle puzzle){
+        this.puzzle = puzzle;
+    }
+
+    public String getExitsFileString() {
+        String exitString = "";
+        for (String key : exits.keySet()) {
+            exitString += key + "," + exits.get(key) + ".";
+        }
+        return exitString.substring(0, exitString.length() - 1);
+    }
+
 }
