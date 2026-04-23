@@ -148,9 +148,17 @@ public class Player extends Character{
 
     public void storeItem(Item item){
 
+
     }
     public Item dropItem(String item){
         return null;
+    }
+    public boolean addItem(Item item){
+        if(item == null){
+            return false;
+        }
+        this.getInventory().add(item);
+        return true;
     }
     public String checkWeapon(){
         if(this.equippedWeapon.getItemName().equals("Fists"))
