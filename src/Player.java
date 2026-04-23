@@ -8,6 +8,7 @@ public class Player extends Character{
     private Item equippedWeapon;
     private int vials;
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
+    private Item pickedUp; //need for item methods.- j
     //constructor
     public Player(String id, int maxHP, int attack, int defense, int coins,String roomID,RoomMap map) {
         super(id, maxHP, attack, defense,coins);
@@ -17,8 +18,69 @@ public class Player extends Character{
         this.currentState = 1;
         this.vials = 0;
         this.previousRoom = roomID;
+        this.pickedUp = null;
     }
 
+    //getters and setters
+    public int getDamage(Monster enemy,boolean heavyDamage){
+        double damage;
+        if(heavyDamage && enemy.isDefending())
+            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus()*1.3)  - enemy.getDefense()));
+        else if(heavyDamage)
+            damage = (this.getAttack() + this.equippedWeapon.getAttackBonus() )*1.3;
+        else if(enemy.isDefending())
+            damage = ((this.getAttack() + this.equippedWeapon.getAttackBonus())*0.6 - enemy.getDefense());
+        else
+            damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - enemy.getDefense();
+        if(damage < 1)
+            return 1;
+        else
+            return (int) damage;
+    }
+    public String getRoomName(){
+        return this.getCurrentRoom(currentRoom).getRoomName();
+    }
+    public String getMonsterName(){
+        return this.getMonster().getMonsterName();
+    }
+    public Monster getMonster(){
+        return this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
+    }
+    public int getCurrentState(){
+        return this.currentState;
+    }
+    public int getAttackBonus(){
+        return this.equippedWeapon.getAttackBonus();
+    }
+    public String getBuilding(){
+        return this.getCurrentRoom(currentRoom).getBuilding();
+    }
+    public String getEquippedWeaponName(){
+        return this.equippedWeapon.getItemName();
+    }
+    public int getVials(){
+        return this.vials;
+    }
+    public Room getCurrentRoom(String roomID){
+        return this.Map.getRoom(roomID);
+    }
+    public String getRoomID(){
+        return this.currentRoom;
+    }
+
+    public Item getPickedUp(){
+        return this.pickedUp;
+    }
+    public void setPickedUp(Item item){
+        this.pickedUp = item;
+    }
+
+    public void setState(int state){
+        this.currentState = state;
+    }
+    public void setCurrentRoom(String roomID){
+        this.currentRoom = roomID;
+    }
 
     //methods
     //monster methods
@@ -74,60 +136,10 @@ public class Player extends Character{
     public boolean engageMonster() {
         return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
     }
-    //getters and setters
-    public int getDamage(Monster enemy,boolean heavyDamage){
-        double damage;
-        if(heavyDamage && enemy.isDefending())
-            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus()*1.3)  - enemy.getDefense()));
-        else if(heavyDamage)
-            damage = (this.getAttack() + this.equippedWeapon.getAttackBonus() )*1.3;
-        else if(enemy.isDefending())
-            damage = ((this.getAttack() + this.equippedWeapon.getAttackBonus())*0.6 - enemy.getDefense());
-        else
-            damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - enemy.getDefense();
-        if(damage < 1)
-            return 1;
-        else
-            return (int) damage;
-    }
-    public String getRoomName(){
-        return this.getCurrentRoom(currentRoom).getRoomName();
-    }
-    public String getMonsterName(){
-        return this.getMonster().getMonsterName();
-    }
-    public Monster getMonster(){
-        return this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
-    }
-    public int getCurrentState(){
-        return this.currentState;
-    }
-    public int getAttackBonus(){
-        return this.equippedWeapon.getAttackBonus();
-    }
-    public String getBuilding(){
-        return this.getCurrentRoom(currentRoom).getBuilding();
-    }
-    public String getEquippedWeaponName(){
-        return this.equippedWeapon.getItemName();
-    }
-    public int getVials(){
-        return this.vials;
-    }
-    public Room getCurrentRoom(String roomID){
-        return this.Map.getRoom(roomID);
-    }
-    public String getRoomID(){
-        return this.currentRoom;
-    }
-    public void setState(int state){
-        this.currentState = state;
-    }
-    public void setCurrentRoom(String roomID){
-        this.currentRoom = roomID;
-    }
+
 
     //item methods
+    //command: PickUp Item (on the srs, ik its sorta irrelevant, but they wanted it)
     public String pickUp(String itemName){
         if(itemName.isBlank()){
             return "Please enter an item to pick up.";
@@ -139,16 +151,18 @@ public class Player extends Character{
         }
         if(items.contains(itemName)) {
             Item item = room.getInventory().get(items.indexOf(itemName));
-            this.getInventory().add(item);
             room.removeItem(item);
             return "You have picked up " + itemName + ".";
         }
         return "There is no item with that name in this room.";
     }
 
-    public void storeItem(Item item){
+    //command: Store item - srs-> depends on "Pickup" command.
+    public void storeItem(String itemName){
+
 
     }
+
     public Item dropItem(String item){
         return null;
     }
