@@ -13,7 +13,6 @@ public class QuestItem extends Item {
     public void setQuestType(String questType) {
         this.questType = questType;
     }
-    @Override
     // Quest items are the only current items that opt into the generic use flow.
     public boolean canUse() {
         return true;
