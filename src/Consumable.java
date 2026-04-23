@@ -1,8 +1,13 @@
+// Consumables are inventory items whose numeric value is treated as healing.
 public class Consumable extends Item {
-    //fields
-    //constructor
-    public Consumable(String itemId, String itemName, String category, String description, int value, String roomLocation, String location,int price) {
-        super(itemId, itemName, category, description, value,roomLocation, location,price);
+
+    public Consumable(String itemId, String itemName, String category,String description,
+                      int value, String roomLocation,String location,int price) {
+        super(itemId, itemName, category, description,value, roomLocation, location, price);
     }
-    //methods
+
+    // The shared Item value field is interpreted as HP restored for food/medicine.
+    public int getHpRestore() {
+        return this.getValue();
+    }
 }

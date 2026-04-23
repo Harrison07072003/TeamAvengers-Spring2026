@@ -9,6 +9,9 @@ public class View {
     public void navUI(String RoomName){
         System.out.println(RoomName +"\nCommands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help" +"\nEnter a command:");
     }
+    public void showCommandPrompt(String roomName) {
+        System.out.println(roomName + "\nEnter a command:");
+    }
 
     public void monsterUI(String health,String monster,String monsterHealth){
         System.out.println("Your HP: " + health + "\n" +
