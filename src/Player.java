@@ -312,7 +312,7 @@ public class Player extends Character {
 
     public Item removeItem(String itemId) {
         for (int i = 0; i < this.getInventory().size(); i++) {
-            if (this.getInventory().get(i).getId().equalsIgnoreCase(itemId)) {
+            if (this.getInventory().get(i).getItemId().equalsIgnoreCase(itemId)) {
                 return this.getInventory().remove(i);
             }
         }
