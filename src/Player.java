@@ -152,27 +152,28 @@ public class Player extends Character{
         if(items.contains(itemName)) {
             Item item = room.getInventory().get(items.indexOf(itemName));
             room.removeItem(item);
-            return "You have picked up " + itemName + ".";
+            setPickedUp(item);
+            return "You have picked up " + itemName + ". Would you like to Store or Drop this item?";
         }
         return "There is no item with that name in this room.";
     }
 
     //command: Store item - srs-> depends on "Pickup" command.
-    public void storeItem(String itemName){
-
-
-
+    public String storeItem(){
+        if(pickedUp == null){
+            return "You have not picked up an item to store.";
+        }
+        if (this.getInventory().size() >= 5){
+            return "Your inventory is full.";
+        }
+        this.getInventory().add(pickedUp);
+        String itemName = pickedUp.getItemName();
+        setPickedUp(null);
+        return "You have stored " + itemName + " in your inventory.";
     }
 
     public Item dropItem(String item){
         return null;
-    }
-    public boolean addItem(Item item){
-        if(item == null){
-            return false;
-        }
-        this.getInventory().add(item);
-        return true;
     }
     public String checkWeapon(){
         if(this.equippedWeapon.getItemName().equals("Fists"))
