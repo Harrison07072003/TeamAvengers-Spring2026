@@ -1,4 +1,5 @@
 public abstract class Item {
+    //fields
     private String itemId;
     private String itemName;
     private String category;
@@ -8,6 +9,7 @@ public abstract class Item {
     private String location;
     private int price;
 
+    //constructor
     public Item(String itemId, String itemName, String category,
                 String description, int value, String roomLocation,String location,int price) {
         this.itemId = itemId;
@@ -20,10 +22,7 @@ public abstract class Item {
         this.price = price;
     }
 
-    public String getId() {
-        return itemId;
-    }
-
+    //getters
     public String getItemId() {
         return itemId;
     }
@@ -52,6 +51,9 @@ public abstract class Item {
     public int getPrice() {
         return price;
     }
+
+
+    //toString and fileString
     public String toFileString() {
         return this.itemId + "," + this.itemName + "," + this.category + "," + this.description + "," + this.value + "," + this.roomLocation + "," + this.location + "," + this.price;
     }
