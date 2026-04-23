@@ -14,16 +14,18 @@ public class RoomMap {
     private String puzzlesFile;
     private String monstersFile;
     private String itemsFile;
+    private String vendingMachinesFile;
     private String saveFile;
     private String checkpointFile;
     private String actualLoadFile;
 
-    public RoomMap(String roomsf,String puzzles, String monsters, String items) {
+    public RoomMap(String roomsf,String puzzles, String monsters, String items, String vendingMachines) {
         rooms = new ArrayList<>();
         roomsFile = roomsf;
         puzzlesFile = puzzles;
         monstersFile = monsters;
         itemsFile = items;
+        vendingMachinesFile = vendingMachines;
         saveFile = "saveFile.txt";
         checkpointFile = "checkpointFile.txt";
     }
@@ -317,7 +319,8 @@ public class RoomMap {
                 player.getCoins() + "," +
                 player.getVialCount() + "," +
                 player.getRoomID() + "," +
-                player.getMaxHP());
+                player.getMaxHP() + "," +
+                player.getPreviousRoom());
     }
 
     private void savePlayerInventorySection(PrintWriter output, Player player) {
@@ -411,6 +414,7 @@ public class RoomMap {
         player.setVialCount(Integer.parseInt(values[5].trim()));
         player.setCurrentRoom(values[6].trim());
         player.setMaxHP(Integer.parseInt(values[7].trim()));
+        player.setPreviousRoom(values[8].trim());
     }
 
     // --- START: Robust item parsing for load operations ---
@@ -504,9 +508,10 @@ public class RoomMap {
         } else if (line.startsWith("PUZZLE|")) {
             String puzzleData = line.split("\\|",2)[1].trim();
             if (!puzzleData.equals("none")) {
-                String[] puzzleValues = puzzleData.split(",");
+                String[] puzzleValues = puzzleData.split(";");
                 Puzzle puzzle = new Puzzle(puzzleValues[0], puzzleValues[1], puzzleValues[2], puzzleValues[3],
                         puzzleValues[4], puzzleValues[5], puzzleValues[6], Integer.parseInt(puzzleValues[7]));
+                puzzle.setSolved(Boolean.parseBoolean(puzzleValues[8]));
                 rooms.get(rooms.size() - 1).setPuzzle(puzzle);
             }
         } else if (line.startsWith("PUZZLE REWARD|")) {

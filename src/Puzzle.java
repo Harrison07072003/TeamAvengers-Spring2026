@@ -8,8 +8,8 @@ public class Puzzle {
     private final String solution;
     private final String successMessage;
     private final String failureMessage;
-    private final ArrayList<Item> inventory;
-    private final String roomId;
+    private final ArrayList<Item> rewards;
+    private  String roomId;
     private int coins;
     private boolean solved;
 
@@ -23,7 +23,7 @@ public class Puzzle {
         this.roomId = roomId;
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
-        this.inventory = new ArrayList<>();
+        this.rewards = new ArrayList<>();
         this.coins = coins;
         this.solved = false;
     }
@@ -52,8 +52,8 @@ public class Puzzle {
         return failureMessage;
     }
 
-    public ArrayList<Item> getInventory() {
-        return inventory;
+    public ArrayList<Item> getRewards() {
+        return this.rewards;
     }
 
     public int getCoins() {
@@ -74,8 +74,8 @@ public class Puzzle {
     public ArrayList<Item> dropItems() {
         ArrayList <Item> items = new ArrayList<>();
         if(this.solved) {
-            for(int i = 0; i < inventory.size(); i++) {
-                items.add(inventory.get(i));
+            for(int i = 0; i < this.rewards.size(); i++) {
+                items.add(this.rewards.get(i));
             }
         }
         return items;
@@ -83,11 +83,12 @@ public class Puzzle {
 
 
     public boolean checkSolution(String answer) {
-        if (answer == null || solved) {
+        if (answer == null || this.solved) {
             return false;
         }
 
-        if (answer.trim().equalsIgnoreCase(solution)) {
+        if (answer.trim().equalsIgnoreCase(this.solution)) {
+            this.solved = true;
             return true;
         }
 
@@ -95,13 +96,19 @@ public class Puzzle {
     }
 
     public boolean isSolved() {
-        return solved;
+        return this.solved;
     }
     public String getRoomId() {
-        return roomId;
+        return this.roomId;
     }
     public void settRoomId(String roomId) {
         this.roomId = roomId;
+    }
+    public String toFileString() {
+        return this.puzzleId + ";" + this.puzzleName + ";" + this.question + ";" + this.solution + ";" + this.roomId + ";" + this.successMessage + ";" + this.failureMessage + ";" + this.coins + ";" + this.solved;
+    }
+    public String getRewardsFileString() {
+        return this.rewards.get(0).toFileString();
     }
 
 }

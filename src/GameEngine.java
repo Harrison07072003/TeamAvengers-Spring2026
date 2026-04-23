@@ -6,7 +6,7 @@ public class GameEngine {
     private final GameResult result;
     //constructor
     public GameEngine(){
-        this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","items.txt");
+        this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","Item.txt","vendingmachines.txt");
         this.A = new Player("Player", 100, 18, 5, 10,"R1",school);
         this.combatEngine = new CombatEngine(A);
         this.result = new GameResult();
@@ -47,6 +47,7 @@ public class GameEngine {
         school.loadPuzzles();
         school.putVendingMachines();
         school.loadItems();
+        //A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
     }
     public String saveGame(){
         return school.saveGame(A);
@@ -90,12 +91,17 @@ public class GameEngine {
             result.setMessage(A.examineItem(command.substring(8)) + "\n");
         else if(command.startsWith("enter "))
             result.setMessage(A.enterRoom(command.substring(6)) + "\n");
-        else if(command.equals("explore"))
+        else if(command.equals("explore room"))
             result.setMessage(A.exploreRoom() + "\n");
+        else if(command.equals("explore puzzle"))
+            result.setMessage(A.explorePuzzle() + "\n");
         else if(command.equals("save game"))
             result.setMessage(this.saveGame());
         else if(command.equals("load game"))
             result.setMessage(this.loadGame());
+        else if(command.equals("checkpoint")){
+            result.setMessage(school.checkpoint(A));
+        }
         else
             this.result.setMessage("Invalid Command\n");
         this.result.setMessage(this.result.getMessage() + "-----------------------------------");
@@ -143,5 +149,24 @@ public class GameEngine {
     }
     public String getMonsterHealth(){
         return combatEngine.getMonsterHealth();
+    }
+    //puzzle getters and setters
+    public String getPuzzleQuestion(){
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getQuestion();
+    }
+    public String getPuzzleSolution(){
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSolution();
+    }
+    public String getPuzzleSuccessMessage() {
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSuccessMessage();
+    }
+    public String getPuzzleFailureMessage() {
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getFailureMessage();
+    }
+    public boolean getPuzzleStatus() {
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSolved();
+    }
+    public boolean checkAnswer(String response){
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().checkSolution(response);
     }
 }

@@ -24,6 +24,14 @@ public class Player extends Character {
 
     //methods
     // getters and setters for my fields
+
+    public String getPreviousRoom() {
+        return previousRoom;
+    }
+    public void setPreviousRoom(String previousRoom) {
+        this.previousRoom = previousRoom;
+    }
+
     public RoomMap getMap() {
         return Map;
     }
@@ -333,7 +341,9 @@ public class Player extends Character {
         String result = "";
         if (this.getCurrentRoom(currentRoom).hasPuzzle()) {
             Puzzle puzzle = this.getCurrentRoom(currentRoom).getPuzzle();
-            result += puzzle.getPuzzleName() + ": " + puzzle.getQuestion() + " Would you like to solve or ignore?";
+            result += puzzle.getPuzzleName() + ": " + puzzle.getQuestion();
+            }
+        else {
             return "no puzzle detected";
         }
         return result;
@@ -349,9 +359,9 @@ public class Player extends Character {
                 this.setCoins(this.getCoins() + puzzle.getCoins());
                 result += puzzle.getCoins() + " coins earned.";
             }
-            if (puzzle.getInventory().size() > 0) {
-                for (int i = 0; i < puzzle.getInventory().size(); i++) {
-                    result += puzzle.getInventory().get(i).getItemName() + " dropped.";
+            if (puzzle.getRewards().size() > 0) {
+                for (int i = 0; i < puzzle.getRewards().size(); i++) {
+                    result += puzzle.getRewards().get(i).getItemName() + " dropped.";
                 }
             }
             return result;

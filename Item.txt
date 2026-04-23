@@ -6,12 +6,14 @@ A3a|Cure Vital 3|QuestItem|Used to make a cure for the plague|0|R7|M5|0
 A3b|Cure Vital 1|QuestItem|Used to make a cure for the plague|0|R4|P1|0
 A3c|Cure Vital 2|QuestItem|Used to make a cure for the plague|0|R5|P2|0
 A3d|Cure Vital 5|QuestItem|Used to make a cure for the plague|0|R3|R3|0
-A4|Vending Machine Food|Consumable|Food sold in vending machines|5|R5|VM|4
-A4a|Vending Machine Food|Consumable|Food sold in vending machines|5|R11|VM|4
-A4b|Vending Machine Food|Consumable|Food sold in vending machines|5|R19|VM|4
+A4|Vending Machine Food|Consumable|Food sold in vending machines|5|R5|V1|4
+A4a|Vending Machine Food|Consumable|Food sold in vending machines|5|R11|V2|4
+A4b|Vending Machine Food|Consumable|Food sold in vending machines|5|R19|V3|4
 A5|Normal Food|Consumable|Basic food that restores health|7|R8|R8|0
-A7|Kitchen Knife|Weapon|Sharp knife used for cutting and self-defense|20|R6|M2|0
-A8|Fork|Weapon|A utensil that can be used as a weapon in emergencies|10|R8|M2|0
+A7|Kitchen Knife|Weapon|Sharp knife used for cutting and self-defense|20|R6|R6|0
+A7a|Kitchen Knife|Weapon|Sharp knife used for cutting and self-defense|20|R15|M2|0
+A8|Fork|Weapon|A utensil that can be used as a weapon in emergencies|10|R8|R8|0
+A8a|Fork|Weapon|A utensil that can be used as a weapon in emergencies|10|R15|M2|0
 A9|Book|Weapon|A worn-out book filled with ancient knowledge|15|R3|R3|0
 A11|Broom|Weapon|A cleaning tool that can be used as a weapon|15|R2|R2|0
 A10|Backpack|Tool|A sturdy backpack used for carrying items|15|R16|R16|0

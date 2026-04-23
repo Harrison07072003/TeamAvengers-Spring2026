@@ -1,0 +1,8 @@
+(ID,Name,Description,HP,Attack,Defense,Coins,Room)
+M1,Freddy Krueger,Attack the player in dark rooms while whispering: 'Don't fall asleep.',80,25,15,3,R18
+M2,Micheal Myers,A slow but unstoppable monster that silently follows the player: 'He never stops.',120,30,25,0,R15
+M3,Riddler,Blocks the player's path and demands answers saying: 'Solve or suffer.',65,15,10,3,R11
+M4,Chucky,A small but fast attacker that rushes the player while laughing: 'Wanna play?',40,20,5,1,R10
+M5,Pennywise,Appears randomly to terrify the player whispering: 'You'll float too.',70,20,12,0,R7
+M6,Nun,Appears in silent and dark rooms and slowly approaches while saying: 'Pray.',65,18,14,0,R19
+M7,Ghostface,Chases the player across rooms asking: 'What's your favorite scary movie?',75,22,15,0,R9

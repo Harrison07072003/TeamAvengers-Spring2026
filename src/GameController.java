@@ -43,6 +43,16 @@ public class GameController {
                     }
 
                 }
+                if(command.equals("explore puzzle")){
+                    view.display("Do you want to solve or ignore the puzzle?" +
+                            " Type in 'solve' to solve or press any other key to ignore.");
+                    String response = input.nextLine();
+                    if(response.equals("solve"))
+                        puzzle();
+                    else{
+                        view.display("You decided not to ignore the puzzle");
+                    }
+                }
             }
         }
         view.display("You have left the game");
@@ -79,7 +89,9 @@ public class GameController {
     }
     //puzzle loop
     public void puzzle(){
-
+        view.display("Put in answer");
+        String reply = input.nextLine();
+        view.display(engine.getPlayer().solvePuzzle(reply));
     }
     //starts game
    public void startGame(){
