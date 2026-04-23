@@ -1,3 +1,4 @@
+// Quest items carry a quest type token that Player.useItem(...) interprets.
 public class Quest extends Item {
     private String questType;
 
@@ -13,6 +14,7 @@ public class Quest extends Item {
     }
 
     @Override
+    // Quest items are the only current items that opt into the generic use flow.
     public boolean canUse() {
         return true;
     }

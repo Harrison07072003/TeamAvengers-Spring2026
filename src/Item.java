@@ -1,3 +1,4 @@
+// Shared base type for everything the player can carry, buy, drop, or use.
 public abstract class Item {
     private String itemId;
     private String name;
@@ -8,6 +9,7 @@ public abstract class Item {
     private int value;
     private int price;
 
+    // Location tracks the immediate container, while roomLocation tracks the room the item belongs to.
     public Item(String itemId, String name, String type, String description,
                 String location, String roomLocation, int value, int price) {
         this.itemId = itemId;
@@ -68,6 +70,7 @@ public abstract class Item {
         this.price = price;
     }
 
+    // Only item types that opt in should be accepted by Player.useItem(...).
     public boolean canUse() {
         return false;
     }

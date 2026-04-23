@@ -1,11 +1,13 @@
 import java.util.Scanner;
 
+// Thin command loop that delegates game rules to Player and GameEngine.
 public class GameController {
     private final View view;
     private final Scanner input;
     private boolean isRunning;
     private final GameEngine engine;
 
+    // Wires together console IO and the current engine instance.
     public GameController() {
         this.view = new View();
         this.input = new Scanner(System.in);
@@ -13,6 +15,7 @@ public class GameController {
         this.engine = new GameEngine();
     }
 
+    // Reads commands from the console and routes each one to the owning class.
     public void run() {
         while (isRunning) {
             view.showCommandPrompt(engine.getRoomName());
@@ -26,24 +29,41 @@ public class GameController {
             String cmd = parts[0].toLowerCase();
             String arg = parts.length > 1 ? parts[1] : "";
 
+            // Inventory-related commands are kept here as routing only; Player owns the behavior.
             if (cmd.equals("quit")) {
                 isRunning = false;
             } else if (cmd.equals("inventory")) {
                 view.display(engine.getPlayer().showInventory());
             } else if (cmd.equals("drop")) {
-                view.display(engine.getPlayer().dropItem(arg, engine.getCurrentRoom()));
+                engine.getPlayer().dropItem(arg);
+                view.display(engine.getPlayer().getLastActionMessage());
             } else if (cmd.equals("pick") || cmd.equals("take")) {
-                view.display(engine.getPlayer().pickUpItem(arg, engine.getCurrentRoom()));
+                engine.getPlayer().pickUpItem(arg);
+                view.display(engine.getPlayer().getLastActionMessage());
+            } else if (cmd.equals("store")) {
+                engine.getPlayer().storeItem(engine.getPlayer().getItem(arg));
+                view.display(engine.getPlayer().getLastActionMessage());
             } else if (cmd.equals("use")) {
-                view.display(engine.getPlayer().useItem(arg));
+                engine.getPlayer().useItem(engine.getPlayer().getItem(arg));
+                view.display(engine.getPlayer().getLastActionMessage());
             } else if (cmd.equals("consume")) {
-                view.display(engine.getPlayer().consumeItem(arg));
+                engine.getPlayer().consumeFood();
+                view.display(engine.getPlayer().getLastActionMessage());
             } else if (cmd.equals("equip")) {
-                view.display(engine.getPlayer().equipWeapon(arg));
+                Item item = engine.getPlayer().getItem(arg);
+                if (item instanceof Weapon) {
+                    engine.getPlayer().equipWeapon((Weapon) item);
+                } else {
+                    // Passing null keeps the controller simple while still letting Player own the message.
+                    engine.getPlayer().equipWeapon(null);
+                }
+                view.display(engine.getPlayer().getLastActionMessage());
             } else if (cmd.equals("combine")) {
-                view.display(engine.getPlayer().combineItems(arg));
+                engine.getPlayer().combineItems();
+                view.display(engine.getPlayer().getLastActionMessage());
             } else if (cmd.equals("buy")) {
-                view.display(engine.getPlayer().buyItem(arg, engine.getCurrentRoom()));
+                engine.getPlayer().buyFood();
+                view.display(engine.getPlayer().getLastActionMessage());
             } else {
                 view.display(engine.navCommand(command));
             }

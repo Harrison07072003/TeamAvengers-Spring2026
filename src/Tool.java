@@ -1,3 +1,4 @@
+// Tools are non-consumable utility items such as flashlights or batteries.
 public class Tool extends Item {
     private String utilityType;
 
@@ -8,6 +9,7 @@ public class Tool extends Item {
         this.utilityType = utilityType;
     }
 
+    // Utility type gives game rules a hook for special-purpose tools later.
     public String getUtilityType() {
         return utilityType;
     }

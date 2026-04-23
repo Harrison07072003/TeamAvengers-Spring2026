@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 
+// Base model for anything in the game that can have stats, coins, and an inventory.
 public class Character {
+    // Shared identity and combat stats inherited by concrete character types.
     private String characterID;
     private String name;
     private int HP;
@@ -10,6 +12,7 @@ public class Character {
     private boolean isAlive;
     private int coins;
 
+    // Starts every character with stats and an empty inventory.
     public Character(String id, int maxHP, int attack, int defense) {
         this.characterID = id;
         this.name = "";
@@ -37,6 +40,7 @@ public class Character {
         return HP;
     }
 
+    // Dropping HP to zero also marks the character as dead.
     public void setHP(int HP) {
         this.HP = HP;
         if (this.HP <= 0) {
@@ -85,6 +89,7 @@ public class Character {
         this.coins = coins;
     }
 
+    // Formats the inventory once so the controller/view can print it directly.
     public String inventoryToString() {
         if (inventory == null || inventory.isEmpty()) {
             return "Inventory empty.";
