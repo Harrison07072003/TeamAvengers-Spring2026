@@ -5,9 +5,10 @@ public abstract class Item {
     private String Type;
     private String location;
     private String roomLocation;
-    private int value; // HP for consumables, attack for weapons, etc.
+    private int value;// HP for consumables, attack for weapons, etc.
+    private int price;
 
-    public Item(String Id, String Name, String Type,String Description,String location, String roomLocation,int value) {
+    public Item(String Id, String Name, String Type,String Description,String location, String roomLocation,int value,int price) {
         this.Id = Id;
         this.Name = Name;
         this.Type = Type;
@@ -15,6 +16,7 @@ public abstract class Item {
         this.location = location;
         this.roomLocation = roomLocation;
         this.value = value;
+        this.price = price;
     }
 
     public String getId() {
@@ -40,5 +42,9 @@ public abstract class Item {
     }
     public int getValue() {
         return value;
+    }
+
+    public int getPrice() {
+        return price;
     }
 }

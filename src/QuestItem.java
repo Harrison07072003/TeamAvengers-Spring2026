@@ -3,8 +3,8 @@ public class QuestItem extends Item {
     private String questType; // office_key, cure_vital, cure
 
     public QuestItem(String id, String name, String description,
-                     String location,String roomId ,String questType) {
-        super(id, name, "quest", description, location, roomId, 0);
+                     String location,String roomlocation ,String questType) {
+        super(id, name, "quest", description, location, roomLocation, 0);
         this.questType = questType.toLowerCase();
     }
 
@@ -25,7 +25,7 @@ public class QuestItem extends Item {
                 return true;
 
             case "cure":
-                if (player.isPlagueCured()) return false;
+                if () return false;
                 player.setPlagueCured(true);
                 player.removeItem(this);
                 return true;

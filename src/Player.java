@@ -29,6 +29,12 @@ public class Player extends Character {
         }
         return null;
     }
+    public Item storeItem(Item item) {
+        if (item == null || getInventory().size() >= inventoryCapacity) {
+            
+        }
+
+    }
     public Item dropItem(String itemName) {
 
         if (itemName == null || itemName.isEmpty()) {
@@ -70,20 +76,13 @@ public class Player extends Character {
     }
 
     public boolean pickUpItem(Item item) {
-        return addItem(item);
-    }
-
-    public void showInventory(View view) {
-
-        if (getInventory().isEmpty()) {
-            view.display("Inventory empty.");
-            return;
-        }
-
-        view.display("Inventory:");
-
-        for (Item item : getInventory()) {
-            view.display("- " + item.getName() + " [" + item.getType() + "]");
+        Item foundItem = currentRoom.getName(item);
+        if (foundItem != null) {
+            currentRoom.removeItem(item);
+            addToInventory(foundItem);
+            System.out.println(item + " has been picked up and added to your inventory");
+        } else {
+            System.out.println("item is not available in this room");
         }
     }
 
@@ -119,7 +118,7 @@ public class Player extends Character {
 
     // CONSUMABLES
 
-    /*public boolean consumeFood() {
+    public boolean consumeFood() {
         for (Item item : getInventory()) {
             if (item instanceof Consumable) {
                 ((Consumable) item).getHpRestore();
@@ -129,23 +128,25 @@ public class Player extends Character {
         }
         return false;
     }
-        */
     // VENDING
 
     public boolean buyFood(VendingMachine vendingMachine, String itemName) {
-        if (vendingMachine == null || itemName == null) return false;
+        if (vendingMachine == null || itemName == null || itemName.isEmpty()) {
+            return false;
+        }
+        if (itemName == null) {
+            System.out.println("Item not available in vending machine.");
+            return false;
+        }
 
-        if(getCoins() < 4){
+        if (getCoins() < vendingMachine.getprice()) {
+            System.out.println("Not enough coins to buy " + itemName);
             return false;
         }
-        Item item = vendingMachine.dispenseItem(itemName);
-        if (item == null) {
-            return false;
-        }
-        if(!addItem(item)){
-            return false;
-        }
-        setCoins(getCoins() - 4);
+
+        setCoins(getCoins() - food.getCost());
+        addItem(food);
+        System.out.println("You bought " + itemName + " for " + food.getCost() + " coins.");
         return true;
     }
 
@@ -193,14 +194,6 @@ public class Player extends Character {
 
     public void setOfficeUnlocked(boolean officeUnlocked) {
         this.officeUnlocked = officeUnlocked;
-    }
-
-    public boolean isPlagueCured() {
-        return plagueCured;
-    }
-
-    public void setPlagueCured(boolean plagueCured) {
-        this.plagueCured = plagueCured;
     }
 
     public Room getCurrentRoom() {
