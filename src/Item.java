@@ -56,9 +56,10 @@ public abstract class Item {
         return this.itemId + "," + this.itemName + "," + this.category + "," + this.description + "," + this.value + "," + this.roomLocation + "," + this.location + "," + this.price;
     }
 
-
-
     public String toString() {
         return itemId + " - " + itemName + " (" + category + ")";
     }
+  //public String toString(){
+   //     return this.name + ": Raises damage by " + this.getAttackBonus();
+    //}
 }

@@ -6,7 +6,7 @@ public class Main {
     String e = "Jocelin";
 
     public static void main(String[] args) {
-        GameController gc = new GameController();
-        gc.startGame();
+        GameController GameManager = new GameController();
+        GameManager.startGame();
     }
 }

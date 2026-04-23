@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Character {
+public abstract class Character {
     //fields
     private String charaterID;
     private int maxHP;
@@ -9,9 +9,10 @@ public class Character {
     private int defense;
     private ArrayList<Item> inventory;
     private boolean alive;
+    private boolean defending;
     private int coins;
     //constructor
-    public Character(String id, int maxHP, int attack, int defense,int coins) {
+    public Character(String id, int maxHP, int attack, int defense, int coins) {
         this.charaterID = id;
         this.maxHP = maxHP;
         this.currentHP = maxHP;
@@ -19,17 +20,13 @@ public class Character {
         this.defense = defense;
         this.inventory = new ArrayList<Item>();
         this.alive = true;
+        this.defending = false;
         this.coins = coins;
     }
     //methods
+    //getters and setters
     public String getCharaterID() {
         return this.charaterID;
-    }
-    public int getMaxHP() {
-        return this.maxHP;
-    }
-    public int getCurrentHP() {
-        return this.currentHP;
     }
     public int getAttack() {
         return this.attack;
@@ -37,45 +34,65 @@ public class Character {
     public int getDefense() {
         return this.defense;
     }
-    public ArrayList<Item> getInventory() {
-        return this.inventory;
-    }
-    public boolean isAlive() {
-        return this.alive;
-    }
-    public void setCurrentHP(int currentHP) {
-        this.currentHP = currentHP;
-    }
-
     public void setAttack(int i) {
         this.attack = i;
     }
     public void setDefense(int i) {
         this.defense = i;
+    public int getCurrentHP() {
+        return currentHP;
+    }
+    public int getMaxHP(){
+        return this.maxHP;
+    }
+    public String getHealth() {
+        return this.currentHP + "/" + this.maxHP;
+    }
+    public ArrayList<Item> getInventory() {
+        return this.inventory;
+    }
+    public int getCoins() {
+        return this.coins;
     }
     public void setCoins(int coins) {
         this.coins = coins;
     }
 
-    public void setAlive(boolean alive) {
-        this.alive = alive;
-    }
 
     public void setCharacterID(String trim) {
         this.charaterID = trim;
     }
     public String getInventoryString() {
+        int i = 1;
         String inventoryString = "";
         if (this.inventory.isEmpty()) {
             return "Your Inventory is Empty";
         }
         for (Item item : this.getInventory()) {
-            inventoryString += item.getItemName() + ", ";
+            inventoryString += i + "." + item.getItemName() +"\n";
+            i++;
         }
-        return (inventoryString.substring(0, inventoryString.length() - 2));
+        return inventoryString.substring(0,inventoryString.length()-1);
     }
-
-    public void setMaxHP(int i) {
+     public void setMaxHP(int i) {
         this.maxHP = i;
     }
+    public boolean isAlive() {
+        return this.alive;
+    }
+    public void setAlive(boolean status) {
+        this.alive = status;
+    }
+    public void setCurrentHP(int hp) {
+        this.currentHP = hp;
+    }
+    public boolean isDefending() {
+        return this.defending;
+    }
+    public void setDefending(boolean defending) {
+        this.defending = defending;
+    }
+    //drop item
+    public abstract Item dropItem(String item);
+
 }

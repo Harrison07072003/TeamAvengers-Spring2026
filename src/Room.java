@@ -30,42 +30,40 @@ public class Room {
 
     //getters
     public String getRoomId() {
-        return roomId;
+        return this.roomId;
     }
-    public String getDescription() {
-        return roomDescription;
-    }
+
     public String getRoomName() {
-        return roomName;
+        return this.roomName;
     }
 
     public String getRoomDescription() {
-        return roomDescription;
+        return this.roomDescription;
     }
 
     public String getBuilding() {
-        return building;
+        return this.building;
     }
 
     public HashMap<String, String> getExits() {
-        return exits;
+        return this.exits;
     }
 
     public String getExit(String input) {
-        if (exits.containsKey((input).substring(0,1))) {
-            return exits.get(input.substring(0,1));
-        }else if(exits.containsValue(input)){
+        if (this.exits.containsKey((input).substring(0,1))) {
+            return this.exits.get(input.substring(0,1));
+        }else if(this.exits.containsValue(input)){
             return input;
         }
         return null;
     }
 
     public ArrayList<Item> getInventory() {
-        return inventory;
+        return this.inventory;
     }
 
     public ArrayList<Monster> getMonster() {
-        return monsters;
+        return this.monsters;
     }
 
     public Puzzle getPuzzle() {
@@ -73,10 +71,10 @@ public class Room {
     }
 
     public boolean requiresValidFlashlight() {
-        return requiresValidFlashlight;
+        return this.requiresValidFlashlight;
     }
 
-    public VendingMachine getVendingMachine() {
+  public VendingMachine getVendingMachine() {
         return vendingMachine;
     }
 
@@ -90,13 +88,18 @@ public class Room {
     }
 
 
+
+
     //methods
     public boolean hasItem() {
-        return !inventory.isEmpty();
+        return !this.inventory.isEmpty();
     }
 
-    public boolean hasMonster() {
-        return !monsters.isEmpty();
+    public boolean hasMonsters() {
+        return !this.monsters.isEmpty();
+    }
+    public ArrayList<Monster> getMonsters(){
+        return this.monsters;
     }
 
     public boolean hasPuzzle() {
@@ -108,20 +111,22 @@ public class Room {
     }
 
 
+
+
     public void addItem(Item item) {
-        inventory.add(item);
+        this.inventory.add(item);
     }
 
     public void removeItem(Item item) {
-        inventory.remove(item);
+        this.inventory.remove(item);
     }
 
     public void addMonster(Monster monster) {
-        monsters.add(monster);
+        this.monsters.add(monster);
     }
 
     public void removeMonster(Monster monster) {
-        monsters.remove(monster);
+        this.monsters.remove(monster);
     }
 
     public void removePuzzle() {
@@ -142,4 +147,5 @@ public class Room {
         }
         return exitString.substring(0, exitString.length() - 1);
     }
+
 }
