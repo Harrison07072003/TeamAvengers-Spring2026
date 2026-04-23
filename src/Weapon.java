@@ -5,4 +5,7 @@ public class Weapon extends Item {
         super(itemId, itemName, category, description, value,roomLocation, location,price);
     }
     //methods
+    public int getAttackBonus(){
+        return this.getValue();
+    }
 }

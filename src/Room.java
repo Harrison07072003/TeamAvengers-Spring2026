@@ -88,8 +88,6 @@ public class Room {
     }
 
 
-
-
     //methods
     public boolean hasItem() {
         return !this.inventory.isEmpty();
@@ -143,7 +141,7 @@ public class Room {
     public String getExitsFileString() {
         String exitString = "";
         for (String key : exits.keySet()) {
-            exitString += key + "," + exits.get(key) + ".";
+            exitString += key + "," + exits.get(key) + ",";
         }
         return exitString.substring(0, exitString.length() - 1);
     }

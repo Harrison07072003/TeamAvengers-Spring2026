@@ -39,8 +39,9 @@ public abstract class Character {
     }
     public void setDefense(int i) {
         this.defense = i;
+    }
     public int getCurrentHP() {
-        return currentHP;
+        return this.currentHP;
     }
     public int getMaxHP(){
         return this.maxHP;
@@ -57,8 +58,6 @@ public abstract class Character {
     public void setCoins(int coins) {
         this.coins = coins;
     }
-
-
     public void setCharacterID(String trim) {
         this.charaterID = trim;
     }

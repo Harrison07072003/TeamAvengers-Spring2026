@@ -59,4 +59,7 @@ public class Monster extends Character{
    public String fileString(){
         return this.getCharaterID() + "," + this.getMonsterName() + "," + this.getMonsterDescription() + "," + this.getMaxHP() + "," + this.getAttack() + "," + this.getDefense() + "," + this.getCoins() + "," + this.getRoomID();
     }
+    public String getRoomID() {
+        return this.RoomID;
+    }
 }

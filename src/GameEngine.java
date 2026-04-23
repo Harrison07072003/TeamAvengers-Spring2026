@@ -6,7 +6,7 @@ public class GameEngine {
     private final GameResult result;
     //constructor
     public GameEngine(){
-        this.school = new RoomMap();
+        this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","items.txt");
         this.A = new Player("Player", 100, 18, 5, 10,"R1",school);
         this.combatEngine = new CombatEngine(A);
         this.result = new GameResult();
@@ -32,13 +32,30 @@ public class GameEngine {
         school.getRooms().get(1).getMonsters().add(m2);
         school.getRooms().get(2).getMonsters().add(m3);
         school.getRooms().get(3).getMonsters().add(m4);
-        Item s = new Item("IO1","Sword", "A sharp sword",5);
-        Item s2 = new Item("IO2","Shield", "A sturdy shield",100);
-        Item s3 = new Item("IO3","Revolver","Crimson case",20);
+        Item s = new Weapon("IO1","Sword","Weapon" ,"A sharp sword",5,"R1","M0",0);
+        Item s2 = new Weapon("IO2","Shield","Weapon" ,"A sturdy shield",100,"R2","M1",0);
+        Item s3 = new Weapon("IO3","Revolver","Weapon","Crimson case",20,"R3","M2",0);
         m.getInventory().add(s);
         m2.getInventory().add(s2);
         m3.getInventory().add(s3);
-        A.getInventory().add(new Item("104,","Powered Flashlight","A flashlight that can be used to explore dark rooms",10));
+        A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
+    }
+    public void resetGame(){
+        A.resetPlayer();
+        school.generateRooms();
+        school.spawnMonsters();
+        school.loadPuzzles();
+        school.putVendingMachines();
+        school.loadItems();
+    }
+    public String saveGame(){
+        return school.saveGame(A);
+    }
+    public String loadGame(){
+        return school.loadGame(A);
+    }
+    public boolean saveExists(){
+        return school.saveExists();
     }
 
     //navigation
@@ -75,6 +92,10 @@ public class GameEngine {
             result.setMessage(A.enterRoom(command.substring(6)) + "\n");
         else if(command.equals("explore"))
             result.setMessage(A.exploreRoom() + "\n");
+        else if(command.equals("save game"))
+            result.setMessage(this.saveGame());
+        else if(command.equals("load game"))
+            result.setMessage(this.loadGame());
         else
             this.result.setMessage("Invalid Command\n");
         this.result.setMessage(this.result.getMessage() + "-----------------------------------");

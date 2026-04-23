@@ -84,14 +84,14 @@ public class RoomMap {
                 String line = input.nextLine();
                 if(line.length() == 0){ continue; }
                 String[] values = line.split(",");
-                monsterId = values[0];
-                monsterName = values[1];
-                monsterDescription = values[2];
-                hp = Integer.parseInt(values[3]);
-                attack = Integer.parseInt(values[4]);
-                defense = Integer.parseInt(values[5]);
-                coins = Integer.parseInt(values[6]);
-                roomId = values[7];
+                monsterId = values[0].trim();
+                monsterName = values[1].trim();
+                monsterDescription = values[2].trim();
+                hp = Integer.parseInt(values[3].trim());
+                attack = Integer.parseInt(values[4].trim());
+                defense = Integer.parseInt(values[5].trim());
+                coins = Integer.parseInt(values[6].trim());
+                roomId = values[7].trim();
                 Monster villan = new Monster(monsterId, monsterName, monsterDescription, hp, attack, defense, coins, roomId);
                 rooms.get(Integer.parseInt(roomId.substring(1))-1).addMonster(villan);
             }
@@ -180,13 +180,13 @@ public class RoomMap {
                 String[] values = line.split("\\|");
                 itemId = values[0];
                 itemName = values[1];
-                itemDescription = values[2];
-                category = values[3];
+                category = values[2];
+                itemDescription = values[3];
                 value = Integer.parseInt(values[4]);
                 roomLocation = values[5];
                 location = values[6];
                 price = Integer.parseInt(values[7]);
-                Item item = returnItem(itemId, itemName, itemDescription, category, value, roomLocation,location,price);
+                Item item = returnItem(itemId, itemName, category, itemDescription, value, roomLocation,location,price);
                 if(location.startsWith("R")){
                     rooms.get(Integer.parseInt(location.substring(1))-1).addItem(item);
                 }
@@ -205,7 +205,11 @@ public class RoomMap {
             System.out.println("Error: items.txt file not found.");
         }
     }
-
+    public boolean saveExists() {
+        File save = new File(saveFile);
+        File checkpoint = new File(checkpointFile);
+        return save.exists() || checkpoint.exists();
+    }
     public ArrayList<Room> getRooms(){
         return this.rooms;
     }
@@ -213,32 +217,33 @@ public class RoomMap {
         int roomNumber = Integer.parseInt(num.substring(1));
         return rooms.get(roomNumber-1);
     }
-    private Item returnItem(String itemId, String itemName, String itemDescription, String category, int value, String roomLocation,String location,int price){
+    private Item returnItem(String itemId, String itemName, String category, String itemDescription, int value, String roomLocation,String location,int price){
         if(category.equals("Weapon")){
-            return new Weapon (itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+            return new Weapon (itemId, itemName, category, itemDescription, value, roomLocation, location, price);
         }
         else if(category.equals("Tool")){
-            return new Tool (itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+            return new Tool (itemId, itemName, category, itemDescription, value, roomLocation, location, price);
         }
         else if(category.equals("Consumable")){
-            return new Consumable (itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+            return new Consumable (itemId, itemName, category, itemDescription, value, roomLocation, location, price);
         }
         else if(category.equals("QuestItem")){
-            return new QuestItem(itemId, itemName, itemDescription, category, value, roomLocation, location, price);
+            return new QuestItem(itemId, itemName, category, itemDescription, value, roomLocation, location, price);
         }
         return null;
     }
 
-    public void saveGame(Player player) {
+    public String saveGame(Player player) {
         try (PrintWriter output = new PrintWriter(saveFile)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             output.println("Current Timestamp: " + timestamp);
             savePlayerSection(output, player);
             savePlayerInventorySection(output, player);
             saveRoomsSection(output);
-            System.out.println("Game saved successfully.");
+            return "Game saved successfully.\n";
         } catch (Exception e) {
-            System.out.println("Error saving game.");
+            e.printStackTrace();
+            return "Error saving game." + e.getMessage() + "\n";
         }
     }
 
@@ -267,18 +272,16 @@ public class RoomMap {
 
     }
 
-    public void loadGame(Player player) {
+    public String loadGame(Player player) {
         this.setActualLoadFile(saveFile,checkpointFile);
         if (actualLoadFile == null || actualLoadFile.isEmpty()) {
-            System.out.println("No saved game found.");
-            return;
+            return "No saved game found.\n";
         }
         rooms.clear();
         player.getInventory().clear();
         File save = new File(actualLoadFile);
         if (!save.exists()) {
-            System.out.println("No saved game found.");
-            return;
+            return "No saved game found.\n";
         }
         //compare timestamps and load most recent
         try (Scanner input = new Scanner(save)) {
@@ -300,20 +303,21 @@ public class RoomMap {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("No saved game found.");
+            return "No saved game found\n.";
         }
+        return "Game loaded successfully.\n";
     }
 
     private void savePlayerSection(PrintWriter output, Player player) {
         output.println("PLAYER");
         output.println(player.getCharaterID() + "," +
                 player.getCurrentHP() + "," +
-                player.getMaxHP() + "," +
                 player.getAttack() + "," +
                 player.getDefense() + "," +
                 player.getCoins() + "," +
-                player.getCurrentRoom() + "," +
-                player.getVialCount());
+                player.getVialCount() + "," +
+                player.getRoomID() + "," +
+                player.getMaxHP());
     }
 
     private void savePlayerInventorySection(PrintWriter output, Player player) {
@@ -335,21 +339,36 @@ public class RoomMap {
         }
     }
 
+    // java
+// in src/RoomMap.java - add helper and replace methods below
+
+    // helper to avoid breaking the '|' separator if field contains '|'
+    private String sanitize(String s) {
+        if (s == null) return "";
+        return s.replace("|", "/"); // replace pipe with safe char
+    }
+
     private void saveRoom(PrintWriter output, Room room) {
-        output.println("ROOM|" + room.getRoomId() +
-                "," + room.getRoomName() +
-                "," + room.getRoomDescription() +
-                "," + room.getBuilding() +
-                "," + room.requiresValidFlashlight());
+        // Use '|' as field delimiter so commas in descriptions/building don't break parsing
+        output.println("ROOM|" + sanitize(room.getRoomId()) +
+                "|" + sanitize(room.getRoomName()) +
+                "|" + sanitize(room.getRoomDescription()) +
+                "|" + sanitize(room.getBuilding()) +
+                "|" + room.requiresValidFlashlight());
         output.println("EXITS|" + room.getExitsFileString());
         for (Item item : room.getInventory()) {
             output.println("Room ITEM|" + item.toFileString());
         }
         if (room.getPuzzle() != null) {
             output.println("PUZZLE|" + room.getPuzzle().toFileString());
-            output.println("PUZZLE REWARD|" + room.getPuzzle().getRewardsFileString());
+            if (room.getPuzzle().getRewards() == null || room.getPuzzle().getRewards().isEmpty()) {
+                output.println("PUZZLE REWARD|none");
+            } else {
+                output.println("PUZZLE REWARD|" + room.getPuzzle().getRewardsFileString());
+            }
         } else {
             output.println("PUZZLE|none");
+            output.println("PUZZLE REWARD|none");
         }
         for (Monster monster : room.getMonster()) {
             output.println("MONSTER|" +
@@ -378,6 +397,9 @@ public class RoomMap {
         output.println("ENDROOM");
     }
 
+// in handleRoomsLine(...) replace ROOM parsing branch with:
+
+
     private void handlePlayerLine(String line, Player player) {
         String[] values = line.split(",");
         // preserved original mapping from your code
@@ -388,48 +410,99 @@ public class RoomMap {
         player.setCoins(Integer.parseInt(values[4].trim()));
         player.setVialCount(Integer.parseInt(values[5].trim()));
         player.setCurrentRoom(values[6].trim());
+        player.setMaxHP(Integer.parseInt(values[7].trim()));
     }
+
+    // --- START: Robust item parsing for load operations ---
+    /**
+     * Parse an item line coming from a toFileString() representation where the description
+     * may contain commas. The format (fields) expected is:
+     * id,name,description,category,value,roomLocation,location,price
+     * description can contain commas, so this method reconstructs the description by
+     * taking the variable-middle part between the fixed head and fixed tail fields.
+     */
+    // java
+    private Item parseItemFromData(String itemData) {
+        String[] parts = itemData.split(",");
+        if (parts.length < 8) {
+            return null; // not enough fields
+        }
+        int n = parts.length;
+        int priceIndex = n - 1;
+        int locationIndex = n - 2;
+        int roomLocationIndex = n - 3;
+        int valueIndex = n - 4;
+        int categoryIndex = 2; // as requested: category is the third parameter (index 2)
+        int descriptionStart = 3; // description begins at index 3
+        int descriptionEnd = valueIndex - 1; // description ends just before the value field
+
+        String itemId = parts[0].trim();
+        String itemName = parts[1].trim();
+        String category = parts[categoryIndex].trim();
+
+        // Rebuild description which may contain commas
+        StringBuilder desc = new StringBuilder();
+        for (int i = descriptionStart; i <= descriptionEnd; i++) {
+            if (i > descriptionStart) desc.append(",");
+            desc.append(parts[i]);
+        }
+        String itemDescription = desc.toString().trim();
+
+        try {
+            int value = Integer.parseInt(parts[valueIndex].trim());
+            String roomLocation = parts[roomLocationIndex].trim();
+            String location = parts[locationIndex].trim();
+            int price = Integer.parseInt(parts[priceIndex].trim());
+
+            return returnItem(itemId, itemName, category, itemDescription, value, roomLocation, location, price);
+        } catch (NumberFormatException e) {
+            return null; // invalid numeric fields
+        }
+    }
+
+    // --- END: Robust item parsing for load operations ---
 
     private void handlePlayerInventoryLine(String line, Player player) {
         if (line.startsWith("Player ITEM|")) {
-            String itemData = line.split("\\|")[1].trim();
-            String[] itemValues = itemData.split(",");
-            Item item = returnItem(itemValues[0], itemValues[1], itemValues[2], itemValues[3],
-                    Integer.parseInt(itemValues[4]), itemValues[5], itemValues[6], Integer.parseInt(itemValues[7]));
-            player.getInventory().add(item);
+            String itemData = line.split("\\|",2)[1].trim();
+            Item item = parseItemFromData(itemData);
+            if (item != null) player.getInventory().add(item);
         } else if (line.startsWith("EQUIPPED|")) {
-            String equippedData = line.split("\\|")[1].trim();
+            String equippedData = line.split("\\|",2)[1].trim();
             if (!equippedData.equals("none")) {
-                String[] equippedValues = equippedData.split(",");
-                Weapon equippedWeapon = new Weapon(equippedValues[0], equippedValues[1], equippedValues[2], equippedValues[3],
-                        Integer.parseInt(equippedValues[4]), equippedValues[5], equippedValues[6], Integer.parseInt(equippedValues[7]));
-                player.setEquippedWeapon(equippedWeapon);
+                Item equipped = parseItemFromData(equippedData);
+                if (equipped != null && equipped instanceof Weapon) {
+                    player.setEquippedWeapon((Weapon) equipped);
+                }
             }
         }
     }
 
     private void handleRoomsLine(String line) {
         if (line.startsWith("ROOM|")) {
-            String roomData = line.split("\\|")[1].trim();
-            String[] roomValues = roomData.split(",");
-            Room room = new Room(roomValues[0], roomValues[1], roomValues[2], roomValues[3],
-                    Boolean.parseBoolean(roomValues[4]));
+            // split into up to 6 parts: "ROOM", id, name, description, building, requiresFlashlight
+            String[] roomValues = line.split("\\|", 6);
+            if (roomValues.length < 6) {
+                System.out.println("Skipping malformed ROOM line: " + line);
+                return;
+            }
+            Room room = new Room(roomValues[1], roomValues[2], roomValues[3], roomValues[4],
+                    Boolean.parseBoolean(roomValues[5]));
             rooms.add(room);
         } else if(line.startsWith("EXITS|")) {
-            String exitsData = line.split("\\|")[1].trim();
+            String exitsData = line.split("\\|",2)[1].trim();
             String[] exits = exitsData.split(",");
-            for(int i = 0; i < exits.length/2;i+=2){
+            // iterate in pairs: direction, targetRoom
+            for(int i = 0; i + 1 < exits.length; i += 2){
                 rooms.get(rooms.size() - 1).addExit(exits[i].trim(), exits[i+1].trim());
             }
         }
         else if (line.startsWith("Room ITEM|")) {
-            String itemData = line.split("\\|")[1].trim();
-            String[] itemValues = itemData.split(",");
-            Item item = returnItem(itemValues[0], itemValues[1], itemValues[2], itemValues[3],
-                    Integer.parseInt(itemValues[4]), itemValues[5], itemValues[6], Integer.parseInt(itemValues[7]));
-            rooms.get(rooms.size() - 1).addItem(item);
+            String itemData = line.split("\\|",2)[1].trim();
+            Item item = parseItemFromData(itemData);
+            if (item != null) rooms.get(rooms.size() - 1).addItem(item);
         } else if (line.startsWith("PUZZLE|")) {
-            String puzzleData = line.split("\\|")[1].trim();
+            String puzzleData = line.split("\\|",2)[1].trim();
             if (!puzzleData.equals("none")) {
                 String[] puzzleValues = puzzleData.split(",");
                 Puzzle puzzle = new Puzzle(puzzleValues[0], puzzleValues[1], puzzleValues[2], puzzleValues[3],
@@ -437,16 +510,21 @@ public class RoomMap {
                 rooms.get(rooms.size() - 1).setPuzzle(puzzle);
             }
         } else if (line.startsWith("PUZZLE REWARD|")) {
-            String rewardsData = line.split("\\|")[1].trim();
+            String rewardsData = line.split("\\|",2)[1].trim();
+            if (rewardsData.equals("none")) {
+                // nothing to add
+                return;
+            }
             String[] rewards = rewardsData.split(";");
+            // ensure puzzle exists before attempting to add rewards
+            Puzzle roomPuzzle = rooms.get(rooms.size() - 1).getPuzzle();
+            if (roomPuzzle == null) return;
             for (int i = 0; i < rewards.length; i++) {
-                String[] rewardValues = rewards[i].split(",");
-                Item reward = returnItem(rewardValues[0], rewardValues[1], rewardValues[2], rewardValues[3],
-                        Integer.parseInt(rewardValues[4]), rewardValues[5], rewardValues[6], Integer.parseInt(rewardValues[7]));
-                rooms.get(rooms.size() - 1).getPuzzle().getRewards().add(reward);
+                Item reward = parseItemFromData(rewards[i].trim());
+                if (reward != null) roomPuzzle.getRewards().add(reward);
             }
         } else if (line.startsWith("MONSTER|")) {
-            String monsterData = line.split("\\|")[1].trim();
+            String monsterData = line.split("\\|",2)[1].trim();
             String[] monsterValues = monsterData.split(",");
             Monster monster = new Monster(monsterValues[0], monsterValues[1], monsterValues[2],
                     Integer.parseInt(monsterValues[3]), Integer.parseInt(monsterValues[4]),
@@ -455,46 +533,49 @@ public class RoomMap {
             monster.setMaxHP(Integer.parseInt(monsterValues[9]));
             rooms.get(rooms.size() - 1).addMonster(monster);
         } else if (line.startsWith("VENDING MACHINE|")) {
-            String vendingData = line.split("\\|")[1].trim();
+            String vendingData = line.split("\\|",2)[1].trim();
             if (!vendingData.equals("none")) {
                 VendingMachine vm = new VendingMachine(vendingData, rooms.get(rooms.size() - 1).getRoomId());
                 rooms.get(rooms.size() - 1).setVendingMachine(vm);
             }
         } else if (line.startsWith("Monster ITEM|")) {
-            String itemData = line.split("\\|")[2].trim();
-            String[] itemValues = itemData.split(",");
-            Item item = returnItem(itemValues[0], itemValues[1], itemValues[2], itemValues[3],
-                    Integer.parseInt(itemValues[4]), itemValues[5], itemValues[6], Integer.parseInt(itemValues[7]));
-            String monsterId = line.split("\\|")[1].trim();
-            for (Room room : rooms) {
-                for (Monster monster : room.getMonster()) {
-                    if (monster.getCharaterID().equals(monsterId)) {
-                        monster.getInventory().add(item);
+            // format: Monster ITEM|<monsterId>|<item toFileString>
+            String[] split = line.split("\\|",3);
+            String monsterId = split[1].trim();
+            String itemData = split[2].trim();
+            Item item = parseItemFromData(itemData);
+            if (item != null) {
+                for (Room room : rooms) {
+                    for (Monster monster : room.getMonster()) {
+                        if (monster.getCharaterID().equals(monsterId)) {
+                            monster.getInventory().add(item);
+                        }
                     }
                 }
             }
         } else if (line.startsWith("VendingMachine ITEM|")) {
-            String itemData = line.split("\\|")[1].trim();
-            String[] itemValues = itemData.split(",");
-            Item item = returnItem(itemValues[0], itemValues[1], itemValues[2], itemValues[3],
-                    Integer.parseInt(itemValues[4]), itemValues[5], itemValues[6], Integer.parseInt(itemValues[7]));
-            rooms.get(rooms.size() - 1).getVendingMachine().addItem(item, Integer.parseInt(itemValues[7]));
+            String itemData = line.split("\\|",2)[1].trim();
+            Item item = parseItemFromData(itemData);
+            if (item != null && rooms.get(rooms.size() - 1).getVendingMachine() != null) {
+                rooms.get(rooms.size() - 1).getVendingMachine().addItem(item, item.getPrice());
+            }
         } else if (line.equals("ENDROOM")) {
             // nothing to do here - room already completed
         }
     }
 
-    public void checkpoint(Player player) {
+    public String checkpoint(Player player) {
         try (PrintWriter output = new PrintWriter(checkpointFile)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             output.println("Current Timestamp: " + timestamp);
             savePlayerSection(output, player);
             savePlayerInventorySection(output, player);
             saveRoomsSection(output);
-            System.out.println("Checkpoint saved successfully.");
+            return "Checkpoint saved successfully.";
         } catch (Exception e) {
             System.out.println("Error saving checkpoint.");
         }
+        return "Error saving checkpoint.";
     }
 
 }

@@ -3,8 +3,9 @@ public class Player extends Character{
     //fields
     private String previousRoom;
     private String currentRoom;
-    private final RoomMap Map;
-    private Item equippedWeapon;
+    private RoomMap Map;
+    private Weapon equippedWeapon;
+    private final Weapon standardWeapon = new Weapon("W0","Fists","Weapon","Your bare hands. Not very effective, but better than nothing.",0,"R0","P1",0);
     private int vials;
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
     private int capacity;
@@ -13,7 +14,7 @@ public class Player extends Character{
         super(id, maxHP, attack, defense,coins);
         this.currentRoom = roomID;
         this.Map = map;
-        this.equippedWeapon = new Item("I0","Fists","test,",0);
+        this.equippedWeapon = standardWeapon;
         this.currentState = 1;
         this.vials = 0;
         this.previousRoom = roomID;
@@ -23,18 +24,18 @@ public class Player extends Character{
     //methods
     // getters and setters for my fields
      public RoomMap getMap() {
-        return map;
+        return Map;
     }
 
     public void setMap(RoomMap map) {
-        this.map = map;
+        this.Map = map;
     }
     public int getVialCount() {
-        return vialCount;
+        return this.vials;
     }
 
     public void setVialCount(int vialCount) {
-        this.vialCount = vialCount;
+        this.vials = vialCount;
     }
 
     public int getCapacity() {
@@ -159,11 +160,13 @@ public class Player extends Character{
             return "There is no weapon equipped.";
         return this.equippedWeapon.toString();
     }
-    public boolean equipWeapon(String weapon){
-        for(int i = 0; i < this.getInventory().size(); i++){
-            if(this.getInventory().get(i).getItemName().equalsIgnoreCase(weapon)){
-                this.equippedWeapon = this.getInventory().get(i);
-                return true;
+    public boolean equipWeapon(String weapon) {
+        for (int i = 0; i < this.getInventory().size(); i++) {
+            if (this.getInventory().get(i).getItemName().equalsIgnoreCase(weapon)) {
+                if (this.getInventory().get(i).getCategory().equalsIgnoreCase("Weapon")) {
+                    this.equippedWeapon = (Weapon) this.getInventory().get(i);
+                    return true;
+                }
             }
         }
         return false;
@@ -250,8 +253,12 @@ public class Player extends Character{
         this.setAlive(true);
         this.setCurrentHP(this.getMaxHP());
         this.setVialCount(0);
-        this.setEquippedWeapon(null);
+        this.setStandardWeapon();
         this.clearInventory();
+    }
+
+    private void setStandardWeapon() {
+        this.equippedWeapon = standardWeapon;
     }
 
     //delete after test
@@ -276,17 +283,17 @@ public class Player extends Character{
         this.getInventory().clear();
     }
 
-    public int getCoins(){
-        return coins;
-    }
-
-public Item getItem(String itemId) {
-        for (Item item : this.getInventory()) {
-            if (item.getItemName().equalsIgnoreCase(itemId)) {
-
     public boolean EscapeGame(){
         if (currentRoom.equals("R2") && this.getInventory().contains(getItem("Cure")))
             return true;
         return false;
+    }
+
+    public Weapon getEquippedWeapon() {
+        return this.equippedWeapon;
+    }
+
+    public void setEquippedWeapon(Weapon equippedWeapon) {
+        this.equippedWeapon = equippedWeapon;
     }
 }

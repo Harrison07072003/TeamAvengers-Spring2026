@@ -29,7 +29,7 @@ public class View {
             +"3.Defend - Defend against an attack from a monster\n" + "4.Dodge - Chance to dodge monster attack\n" +"5.Check Weapon - View the stats of the currently held weapon\n" + "6.Retreat - Flee from the monster\n--------------------");
     }
     public void showMap(String building) {
-        if (building.equals("Building E")) {
+        if (building.equals("E Building")) {
             System.out.println(
                             "                         |Building E|\n" +
                             " [Game Room] -------- [Kitchen] -------- [Dining Hall]\n" +
@@ -45,7 +45,7 @@ public class View {
                             "                          |                 |            \n" +
                             "[Electric Control Room]----                 ----[Malfunctioning Elevators]"
             );
-        } else if (building.equals("Building H")) {
+        } else if (building.equals("H Building")) {
             System.out.println(
                             "                         |H Building|\n" +
                             " [Chemistry Lab] ---- [Professor Office] ---- [Chemistry Lab 2]\n" +
