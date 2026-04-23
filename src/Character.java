@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
 public class Character {
-    //fields
     private String characterID;
     private String name;
     private int HP;
@@ -10,20 +9,20 @@ public class Character {
     private ArrayList<Item> inventory;
     private boolean isAlive;
     private int coins;
-    //constructor
+
     public Character(String id, int maxHP, int attack, int defense) {
         this.characterID = id;
-        this.name = ""; // Default, can be set
+        this.name = "";
         this.HP = maxHP;
         this.ATK = attack;
         this.DEF = defense;
         this.inventory = new ArrayList<>();
         this.isAlive = true;
-        this.coins = 0; // Default
+        this.coins = 0;
     }
-    //methods
+
     public String getCharacterID() {
-        return this.characterID;
+        return characterID;
     }
 
     public String getName() {
@@ -40,6 +39,10 @@ public class Character {
 
     public void setHP(int HP) {
         this.HP = HP;
+        if (this.HP <= 0) {
+            this.HP = 0;
+            this.isAlive = false;
+        }
     }
 
     public int getATK() {
@@ -70,8 +73,8 @@ public class Character {
         return isAlive;
     }
 
-    public void setAlive(boolean isAlive) {
-        this.isAlive = isAlive;
+    public void setAlive(boolean alive) {
+        this.isAlive = alive;
     }
 
     public int getCoins() {
@@ -82,4 +85,19 @@ public class Character {
         this.coins = coins;
     }
 
+    public String inventoryToString() {
+        if (inventory == null || inventory.isEmpty()) {
+            return "Inventory empty.";
+        }
+
+        StringBuilder sb = new StringBuilder("Inventory:\n");
+        for (Item item : inventory) {
+            sb.append("- ")
+                    .append(item.getName())
+                    .append(" [")
+                    .append(item.getType())
+                    .append("]\n");
+        }
+        return sb.toString().trim();
+    }
 }

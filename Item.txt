@@ -1,17 +1,25 @@
-# ID|Name|Type|Description|Location|roomLocation|Value|price|
-A1|Flashlight|tool|Used to see throughout the game. Needs batteries to stay powered|R17|R17|0|0|
-A2|Batteries|tool| Used to power the flashlight|P1|R1|0|0|
-A3|Cure Vital 4| quest|Used to make a cure for the plague|M1|R18|0|
-A3a|Cure Vital 3|quest|Used to make a cure for the plague|M5|R7|0|
-A3b|Cure Vital 1|quest|Used to make a cure for the plague|P1|R4|0|
-A3c|Cure Vital 2|quest|Used to make a cure for the plague|P2|R5|0|
-A3d|Cure Vital 5|quest|Used to make a cure for the plague|R3|R3|0|
-A4|Vending Machine food|consumable|R5, R11, R19|R5, R11, R19|5|4|
-A5|Normal food|consumable|R8|R8|7|0|0|
-A7|Kitchen Knife|weapon|Sharp knife used for cutting and self-defense|M2|R6|20|0|
-A8|Fork|weapon|A utensil used for eating and can be used as a weapon in emergencies|M2|R8|10|0|
-A9|Book|weapon|A worn-out book filled with ancient knowledge and secrets|R3|R3|15|0|
-A10|Backpack|tool|A sturdy backpack used for carrying items and supplies during the game|R16|R16|15|0|
-A11|Broom|weapon|A cleaning tool that can be used for sweeping and as a makeshift weapon|R2|R2|15|0|
-A12|Office Key|quest|A key that opens the office door|P3|R1|0|0|
-A13|Cure|quest|A powerful remedy that can cure the plague|R16|R16|0|0|
+#itemId|itemName|description|category|value|roomLocationID|physicalLocationID|price
+
+A1|Flashlight|Used to see throughout the game. Needs batteries to stay powered|tool|0|R17|R17|0
+A2|Batteries|Used to power the flashlight|tool|0|R1|P1|0
+
+A3|Cure Vital 4|Used to make a cure for the plague|quest|0|R18|M1|0
+A3a|Cure Vital 3|Used to make a cure for the plague|quest|0|R7|M5|0
+A3b|Cure Vital 1|Used to make a cure for the plague|quest|0|R4|P1|0
+A3c|Cure Vital 2|Used to make a cure for the plague|quest|0|R5|P2|0
+A3d|Cure Vital 5|Used to make a cure for the plague|quest|0|R3|R3|0
+
+A4|Vending Machine Food|Food sold in vending machines|consumable|5|R5|VM|4
+A4a|Vending Machine Food|Food sold in vending machines|consumable|5|R11|VM|4
+A4b|Vending Machine Food|Food sold in vending machines|consumable|5|R19|VM|4
+
+A5|Normal Food|Basic food that restores health|consumable|7|R8|R8|0
+
+A7|Kitchen Knife|Sharp knife used for cutting and self-defense|weapon|20|R6|M2|0
+A8|Fork|A utensil that can be used as a weapon in emergencies|weapon|10|R8|M2|0
+A9|Book|A worn-out book filled with ancient knowledge|weapon|15|R3|R3|0
+A11|Broom|A cleaning tool that can be used as a weapon|weapon|15|R2|R2|0
+
+A10|Backpack|A sturdy backpack used for carrying items|tool|15|R16|R16|0
+A12|Office Key|A key that opens the office door|quest|0|R1|P3|0
+A13|Cure|A powerful remedy that can cure the plague|quest|0|R16|R16|0
