@@ -61,9 +61,19 @@ public class Player extends Character {
         return lastActionMessage;
     }
 
+    private void setActionMessage(String message) {
+        this.lastActionMessage = message;
+    }
+
+    private boolean hasInventorySpace() {
+        return getInventory().size() < inventoryCapacity;
+    }
+
     // Name lookup is the common bridge from text commands to concrete inventory items.
     public Item getItem(String itemName) {
-        if (itemName == null) return null;
+        if (itemName == null) {
+            return null;
+        }
 
         for (Item item : getInventory()) {
             if (item.getName().equalsIgnoreCase(itemName)) {
@@ -75,9 +85,10 @@ public class Player extends Character {
 
     // Adds an item to inventory and rewrites its container metadata to match the player.
     public boolean addItem(Item item) {
-        if (item == null || getInventory().size() >= inventoryCapacity) {
+        if (item == null || !hasInventorySpace()) {
             return false;
         }
+
         item.setLocation("inventory");
         item.setRoomLocation(currentRoom);
         return getInventory().add(item);
@@ -106,56 +117,103 @@ public class Player extends Character {
         return true;
     }
 
+    private Room getCurrentRoomObject() {
+        if (roomMap == null || currentRoom == null || currentRoom.isEmpty()) {
+            return null;
+        }
+        return roomMap.getRoom(currentRoom);
+    }
+
+    private Room requireCurrentRoom() {
+        Room room = getCurrentRoomObject();
+        if (room == null) {
+            setActionMessage("Room not found.");
+        }
+        return room;
+    }
+
+    private Item requireOwnedItem(Item item) {
+        if (item == null || !getInventory().contains(item)) {
+            setActionMessage("You don't have that item.");
+            return null;
+        }
+        return item;
+    }
+
+    private Consumable getFirstConsumable() {
+        for (Item item : getInventory()) {
+            if (item instanceof Consumable) {
+                return (Consumable) item;
+            }
+        }
+        return null;
+    }
+
+    private Consumable getFirstFoodForSale(VendingMachine vendingMachine) {
+        for (Map.Entry<Item, Integer> entry : vendingMachine.getItemsForSale().entrySet()) {
+            if (entry.getKey() instanceof Consumable) {
+                return (Consumable) entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private boolean isFlashlightRecipe(Item firstItem, Item secondItem) {
+        return firstItem != null && secondItem != null &&
+                (("flashlight".equalsIgnoreCase(firstItem.getName()) &&
+                        "batteries".equalsIgnoreCase(secondItem.getName())) ||
+                        ("flashlight".equalsIgnoreCase(secondItem.getName()) &&
+                                "batteries".equalsIgnoreCase(firstItem.getName())));
+    }
+
     // Picks up an item from the player's current room using the exact API shape requested.
     public void pickUpItem(String itemName) {
         if (itemName == null || itemName.isEmpty()) {
-            lastActionMessage = "Specify item to pick up.";
+            setActionMessage("Specify item to pick up.");
             return;
         }
 
-        Room room = getCurrentRoomObject();
+        Room room = requireCurrentRoom();
         if (room == null) {
-            lastActionMessage = "Room not found.";
             return;
         }
 
         Item item = room.findItem(itemName);
         if (item == null) {
-            lastActionMessage = "Item not found.";
+            setActionMessage("Item not found.");
             return;
         }
 
         if (!addItem(item)) {
-            lastActionMessage = "Inventory full.";
+            setActionMessage("Inventory full.");
             return;
         }
 
         room.removeItem(item);
-        lastActionMessage = "Picked up " + item.getName() + ".";
+        setActionMessage("Picked up " + item.getName() + ".");
     }
 
     // Drops an item back into the current room and returns the dropped object for callers that need it.
     public Item dropItem(String itemName) {
         if (itemName == null || itemName.isEmpty()) {
-            lastActionMessage = "Specify item to drop.";
+            setActionMessage("Specify item to drop.");
             return null;
         }
 
-        Room room = getCurrentRoomObject();
+        Room room = requireCurrentRoom();
         if (room == null) {
-            lastActionMessage = "Room not found.";
             return null;
         }
 
         Item item = getItem(itemName);
         if (item == null) {
-            lastActionMessage = "You don't have that item.";
+            setActionMessage("You don't have that item.");
             return null;
         }
 
         removeItem(item);
         room.addItem(item);
-        lastActionMessage = "Dropped " + item.getName() + ".";
+        setActionMessage("Dropped " + item.getName() + ".");
         return item;
     }
 
@@ -167,70 +225,69 @@ public class Player extends Character {
     // Quest item handling happens from the player side, matching the current project rule.
     public void useItem(Item item) {
         if (item == null) {
-            lastActionMessage = "Item not found.";
+            setActionMessage("Item not found.");
             return;
         }
 
         if (!(item instanceof Quest) || !item.canUse()) {
-            lastActionMessage = "You can't use that item.";
+            setActionMessage("You can't use that item.");
             return;
         }
 
-        String type = ((Quest) item).getQuestType();
-
-        switch (type) {
+        Quest questItem = (Quest) item;
+        switch (questItem.getQuestType()) {
             case "office_key":
                 if (officeUnlocked) {
-                    lastActionMessage = "Nothing happened.";
+                    setActionMessage("Nothing happened.");
                     return;
                 }
                 officeUnlocked = true;
-                removeItem(item);
-                lastActionMessage = "Used " + item.getName() + ".";
-                return;
-
+                break;
             case "cure":
                 if (plagueCured) {
-                    lastActionMessage = "Nothing happened.";
+                    setActionMessage("Nothing happened.");
                     return;
                 }
                 plagueCured = true;
-                removeItem(item);
-                lastActionMessage = "Used " + item.getName() + ".";
-                return;
-
+                break;
             case "cure_vital":
-                lastActionMessage = "Used " + item.getName() + ".";
-                return;
-
+                break;
             default:
-                lastActionMessage = "Nothing happened.";
+                setActionMessage("Nothing happened.");
+                return;
         }
+
+        removeItem(item);
+        setActionMessage("Used " + item.getName() + ".");
     }
 
     // Stores an owned item in the current room's vending machine using the item's current price.
     public boolean storeItem(Item item) {
-        Room room = getCurrentRoomObject();
-        if (room == null || !room.hasVendingMachine()) {
-            lastActionMessage = "No vending machine here.";
+        Room room = requireCurrentRoom();
+        if (room == null) {
             return false;
         }
-        if (item == null || !getInventory().contains(item)) {
-            lastActionMessage = "You don't have that item.";
+        if (!room.hasVendingMachine()) {
+            setActionMessage("No vending machine here.");
             return false;
         }
 
-        removeItem(item);
-        room.getVendingMachine().addItem(item, item.getPrice());
-        item.setRoomLocation(currentRoom);
-        lastActionMessage = "Stored " + item.getName() + ".";
+        Item ownedItem = requireOwnedItem(item);
+        if (ownedItem == null) {
+            return false;
+        }
+
+        removeItem(ownedItem);
+        room.getVendingMachine().addItem(ownedItem, ownedItem.getPrice());
+        ownedItem.setRoomLocation(currentRoom);
+        setActionMessage("Stored " + ownedItem.getName() + ".");
         return true;
     }
 
     // Equipping always replaces the previous weapon bonus before applying the new one.
     public void equipWeapon(Weapon weapon) {
         if (weapon == null || !getInventory().contains(weapon)) {
-            lastActionMessage = "Not a weapon.";
+            setActionMessage("Not a weapon.");
             return;
         }
 
@@ -239,79 +296,67 @@ public class Player extends Character {
         }
 
         equippedWeapon = weapon;
-        setATK(getATK() + equippedWeapon.getAtkIncrease());
-        lastActionMessage = "Equipped " + weapon.getName() + ".";
+        setATK(getATK() + weapon.getAtkIncrease());
+        setActionMessage("Equipped " + weapon.getName() + ".");
     }
 
     // Buys the first consumable currently stocked in the room's vending machine.
     public boolean buyFood() {
-        Room room = getCurrentRoomObject();
-        if (room == null || !room.hasVendingMachine()) {
-            lastActionMessage = "No vending machine here.";
+        Room room = requireCurrentRoom();
+        if (room == null) {
             return false;
         }
-        if (getInventory().size() >= inventoryCapacity) {
-            lastActionMessage = "Inventory full.";
+        if (!room.hasVendingMachine()) {
+            setActionMessage("No vending machine here.");
+            return false;
+        }
+        if (!hasInventorySpace()) {
+            setActionMessage("Inventory full.");
             return false;
         }
 
         VendingMachine vendingMachine = room.getVendingMachine();
-        Item food = null;
-        for (Map.Entry<Item, Integer> entry : vendingMachine.getItemsForSale().entrySet()) {
-            if (entry.getKey() instanceof Consumable) {
-                food = entry.getKey();
-                break;
-            }
-        }
-
+        Consumable food = getFirstFoodForSale(vendingMachine);
         if (food == null) {
-            lastActionMessage = "Food not found.";
+            setActionMessage("Food not found.");
             return false;
         }
         if (getCoins() < food.getPrice()) {
-            lastActionMessage = "Not enough coins.";
+            setActionMessage("Not enough coins.");
             return false;
         }
 
         Item boughtItem = vendingMachine.dispenseItem(food.getName());
         if (boughtItem == null || !addItem(boughtItem)) {
-            lastActionMessage = "Purchase failed.";
+            setActionMessage("Purchase failed.");
             return false;
         }
 
         setCoins(getCoins() - food.getPrice());
-        lastActionMessage = "Bought " + boughtItem.getName() + ".";
+        setActionMessage("Bought " + boughtItem.getName() + ".");
         return true;
     }
 
     // Consumes the first consumable in inventory because the required method shape has no parameters.
     public void consumeFood() {
-        for (Item item : new ArrayList<>(getInventory())) {
-            if (item instanceof Consumable) {
-                int healed = ((Consumable) item).getHpRestore();
-                setHP(getHP() + healed);
-                removeItem(item);
-                lastActionMessage = "Consumed " + item.getName() + " +" + healed + " HP";
-                return;
-            }
+        Consumable food = getFirstConsumable();
+        if (food == null) {
+            setActionMessage("Not consumable.");
+            return;
         }
 
-        lastActionMessage = "Not consumable.";
+        int healed = food.getHpRestore();
+        setHP(getHP() + healed);
+        removeItem(food);
+        setActionMessage("Consumed " + food.getName() + " +" + healed + " HP");
     }
 
     // Combines the hard-coded flashlight recipe required by the no-argument method signature.
     public boolean combineItems() {
         Item firstItem = getItem("flashlight");
         Item secondItem = getItem("batteries");
-        boolean flashlightCombo =
-                firstItem != null && secondItem != null &&
-                        (("flashlight".equalsIgnoreCase(firstItem.getName()) &&
-                                "batteries".equalsIgnoreCase(secondItem.getName())) ||
-                                ("flashlight".equalsIgnoreCase(secondItem.getName()) &&
-                                        "batteries".equalsIgnoreCase(firstItem.getName())));
-
-        if (!flashlightCombo) {
-            lastActionMessage = "Cannot combine those items.";
+        if (!isFlashlightRecipe(firstItem, secondItem)) {
+            setActionMessage("Cannot combine those items.");
             return false;
         }
 
@@ -330,15 +375,7 @@ public class Player extends Character {
         );
 
         addItem(poweredFlashlight);
-        lastActionMessage = "Created " + poweredFlashlight.getName() + ".";
+        setActionMessage("Created " + poweredFlashlight.getName() + ".");
         return true;
-    }
-
-    // Internal helper used by the API methods above to resolve the active room safely.
-    private Room getCurrentRoomObject() {
-        if (roomMap == null || currentRoom == null || currentRoom.isEmpty()) {
-            return null;
-        }
-        return roomMap.getRoom(currentRoom);
     }
 }
