@@ -10,15 +10,19 @@ public class VendingMachine {
         this.location = location;
         this.itemsForSale = new HashMap<>();
     }
-    public void addItemForSale(Item item, int price) {
-        itemsForSale.put(item, price);
-    }
     public String getLocation() {
         return location;
     }
     public void addItem(Item item,int price) {
         itemsForSale.put(item,price);
     }
+    public Item getItem(){
+        for (Item item : itemsForSale.keySet()) {
+            return item;
+        }
+        return null;
+    }
+
     public String getItemList() {
         StringBuilder sb = new StringBuilder();
         for (Item item : itemsForSale.keySet()) {

@@ -283,6 +283,63 @@ public class Player extends Character {
         return false;
     }
 
+    //Command: Buy Food
+    public String buyFood(){
+        Room room = this.getCurrentRoom(currentRoom);
+        if(room.hasVendingMachine()){
+            if(this.getCoins() >= 4){
+                this.setCoins(this.getCoins() - 4);
+                room.addItem(room.getVendingMachine().getItem());
+                return "Vending machine food has been dispensed into the room.";
+            }
+            else{
+                return "You don't have enough coins to buy food. You need at least 4 coins.";
+            }
+        }
+        else{
+            return "There is no vending machine in this room.";
+        }
+    }
+    //Command: Consume Food
+    public String consumeFood(String itemName){
+        if(itemName.isBlank()){
+            return "Please enter a item to consume";
+        }
+        Item item = getItem(itemName);
+        //if in inventory
+        if(this.getInventory().contains(item)&&item.getCategory().equalsIgnoreCase("Consumable")){
+            if(this.getCurrentHP()==getMaxHP()){
+                return "You cannot consume right now, your HP is already full.";
+            }
+            int total = this.getCurrentHP()+ 5;
+            if(total>getMaxHP()){
+                int restored = getMaxHP()-getCurrentHP();//if we wanna tell player specifically, how much was added
+                setCurrentHP(getMaxHP());
+                getInventory().remove(item);
+                return "HP fully restored.";
+            }
+            getInventory().remove(item);
+            setCurrentHP(total);
+            return "5 HP has been restored. You now have " + total + "HP";
+        }
+        //if in picked up
+        if(this.getPickedUp()==(item)&&item.getCategory().equalsIgnoreCase("Consumable")){
+            if(this.getCurrentHP()==getMaxHP()){
+                return "You cannot consume right now, your HP is already full.";
+            }
+            int total = this.getCurrentHP()+ 5;
+            if(total>getMaxHP()){
+                int restored = getMaxHP()-getCurrentHP();//if we wanna tell player specifically, how much was added
+                setCurrentHP(getMaxHP());
+                setPickedUp(null);
+                return "HP fully restored.";
+            }
+            setPickedUp(null);
+            setCurrentHP(total);
+            return "5 HP has been restored. You now have " + total + "HP";
+        }
+        return "Item entered not currently picked up or found in your inventory. Please enter a valid Item.";
+    }
 
     //Command: Combine Items - for cure vials, only in r16 chem lab (and flashlight?)
 
@@ -404,7 +461,7 @@ public class Player extends Character {
                 }
             }
             if (current.hasVendingMachine()) {
-                result += "\nThere is a vending machine in this room.";
+                result += "\nThere is a vending machine in this room. You can buy food from it to restore health.";
             }
             if (current.hasMonsters()) {
                 if (current.getMonster().size() == 1) {
