@@ -59,6 +59,10 @@ public class RoomMap {
                         room.addExit(directions[i], exitRoom);
                     }
                 }
+                if(room.getRoomId().equals("R17")){ //if prof office -jocelin
+                    room.setLocked(true);
+                }
+
                 rooms.add(room);
             }
             input.close();
