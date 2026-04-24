@@ -110,6 +110,9 @@ public class Player extends Character {
     public void setPreviousRoom(String previousRoom) {
         this.previousRoom = previousRoom;
     }
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 
 
 
@@ -283,9 +286,7 @@ public class Player extends Character {
 
     //Command: Combine Items - for cure vials, only in r16 chem lab (and flashlight?)
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
+
 
     public String dropItem(String item) {
         for (int i = 0; i < this.getInventory().size(); i++) {
