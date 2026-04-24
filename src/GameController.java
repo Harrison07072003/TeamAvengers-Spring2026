@@ -15,23 +15,44 @@ public class GameController {
     }
     //methods
     //navigation state
-    public void run(){
-        engine.resetGame();
+    public void run(boolean savedgame){
+        if(!savedgame)
+            engine.resetGame();
         //navigation loop
         while(isRunning) {
             view.navUI(engine.getRoomName());
             String command = input.nextLine();
-            if(command.equals("help"))
-                view.navHelp(engine.getPlayerState());
-            else if(command.equals("map"))
+            if(command.equalsIgnoreCase("help")) {
+                view.help(engine.getPlayerState());
+            }
+            if(command.equalsIgnoreCase("navHelp")){
+                view.navHelp();
+            }
+            else if(command.equalsIgnoreCase("map"))
                 view.showMap(engine.getPlayerBuilding());
-            else if(command.equals("quit")){
-                isRunning = false;
+            else if(command.equalsIgnoreCase("restart")){
+                while(true) {
+                    view.display("Do you want to restart the game yes/no");
+                    String response = input.nextLine();
+                    if(response.equalsIgnoreCase("yes")) {
+                        engine.resetGame();
+                        break;
+                    }
+                    else if(response.equalsIgnoreCase("no")) {
+                        view.display("You decided not to restart");
+                        break;
+                    }
+                    view.display("I didn't quite get that");
+                }
+
+            }
+            else if(command.equalsIgnoreCase("quit")){
+                this.quitGame();
             }
             else {
                 String result = engine.navCommand(command);
                 view.display(result);
-                if (command.equals("inspect") && !(result.substring(0, result.length() - 1).startsWith("No Monsters detected"))) {
+                if (command.equalsIgnoreCase("inspect") && !(result.substring(0, result.length() - 1).startsWith("No Monsters detected"))) {
                     view.display("Do you want to engage or ignore monster? Type in 'engage' to fight" +
                             " or press any other key to ignore.");
                     String response = input.nextLine();
@@ -43,7 +64,7 @@ public class GameController {
                     }
 
                 }
-                if(command.equals("explore puzzle") && !(result.substring(0, result.length() - 1).startsWith("You have already solved this puzzle."))) {
+                if(command.equalsIgnoreCase("explore puzzle") && !(result.substring(0, result.length() - 1).startsWith("You have already solved this puzzle."))) {
                     view.display("Do you want to solve or ignore the puzzle?" +
                             " Type in 'solve' to solve or press any other key to ignore.");
                     String response = input.nextLine();
@@ -53,7 +74,7 @@ public class GameController {
                         view.display("You decided not to ignore the puzzle");
                     }
                 }
-                if(command.equals("escape game") && result.startsWith("Congratulations! You have escaped the school and won the game!")){
+                if(command.equalsIgnoreCase("escape") && result.startsWith("Congratulations! You have escaped the school and won the game!")){
                     isRunning = false;
                     view.showCredits();
                 }
@@ -70,7 +91,7 @@ public class GameController {
             view.monsterUI(engine.getPlayerHealth(), engine.getMonsterName(), engine.getMonsterHealth());
             String command = input.nextLine();
             if(command.equals("help"))
-                view.navHelp(engine.getPlayerState());
+                view.help(engine.getPlayerState());
             else {
                 String result = this.engine.battleCommand(command);
                 view.display(result + "------------------------------");
@@ -89,24 +110,32 @@ public class GameController {
             else
                 engine.resetGame();
         }
-        engine.getPlayer().setState(1);
+        engine.setPlayerState(2);
     }
-    //puzzle loop
+    //puzzle state
     public void puzzle(){
-        view.display("Put in answer");
-        String reply = input.nextLine();
-        view.display(engine.getPlayer().solvePuzzle(reply));
+        while(!engine.getPuzzleStatus()) {
+            view.display("Put in answer");
+            String reply = input.nextLine();
+            view.display(engine.solvePuzzle(reply));
+            if(engine.getPuzzleStatus())
+                break;
+            view.display("Do you want to try again. If no type in no otherwise any key will allow retry");
+            String choice = input.nextLine();
+            if(choice.equalsIgnoreCase("no"))
+                break;
+        }
     }
     //starts game
    public void startGame(){
-        // New simple, bold console title screen (GGC PLAGUE)
+        // ASCII title for "GGC PLAGUE"
         String[] title = new String[]{
             "====================================================",
-            "  ____   ____   ____    ____    _      _   ____  _____",
-            " / ___| / ___| / ___|  / ___|  / \\    | | / ___|| ____|",
-            "| |  _ | |  _ | |  _  | |  _  / _ \\   | || |  _ |  _|  ",
-            "| |_| || |_| || |_| | | |_| |/ ___ \\  | || |_| || |___ ",
-            " \\____| \\____| \\____|  \\____/_/   \\_\\_| \\____||_____",
+            "  ____   ____    ____     ____   _      _   ____  _____ ",
+            " / ___| / ___|  |  _ \\   / ___| / \\    | | / ___|| ____|",
+            "| |  _ | |  _   | |_) | | |  _ / _ \\   | || |  _ |  _|  ",
+            "| |_| || |_| |  |  __/  | |_| / ___ \\  | || |_| || |___ ",
+            " \\____| \\____|  |_|      \\____/_/   \\_\\_| \\____||_____|",
             "",
             "                      GGC PLAGUE",
             "===================================================="
@@ -121,7 +150,7 @@ public class GameController {
 
         while (menuActive) {
             view.display("[1] Start New Game");
-            view.display("[2] Load Game (not implemented)");
+            view.display("[2] Load Game");
             view.display("[3] Quit");
             view.display("Enter choice (1-3) or type start/load/quit:");
             String choice = input.nextLine();
@@ -133,41 +162,42 @@ public class GameController {
                 case "start":
                 case "new":
                     view.display("Starting new game...\n");
-                    // enter the main game loop
-                    run();
+                    // start a fresh game; run(false) -> run will call resetGame()
+                    run(false);
                     menuActive = false; // if run returns, break out
                     break;
                 case "2":
                 case "load":
-                    view.display("Load game selected. (Feature not implemented yet.)");
-                    view.display("Press Enter to return to the main menu...");
-                    input.nextLine();
+                    // attempt to load via engine
+                    String loadResult;
+                    try {
+                        loadResult = engine.loadGame();
+                    } catch (Exception e) {
+                        loadResult = "Error while attempting to load game: " + e.getMessage();
+                    }
+                    view.display(loadResult);
+                    // If loaded successfully, enter the main loop preserving loaded state
+                    if (loadResult != null && loadResult.toLowerCase().contains("loaded successfully")) {
+                        run(true); // don't reset game inside run
+                        menuActive = false;
+                    } else {
+                        view.display("Returning to title menu...");
+                    }
                     break;
                 case "3":
                 case "quit":
                 case "q":
-                    // Instead of terminating the JVM here, cleanly stop the controller loop
                     view.display("Goodbye!");
-                    // signal run() (if running) to stop and return control to caller
                     isRunning = false;
                     menuActive = false;
-                    return; // return from startGame and let the caller decide lifecycle
+                    return;
                 default:
                     view.display("Invalid option. Please enter 1, 2, or 3 (or start/load/quit). ");
             }
         }
     }
 
-    /*
-    public void startGame(){
-        view.display("Welcome to the game! You are a student trapped in a school filled with monsters and puzzles. Your goal is to escape the school by solving puzzles, defeating monsters, and collecting items. Good luck!");
-        view.display("Do you want to start new game or load a saved game? (new/load)");
-        String response = input.nextLine();
-        this.run(response);
-    }
-
-     */
-
+    //quits game
     public void quitGame() {
         view.display("Do you want to quit the game? (yes/no)");
         String response = input.nextLine();

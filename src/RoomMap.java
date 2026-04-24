@@ -281,7 +281,7 @@ public class RoomMap {
     public String loadGame(Player player) {
         this.setActualLoadFile(saveFile,checkpointFile);
         if (actualLoadFile == null || actualLoadFile.isEmpty()) {
-            return "No saved game found.\n";
+            return "There are no saved games or checkpoints found.\n";
         }
         rooms.clear();
         player.getInventory().clear();
@@ -497,8 +497,8 @@ public class RoomMap {
     private void handleRoomsLine(String line) {
         if (line.startsWith("ROOM|")) {
             // split into up to 6 parts: "ROOM", id, name, description, building, requiresFlashlight
-            String[] roomValues = line.split("\\|", 6);
-            if (roomValues.length < 6) {
+            String[] roomValues = line.split("\\|", 7);
+            if (roomValues.length < 7) {
                 System.out.println("Skipping malformed ROOM line: " + line);
                 return;
             }

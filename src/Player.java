@@ -112,6 +112,10 @@ public class Player extends Character {
 
     //reset
     public void resetPlayer() {
+        this.setCurrentRoom("R1");
+        this.setPreviousRoom("R1");
+        this.pickedUp = null;
+        this.capacity = 5;
         this.setAlive(true);
         this.setCurrentHP(this.getMaxHP());
         this.setVials(0);
@@ -137,8 +141,11 @@ public class Player extends Character {
             monster.setCurrentHP(monster.getCurrentHP() - (int) damage);
             if (monster.getCurrentHP() <= 0) {
                 monster.setAlive(false);
-                if (!monster.getInventory().isEmpty())
-                    this.getInventory().add(monster.dropItem(""));
+                if (!monster.getInventory().isEmpty()) {
+                    Item dropped = monster.getInventory().get(0);
+                    this.getInventory().add(dropped);
+                    this.addVial(dropped);
+                }
                 this.collectCoins(monster.getCoins());
             }
         }
@@ -158,8 +165,11 @@ public class Player extends Character {
                 monster.setCurrentHP(monster.getCurrentHP() - (int) heavyDamage);
                 if (monster.getCurrentHP() <= 0) {
                     monster.setAlive(false);
-                    if (!monster.getInventory().isEmpty())
-                        this.getInventory().add(monster.dropItem(""));
+                    if (!monster.getInventory().isEmpty()) {
+                        Item dropped = monster.getInventory().get(0);
+                        this.getInventory().add(dropped);
+                        this.addVial(dropped);
+                    }
                     this.collectCoins(monster.getCoins());
                 }
                 return true;
@@ -214,14 +224,15 @@ public class Player extends Character {
 
     //command: Store item - srs-> depends on "Pickup" command.
     public String storeItem() {
-        if (pickedUp == null) {
+        if (this.pickedUp == null) {
             return "You have not picked up an item to store.";
         }
         if (this.getInventory().size() >= this.capacity) {// *FIX ME* inventory size limit yadaya..
             return "Your inventory is full. Please drop an item before storing a new one.";
         }
-        this.getInventory().add(pickedUp);
-        String itemName = pickedUp.getItemName();
+        this.getInventory().add(this.pickedUp);
+        String itemName = this.pickedUp.getItemName();
+        this.addVial(pickedUp);
         setPickedUp(null);
         return "You have stored " + itemName + " in your inventory.";
     }
@@ -250,6 +261,19 @@ public class Player extends Character {
     
     //Command: Use Item - "for key item only"-analysis doc...
     public boolean useItem(String itemName){
+            if(itemName.isBlank()){
+                return false;
+            }
+            Item item = getItem(itemName);
+            if(item == null){
+                return false;
+            }
+            if(item.getItemName().equalsIgnoreCase("Office Key")){
+                if(currentRoom.equals("R1") || currentRoom.equals("R20") || currentRoom.equals("R16")){
+                    this.getCurrentRoom("R17").setLocked(false);
+                    return true;
+                }
+            }
             return false;
     }
 
@@ -293,7 +317,7 @@ public class Player extends Character {
         if (nextRoom == null) {
             return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
         }
-        if(current.isLocked()){
+        if(this.getCurrentRoom(nextRoom).isLocked()){
             return "This room is locked. You must use a key item to enter this room.";
         }
         this.previousRoom = this.currentRoom;
@@ -392,6 +416,7 @@ public class Player extends Character {
                 if (puzzle.getRewards().size() > 0) {
                     for (int i = 0; i < puzzle.getRewards().size(); i++) {
                         this.getInventory().add(puzzle.getRewards().get(i));
+                        this.addVial(puzzle.getRewards().get(i));
                         result += puzzle.getRewards().get(i).getItemName() + " dropped.";
                     }
                 }
@@ -410,6 +435,7 @@ public class Player extends Character {
                 Item dropped = this.getInventory().get(i);
                 this.getCurrentRoom(currentRoom).addItem(dropped);
                 this.getInventory().remove(dropped);
+                this.removeVial(dropped);
                 return "You have dropped " + dropped.getItemName() + " in the room.";
             }
         }
@@ -423,10 +449,36 @@ public class Player extends Character {
             this.getInventory().add(poweredFlashlight);
             return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
         }
+        else if(this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
+                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
+                this.getInventory().contains(getItem("Cure Vial 5")) && this.currentRoom.equals("R16")){
+            this.getInventory().remove(getItem("Cure Vial 1"));
+            this.getInventory().remove(getItem("Cure Vial 2"));
+            this.getInventory().remove(getItem("Cure Vial 3"));
+            this.getInventory().remove(getItem("Cure Vial 4"));
+            this.getInventory().remove(getItem("Cure Vial 5"));
+            Item Cure = new QuestItem("A13","Cure","QuestItem","Cure for the plague",0,"","",0);
+            this.getInventory().add(Cure);
+            return "You have combined the vials and created the Cure for the plague";
+
+        }
         return "You don't have the necessary items to combine.";
     }
 
-    public boolean combineMessage(){
+    public boolean combineFlashlightMessage(){
         return this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"));
+    }
+    public boolean combineCureMessage(){
+        return this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
+                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
+                this.getInventory().contains(getItem("Cure Vial 5"));
+    }
+    public void addVial(Item item){
+        if(item.getItemName().startsWith("Cure Vial"))
+            this.vials++;
+    }
+    public void removeVial(Item item) {
+        if (item.getItemName().startsWith("Cure Vial"))
+            this.vials--;
     }
 }

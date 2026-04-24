@@ -65,7 +65,7 @@ public abstract class Item {
     }
 
     public String toString() {
-        return itemId + " - " + itemName + " (" + category + ")";
+        return this.itemName + "| " +this.description;
     }
   //public String toString(){
    //     return this.name + ": Raises damage by " + this.getAttackBonus();

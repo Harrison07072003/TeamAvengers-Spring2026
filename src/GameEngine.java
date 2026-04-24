@@ -7,13 +7,173 @@ public class GameEngine {
     //constructor
     public GameEngine(){
         this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","Item.txt","vendingmachines.txt");
-        this.A = new Player("Player", 100, 18, 5, 10,"R1",school);
+        this.A = new Player("Player", 100, 180, 5, 10,"R1",school);
         this.combatEngine = new CombatEngine(A);
         this.result = new GameResult();
     }
     //methods
+    //navigation
+    public String navCommand(String command){
+        result.resetMessage();
+        result.resetStatus();
+        if(command.equals("finish")){
+            //A.getInventory().add(new QuestItem("A3","Cure Vial 1","QuestItem","Used to make a cure for the plague",0,"","",0));
+            //A.getInventory().add(new QuestItem("A3a","Cure Vial 2","QuestItem","Used to make a cure for the plague",0,"","",0));
+            //A.getInventory().add(new QuestItem("A3b","Cure Vial 3","QuestItem","Used to make a cure for the plague",0,"","",0));
+            //A.getInventory().add(new QuestItem("A3c","Cure Vial 4","QuestItem","Used to make a cure for the plague",0,"","",0));
+            //A.getInventory().add(new QuestItem("A3d","Cure Vial 5","QuestItem","Used to make a cure for the plague",0,"","",0));
+            //A.getInventory().add(new QuestItem("A13","Cure","QuestItem","A powerful remedy that can cure the plague",0,"R16","R16",0));
+            A.setCurrentRoom("R4");
+            //result.setMessage("You have collected all 5 vials! You can now escape the school!\n");
+        }
+        else if(command.equalsIgnoreCase("status")) {
+            String health = A.getHealth();
+            int attack = A.getAttack();
+            int bonus = A.getAttackBonus();
+            int defense = A.getDefense();
+            int vials = A.getVials();
+            int coins = A.getCoins();
+            String weapon = A.getEquippedWeaponName();
+            result.setMessage("HP: " + health + "  \n" +
+                    "Attack: " + attack + " | ATK Bonus: (+" + bonus +") | Defense: " + defense + "\n" +
+                    "Vials: " + vials + "/5 | Coins: " + coins + "\nCurrent Weapon: " + weapon +"\n");
+        }
+        else if(command.equalsIgnoreCase("inventory"))
+            this.result.setMessage(A.getInventoryString()+"\n");
+        else if(command.equalsIgnoreCase("inspect"))
+            this.result.setMessage(A.inspectMonster()+"\n");
+        else if(command.startsWith("equip ")) {
+            String itemName = command.substring(6);
+            boolean success = A.equipWeapon(itemName);
+            if(success)
+                this.result.setMessage("You have equipped the " + itemName + "!\n");
+            else
+                this.result.setMessage("You don't have a " + itemName + " in your inventory.\n");
+        }
+        else if(command.startsWith("examine "))
+            result.setMessage(A.examineItem(command.substring(8)) + "\n");
+        else if(command.startsWith("enter "))
+            result.setMessage(A.enterRoom(command.substring(6)) + "\n");
+        else if(command.equalsIgnoreCase("explore room"))
+            result.setMessage(A.exploreRoom() + "\n");
+        else if(command.equalsIgnoreCase("explore puzzle"))
+            result.setMessage(A.explorePuzzle() + "\n");
+        else if(command.startsWith("pickup "))
+            result.setMessage(A.pickUp(command.substring(7)) + "\n");
+        else if(command.equalsIgnoreCase("store item"))
+            result.setMessage(A.storeItem() + "\n");
+       else if(command.startsWith("drop "))
+            result.setMessage(A.dropItem(command.substring(5)) + "\n");
+       else if(command.startsWith("leave "))
+            result.setMessage(A.leave(command.substring(6)) + "\n");
+       else if(command.startsWith("use ")) {
+            if(A.useItem(command.substring(4))){
+                result.setMessage("You used the " + command.substring(4) + "!\n");
+            }
+            else{
+                result.setMessage("You don't have a " + command.substring(4) + " in your inventory.\n");
+            }
+        }
+       else if(command.equalsIgnoreCase("combine"))
+            result.setMessage(A.combineItems() + "\n");
+        else if(command.equalsIgnoreCase("save game"))
+            result.setMessage(this.saveGame());
+        else if(command.equalsIgnoreCase("load game"))
+            result.setMessage(this.loadGame());
+        else if(command.equalsIgnoreCase("checkpoint")){
+            result.setMessage(school.checkpoint(A));
+        }
+        else if(command.equalsIgnoreCase("escape")){
+            if(A.escapeGame()){
+                result.setMessage("Congratulations! You have escaped the school and won the game!\n");
+            }
+            else{
+                result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n");
+            }
+        }
+        else
+            this.result.setMessage("Invalid Command\n");
+        if(A.combineFlashlightMessage())
+            this.result.setMessage(this.result.getMessage() + "You can combine the batteries and the Flashlight\n");
+        if(A.combineCureMessage())
+            this.result.setMessage(this.result.getMessage() + "You can combine the vials in Chemistry Lab 2\n");
+        this.result.setMessage(this.result.getMessage() + "-----------------------------------");
+        return result.getMessage();
+
+    }
+    //battle
+    public String battleCommand(String command){
+        return this.combatEngine.action(command);
+    }
+    public void resetCombat(){
+        this.combatEngine.resetEngine();
+    }
+    public boolean battleEnded(){
+        return this.combatEngine.isBattleOver();
+    }
+    public boolean playerAlive(){
+        return A.isAlive();
+    }
+    public boolean monsterAlive(){
+        return combatEngine.getMonsterAlive();
+    }
+    public int getTurn(){
+        return this.combatEngine.getTurns();
+    }
+    public String getMonsterName(){
+        return A.getMonsterName();
+    }
+    public String getMonsterHealth(){
+        return combatEngine.getMonsterHealth();
+    }
+    //puzzle
+    public String solvePuzzle(String reply){
+        return this.A.solvePuzzle(reply);
+    }
+    public boolean getPuzzleStatus(){
+        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSolved();
+    }
+    //getters and setters
+    public Player getPlayer(){
+        return this.A;
+    }
+    public String getRoomName(){
+        result.setMessage(A.getRoomName());
+        return result.getMessage();
+    }
+    public int getPlayerState(){
+        return this.getPlayer().getCurrentState();
+    }
+    public void setPlayerState(int state){
+        this.A.setState(state);
+    }
+    public String getPlayerBuilding(){
+        return this.getPlayer().getBuilding();
+    }
+    public String getPlayerHealth(){
+        return A.getHealth();
+    }
+    //game manager methods
+    public void resetGame(){
+        A.resetPlayer();
+        school.generateRooms();
+        school.spawnMonsters();
+        school.loadPuzzles();
+        school.putVendingMachines();
+        school.loadItems();
+        //A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
+    }
+    public String saveGame(){
+        return school.saveGame(A);
+    }
+    public String loadGame(){
+        return school.loadGame(A);
+    }
+    public boolean saveExists(){
+        return school.saveExists();
+    }
     //loads test data
-    public void test(){
+    /*public void test(){
         school.getRooms().add(new Room("R1","Dining Hall","Trays of food are scattered around, and some tables and chairs have been scattered.","Building E",true));
         school.getRooms().add(new Room("R2","Library","A quiet library filled with books.","Library",true));
         school.getRooms().add(new Room("R3","Chem Lab","A science lab that has chemicals to quell plague","Building H",true));
@@ -40,159 +200,6 @@ public class GameEngine {
         m3.getInventory().add(s3);
         A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
     }
-    public void resetGame(){
-        A.resetPlayer();
-        school.generateRooms();
-        school.spawnMonsters();
-        school.loadPuzzles();
-        school.putVendingMachines();
-        school.loadItems();
-        //A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
-    }
-    public String saveGame(){
-        return school.saveGame(A);
-    }
-    public String loadGame(){
-        return school.loadGame(A);
-    }
-    public boolean saveExists(){
-        return school.saveExists();
-    }
 
-    //navigation
-    public String navCommand(String command){
-        result.resetMessage();
-        result.resetStatus();
-        if(command.equals("finish")){
-            A.setVials(5);
-            A.getInventory().add(new QuestItem("A13","Cure","QuestItem","A powerful remedy that can cure the plague",0,"R16","R16",0));
-            A.setCurrentRoom("R20");
-            result.setMessage("You have collected all 5 vials! You can now escape the school!\n");
-        }
-        else if(command.equals("status")) {
-            String health = A.getHealth();
-            int attack = A.getAttack();
-            int bonus = A.getAttackBonus();
-            int defense = A.getDefense();
-            int vials = A.getVials();
-            int coins = A.getCoins();
-            String weapon = A.getEquippedWeaponName();
-            result.setMessage("HP: " + health + "  \n" +
-                    "Attack: " + attack + " | ATK Bonus: (+" + bonus +") | Defense: " + defense + "\n" +
-                    "Vials: " + vials + "/5 | Coins: " + coins + "\nCurrent Weapon: " + weapon +"\n");
-        }
-        else if(command.equals("inventory"))
-            this.result.setMessage(A.getInventoryString()+"\n");
-        else if(command.equals("inspect"))
-            this.result.setMessage(A.inspectMonster()+"\n");
-        else if(command.startsWith("equip ")) {
-            String itemName = command.substring(6);
-            boolean success = A.equipWeapon(itemName);
-            if(success)
-                this.result.setMessage("You have equipped the " + itemName + "!\n");
-            else
-                this.result.setMessage("You don't have a " + itemName + " in your inventory.\n");
-        }
-        else if(command.startsWith("examine "))
-            result.setMessage(A.examineItem(command.substring(8)) + "\n");
-        else if(command.startsWith("enter "))
-            result.setMessage(A.enterRoom(command.substring(6)) + "\n");
-        else if(command.equals("explore room"))
-            result.setMessage(A.exploreRoom() + "\n");
-        else if(command.equals("explore puzzle"))
-            result.setMessage(A.explorePuzzle() + "\n");
-        else if(command.startsWith("pickup "))
-            result.setMessage(A.pickUp(command.substring(7)) + "\n");
-        else if(command.equals("store item"))
-            result.setMessage(A.storeItem() + "\n");
-       else if(command.startsWith("drop "))
-            result.setMessage(A.dropItem(command.substring(5)) + "\n");
-       else if(command.startsWith("leave "))
-            result.setMessage(A.leave(command.substring(6)) + "\n");
-       else if(command.equals("combine items"))
-            result.setMessage(A.combineItems() + "\n");
-        else if(command.equals("save game"))
-            result.setMessage(this.saveGame());
-        else if(command.equals("load game"))
-            result.setMessage(this.loadGame());
-        else if(command.equals("checkpoint")){
-            result.setMessage(school.checkpoint(A));
-        }
-        else if(command.equals("escape game")){
-            if(A.escapeGame()){
-                result.setMessage("Congratulations! You have escaped the school and won the game!\n");
-            }
-            else{
-                result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n");
-            }
-        }
-        else
-            this.result.setMessage("Invalid Command\n");
-        if(A.combineMessage())
-            this.result.setMessage(this.result.getMessage() + "You can combine the batteries and the Flashlight\n");
-        this.result.setMessage(this.result.getMessage() + "-----------------------------------");
-        return result.getMessage();
-
-    }
-    //battle
-    public String battleCommand(String command){
-        return this.combatEngine.action(command);
-    }
-    public void resetCombat(){
-        this.combatEngine.resetEngine();
-    }
-    public boolean battleEnded(){
-        return this.combatEngine.isBattleOver();
-    }
-    public boolean playerAlive(){
-        return A.isAlive();
-    }
-    public boolean monsterAlive(){
-        return combatEngine.getMonsterAlive();
-    }
-    public int getTurn(){
-        return this.combatEngine.getTurns();
-    }
-    //getters and setters
-    public Player getPlayer(){
-        return this.A;
-    }
-    public String getRoomName(){
-        result.setMessage(A.getRoomName());
-        return result.getMessage();
-    }
-    public int getPlayerState(){
-        return this.getPlayer().getCurrentState();
-    }
-    public String getPlayerBuilding(){
-        return this.getPlayer().getBuilding();
-    }
-    public String getPlayerHealth(){
-        return A.getHealth();
-    }
-    public String getMonsterName(){
-        return A.getMonsterName();
-    }
-    public String getMonsterHealth(){
-        return combatEngine.getMonsterHealth();
-    }
-    //puzzle getters and setters
-    public String getPuzzleQuestion(){
-        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getQuestion();
-    }
-    public String getPuzzleSolution(){
-        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSolution();
-    }
-    public String getPuzzleSuccessMessage() {
-        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSuccessMessage();
-    }
-    public String getPuzzleFailureMessage() {
-        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getFailureMessage();
-    }
-    public boolean getPuzzleStatus() {
-        return A.getCurrentRoom(A.getRoomID()).getPuzzle().getSolved();
-    }
-    public boolean checkAnswer(String response){
-        return A.getCurrentRoom(A.getRoomID()).getPuzzle().checkSolution(response);
-    }
+     */
 }

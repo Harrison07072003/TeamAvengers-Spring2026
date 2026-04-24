@@ -38,7 +38,7 @@ public class Monster extends Character{
                 player.setAlive(false);
         }
     }
-    public Item dropItem(String item){
+    public Item dropItem(){
         Item drop = this.getInventory().get(0);
         if(!this.isAlive() && !this.getInventory().isEmpty()) {
             return drop;
