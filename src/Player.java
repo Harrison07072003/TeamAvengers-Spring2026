@@ -11,7 +11,6 @@ public class Player extends Character {
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
     private Item pickedUp; //need for item methods.- j
     private int capacity;
-    private boolean unlocked;//needed for useItem method, and enterRoom
 
 
     //constructor
@@ -25,7 +24,6 @@ public class Player extends Character {
         this.previousRoom = roomID;
         this.pickedUp = null;
         this.capacity = 5;
-        this.unlocked = false;
     }
 
     //getters and setters
@@ -113,9 +111,6 @@ public class Player extends Character {
         this.previousRoom = previousRoom;
     }
 
-    public void setUnlocked(){
-        this.unlocked = true;
-    }
 
 
     //reset
@@ -269,15 +264,18 @@ public class Player extends Character {
     
     //Command: Use Item - "for key item only"-analysis doc...
     public boolean useItem(String itemName){
-        ArrayList<String> items = new ArrayList<>();
-        for(int i = 0; i< this.getInventory().size(); i++) {
-            items.add(this.getInventory().get(i).getItemName());
+        if(itemName.isBlank()){
+            return false;
         }
-        if(itemName.equalsIgnoreCase("Office Key") && items.contains("Office Key")){
-            Item key = this.getInventory().get(items.indexOf("Office Key"));
-            this.getInventory().remove(key);
-            this.unlocked = true;
-            return true;
+        Item item = getItem(itemName);
+        if(item == null){
+            return false;
+        }
+        if(item.getItemName().equalsIgnoreCase("Office Key")){
+            if(currentRoom.equals("R1") || currentRoom.equals("R20") || currentRoom.equals("R16")){
+                this.getCurrentRoom("R17").setLocked(false);
+                return true;
+            }
         }
         return false;
     }
