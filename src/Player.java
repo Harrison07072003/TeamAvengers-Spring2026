@@ -153,7 +153,7 @@ public class Player extends Character{
             Item item = room.getInventory().get(items.indexOf(itemName));
             room.removeItem(item);
             setPickedUp(item);
-            return "You have picked up " + itemName + ". Would you like to Store or Drop this item?";
+            return "You have picked up " + itemName;
         }
         return "There is no item with that name in this room.";
     }
@@ -163,8 +163,8 @@ public class Player extends Character{
         if(pickedUp == null){
             return "You have not picked up an item to store.";
         }
-        if (this.getInventory().size() >= 5){
-            return "Your inventory is full.";
+        if (this.getInventory().size() >= 5){// *FIX ME* inventory size limit yadaya..
+            return "Your inventory is full. Please drop an item before storing a new one.";
         }
         this.getInventory().add(pickedUp);
         String itemName = pickedUp.getItemName();
@@ -172,9 +172,31 @@ public class Player extends Character{
         return "You have stored " + itemName + " in your inventory.";
     }
 
-    public Item dropItem(String item){
-        return null;
+    //Command: Drop item
+    public String drop(String itemName){
+        ArrayList<String> items = new ArrayList<>();
+        for(int i = 0; i< this.getInventory().size(); i++){
+            items.add(this.getInventory().get(i).getItemName());
+        if(itemName.isBlank()){
+            return "Please enter an item to drop.";
+        }
+        if(pickedUp.getItemName().equalsIgnoreCase(itemName)|| items.contains(itemName)){
+            Item item;
+            if(pickedUp.getItemName().equalsIgnoreCase(itemName)){
+                item = pickedUp;
+                setPickedUp(null);
+            }
+            else {
+                item = this.getInventory().get(items.indexOf(itemName));
+                this.getInventory().remove(item);
+            }
+            this.getCurrentRoom(currentRoom).addItem(item);
+            return "You have dropped " + item.getItemName() + " in the room.";
+        }
+        }
+        return "Item entered not found. Please enter an item you've picked up or have in your inventory.";
     }
+
     public String checkWeapon(){
         if(this.equippedWeapon.getItemName().equals("Fists"))
             return "There is no weapon equipped.";
