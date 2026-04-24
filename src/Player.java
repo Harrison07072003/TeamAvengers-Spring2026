@@ -391,6 +391,7 @@ public class Player extends Character {
             }
                 if (puzzle.getRewards().size() > 0) {
                     for (int i = 0; i < puzzle.getRewards().size(); i++) {
+                        this.getInventory().add(puzzle.getRewards().get(i));
                         result += puzzle.getRewards().get(i).getItemName() + " dropped.";
                     }
                 }
@@ -413,5 +414,19 @@ public class Player extends Character {
             }
         }
         return null;
+    }
+    public String combineItems(){
+        if(this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"))){
+            this.getInventory().remove(getItem("Flashlight"));
+            this.getInventory().remove(getItem("Batteries"));
+            Item poweredFlashlight = new Tool("I9", "Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
+            this.getInventory().add(poweredFlashlight);
+            return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
+        }
+        return "You don't have the necessary items to combine.";
+    }
+
+    public boolean combineMessage(){
+        return this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"));
     }
 }

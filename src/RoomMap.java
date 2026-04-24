@@ -362,7 +362,8 @@ public class RoomMap {
                 "|" + sanitize(room.getRoomName()) +
                 "|" + sanitize(room.getRoomDescription()) +
                 "|" + sanitize(room.getBuilding()) +
-                "|" + room.requiresValidFlashlight());
+                "|" + room.requiresValidFlashlight() +
+                "|" + room.isLocked());
         output.println("EXITS|" + room.getExitsFileString());
         for (Item item : room.getInventory()) {
             output.println("Room ITEM|" + item.toFileString());
@@ -503,6 +504,7 @@ public class RoomMap {
             }
             Room room = new Room(roomValues[1], roomValues[2], roomValues[3], roomValues[4],
                     Boolean.parseBoolean(roomValues[5]));
+            room.setLocked(Boolean.parseBoolean(roomValues[6]));
             rooms.add(room);
         } else if(line.startsWith("EXITS|")) {
             String exitsData = line.split("\\|",2)[1].trim();

@@ -109,6 +109,8 @@ public class GameEngine {
             result.setMessage(A.dropItem(command.substring(5)) + "\n");
        else if(command.startsWith("leave "))
             result.setMessage(A.leave(command.substring(6)) + "\n");
+       else if(command.equals("combine items"))
+            result.setMessage(A.combineItems() + "\n");
         else if(command.equals("save game"))
             result.setMessage(this.saveGame());
         else if(command.equals("load game"))
@@ -126,6 +128,8 @@ public class GameEngine {
         }
         else
             this.result.setMessage("Invalid Command\n");
+        if(A.combineMessage())
+            this.result.setMessage(this.result.getMessage() + "You can combine the batteries and the Flashlight\n");
         this.result.setMessage(this.result.getMessage() + "-----------------------------------");
         return result.getMessage();
 
