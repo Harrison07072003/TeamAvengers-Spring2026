@@ -11,6 +11,8 @@ public class Player extends Character {
     private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
     private Item pickedUp; //need for item methods.- j
     private int capacity;
+    private boolean unlocked;//needed for useItem method, and enterRoom
+
 
     //constructor
     public Player(String id, int maxHP, int attack, int defense, int coins, String roomID, RoomMap map) {
@@ -23,6 +25,7 @@ public class Player extends Character {
         this.previousRoom = roomID;
         this.pickedUp = null;
         this.capacity = 5;
+        this.unlocked = false;
     }
 
     //getters and setters
@@ -109,6 +112,11 @@ public class Player extends Character {
     public void setPreviousRoom(String previousRoom) {
         this.previousRoom = previousRoom;
     }
+
+    public void setUnlocked(){
+        this.unlocked = true;
+    }
+
 
     //reset
     public void resetPlayer() {
@@ -261,24 +269,78 @@ public class Player extends Character {
     
     //Command: Use Item - "for key item only"-analysis doc...
     public boolean useItem(String itemName){
-            if(itemName.isBlank()){
-                return false;
-            }
-            Item item = getItem(itemName);
-            if(item == null){
-                return false;
-            }
-            if(item.getItemName().equalsIgnoreCase("Office Key")){
-                if(currentRoom.equals("R1") || currentRoom.equals("R20") || currentRoom.equals("R16")){
-                    this.getCurrentRoom("R17").setLocked(false);
-                    return true;
-                }
-            }
-            return false;
+        ArrayList<String> items = new ArrayList<>();
+        for(int i = 0; i< this.getInventory().size(); i++) {
+            items.add(this.getInventory().get(i).getItemName());
+        }
+        if(itemName.equalsIgnoreCase("Office Key") && items.contains("Office Key")){
+            Item key = this.getInventory().get(items.indexOf("Office Key"));
+            this.getInventory().remove(key);
+            this.unlocked = true;
+            return true;
+        }
+        return false;
     }
+
 
     //Command: Combine Items - for cure vials, only in r16 chem lab (and flashlight?)
 
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public String dropItem(String item) {
+        for (int i = 0; i < this.getInventory().size(); i++) {
+            if (this.getInventory().get(i).getItemName().equalsIgnoreCase(item)) {
+                Item dropped = this.getInventory().get(i);
+                this.getCurrentRoom(currentRoom).addItem(dropped);
+                this.getInventory().remove(dropped);
+                this.removeVial(dropped);
+                return "You have dropped " + dropped.getItemName() + " in the room.";
+            }
+        }
+        return null;
+    }
+    public String combineItems(){
+        if(this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"))){
+            this.getInventory().remove(getItem("Flashlight"));
+            this.getInventory().remove(getItem("Batteries"));
+            Item poweredFlashlight = new Tool("I9", "Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
+            this.getInventory().add(poweredFlashlight);
+            return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
+        }
+        else if(this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
+                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
+                this.getInventory().contains(getItem("Cure Vial 5")) && this.currentRoom.equals("R16")){
+            this.getInventory().remove(getItem("Cure Vial 1"));
+            this.getInventory().remove(getItem("Cure Vial 2"));
+            this.getInventory().remove(getItem("Cure Vial 3"));
+            this.getInventory().remove(getItem("Cure Vial 4"));
+            this.getInventory().remove(getItem("Cure Vial 5"));
+            Item Cure = new QuestItem("A13","Cure","QuestItem","Cure for the plague",0,"","",0);
+            this.getInventory().add(Cure);
+            return "You have combined the vials and created the Cure for the plague";
+
+        }
+        return "You don't have the necessary items to combine.";
+    }
+
+    public boolean combineFlashlightMessage(){
+        return this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"));
+    }
+    public boolean combineCureMessage(){
+        return this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
+                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
+                this.getInventory().contains(getItem("Cure Vial 5"));
+    }
+    public void addVial(Item item){
+        if(item.getItemName().startsWith("Cure Vial"))
+            this.vials++;
+    }
+    public void removeVial(Item item) {
+        if (item.getItemName().startsWith("Cure Vial"))
+            this.vials--;
+    }
 
     public String checkWeapon(){
         if(this.equippedWeapon.getItemName().equals("Fists"))
@@ -424,61 +486,4 @@ public class Player extends Character {
             }
             return puzzle.getFailureMessage();
         }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public String dropItem(String item) {
-        for (int i = 0; i < this.getInventory().size(); i++) {
-            if (this.getInventory().get(i).getItemName().equalsIgnoreCase(item)) {
-                Item dropped = this.getInventory().get(i);
-                this.getCurrentRoom(currentRoom).addItem(dropped);
-                this.getInventory().remove(dropped);
-                this.removeVial(dropped);
-                return "You have dropped " + dropped.getItemName() + " in the room.";
-            }
-        }
-        return null;
-    }
-    public String combineItems(){
-        if(this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"))){
-            this.getInventory().remove(getItem("Flashlight"));
-            this.getInventory().remove(getItem("Batteries"));
-            Item poweredFlashlight = new Tool("I9", "Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
-            this.getInventory().add(poweredFlashlight);
-            return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
-        }
-        else if(this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
-                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
-                this.getInventory().contains(getItem("Cure Vial 5")) && this.currentRoom.equals("R16")){
-            this.getInventory().remove(getItem("Cure Vial 1"));
-            this.getInventory().remove(getItem("Cure Vial 2"));
-            this.getInventory().remove(getItem("Cure Vial 3"));
-            this.getInventory().remove(getItem("Cure Vial 4"));
-            this.getInventory().remove(getItem("Cure Vial 5"));
-            Item Cure = new QuestItem("A13","Cure","QuestItem","Cure for the plague",0,"","",0);
-            this.getInventory().add(Cure);
-            return "You have combined the vials and created the Cure for the plague";
-
-        }
-        return "You don't have the necessary items to combine.";
-    }
-
-    public boolean combineFlashlightMessage(){
-        return this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"));
-    }
-    public boolean combineCureMessage(){
-        return this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
-                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
-                this.getInventory().contains(getItem("Cure Vial 5"));
-    }
-    public void addVial(Item item){
-        if(item.getItemName().startsWith("Cure Vial"))
-            this.vials++;
-    }
-    public void removeVial(Item item) {
-        if (item.getItemName().startsWith("Cure Vial"))
-            this.vials--;
-    }
 }
