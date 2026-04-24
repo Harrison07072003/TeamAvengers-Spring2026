@@ -13,6 +13,7 @@ public class Room {
     private Puzzle puzzle;
     private VendingMachine vendingMachine;
     private boolean requiresValidFlashlight;
+    private boolean locked;
 
     //constructor
     public Room(String roomId, String roomName, String roomDescription, String building, boolean requiresValidFlashlight) {
@@ -26,6 +27,7 @@ public class Room {
         this.puzzle = null;
         this.vendingMachine = null;
         this.requiresValidFlashlight = requiresValidFlashlight;
+        this.locked = false;
     }
 
     //getters
@@ -78,6 +80,10 @@ public class Room {
         return vendingMachine;
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
+
     //setters
     public void setPuzzle(Puzzle puzzle) {
         this.puzzle = puzzle;
@@ -85,6 +91,10 @@ public class Room {
 
     public void setVendingMachine(VendingMachine vendingMachine) {
         this.vendingMachine = vendingMachine;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
 

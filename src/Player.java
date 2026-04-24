@@ -197,6 +197,14 @@ public class Player extends Character{
         return "Item entered not found. Please enter an item you've picked up or have in your inventory.";
     }
 
+    //Command: Use Item - "for key item only"-analysis doc...
+    public boolean useItem(String itemName){
+
+    }
+
+    //Command: Combine Items - for cure vials, only in r16 chem lab (and flashlight?)
+
+
     public String checkWeapon(){
         if(this.equippedWeapon.getItemName().equals("Fists"))
             return "There is no weapon equipped.";
@@ -231,6 +239,9 @@ public class Player extends Character{
         String nextRoom = current.getExit(userInput);
         if (nextRoom == null) {
             return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
+        }
+        if(current.isLocked()){
+            return "This room is locked. You must use a key item to enter this room.";
         }
         this.previousRoom = this.currentRoom;
         this.currentRoom = nextRoom;
