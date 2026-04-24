@@ -92,6 +92,5 @@ public abstract class Character {
         this.defending = defending;
     }
     //drop item
-    public abstract Item dropItem(String item);
 
 }

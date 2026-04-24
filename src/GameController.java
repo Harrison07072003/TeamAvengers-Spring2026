@@ -43,7 +43,7 @@ public class GameController {
                     }
 
                 }
-                if(command.equals("explore puzzle")){
+                if(command.equals("explore puzzle") && !(result.substring(0, result.length() - 1).startsWith("You have already solved this puzzle."))) {
                     view.display("Do you want to solve or ignore the puzzle?" +
                             " Type in 'solve' to solve or press any other key to ignore.");
                     String response = input.nextLine();
@@ -52,6 +52,10 @@ public class GameController {
                     else{
                         view.display("You decided not to ignore the puzzle");
                     }
+                }
+                if(command.equals("escape game") && result.startsWith("Congratulations! You have escaped the school and won the game!")){
+                    isRunning = false;
+                    view.showCredits();
                 }
             }
         }

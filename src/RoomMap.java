@@ -317,10 +317,11 @@ public class RoomMap {
                 player.getAttack() + "," +
                 player.getDefense() + "," +
                 player.getCoins() + "," +
-                player.getVialCount() + "," +
+                player.getVials() + "," +
                 player.getRoomID() + "," +
                 player.getMaxHP() + "," +
-                player.getPreviousRoom());
+                player.getPreviousRoom() + "," +
+                (player.getPickedUp() != null ? player.getPickedUp().toFileString() : ""));
     }
 
     private void savePlayerInventorySection(PrintWriter output, Player player) {
@@ -411,10 +412,16 @@ public class RoomMap {
         player.setAttack(Integer.parseInt(values[2].trim()));
         player.setDefense(Integer.parseInt(values[3].trim()));
         player.setCoins(Integer.parseInt(values[4].trim()));
-        player.setVialCount(Integer.parseInt(values[5].trim()));
+        player.setVials(Integer.parseInt(values[5].trim()));
         player.setCurrentRoom(values[6].trim());
         player.setMaxHP(Integer.parseInt(values[7].trim()));
         player.setPreviousRoom(values[8].trim());
+        if(values.length > 9 && !values[9].trim().isEmpty()) {
+            Item pickedUp = returnItem(values[9].trim(), values[10].trim(), values[11].trim(), values[12].trim(),
+                    Integer.parseInt(values[13].trim()), values[14].trim(), values[15].trim(), Integer.parseInt(values[16].trim()));
+            player.setPickedUp(pickedUp);
+        }
+
     }
 
     // --- START: Robust item parsing for load operations ---

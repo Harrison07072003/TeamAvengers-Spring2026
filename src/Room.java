@@ -112,6 +112,8 @@ public class Room {
 
 
     public void addItem(Item item) {
+        item.setRoomLocation(this.roomId);
+        item.setLocation(this.roomId);
         this.inventory.add(item);
     }
 

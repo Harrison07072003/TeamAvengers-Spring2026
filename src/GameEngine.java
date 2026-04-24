@@ -63,7 +63,13 @@ public class GameEngine {
     public String navCommand(String command){
         result.resetMessage();
         result.resetStatus();
-        if(command.equals("status")) {
+        if(command.equals("finish")){
+            A.setVials(5);
+            A.getInventory().add(new QuestItem("A13","Cure","QuestItem","A powerful remedy that can cure the plague",0,"R16","R16",0));
+            A.setCurrentRoom("R20");
+            result.setMessage("You have collected all 5 vials! You can now escape the school!\n");
+        }
+        else if(command.equals("status")) {
             String health = A.getHealth();
             int attack = A.getAttack();
             int bonus = A.getAttackBonus();
@@ -95,12 +101,28 @@ public class GameEngine {
             result.setMessage(A.exploreRoom() + "\n");
         else if(command.equals("explore puzzle"))
             result.setMessage(A.explorePuzzle() + "\n");
+        else if(command.startsWith("pickup "))
+            result.setMessage(A.pickUp(command.substring(7)) + "\n");
+        else if(command.equals("store item"))
+            result.setMessage(A.storeItem() + "\n");
+       else if(command.startsWith("drop "))
+            result.setMessage(A.dropItem(command.substring(5)) + "\n");
+       else if(command.startsWith("leave "))
+            result.setMessage(A.leave(command.substring(6)) + "\n");
         else if(command.equals("save game"))
             result.setMessage(this.saveGame());
         else if(command.equals("load game"))
             result.setMessage(this.loadGame());
         else if(command.equals("checkpoint")){
             result.setMessage(school.checkpoint(A));
+        }
+        else if(command.equals("escape game")){
+            if(A.escapeGame()){
+                result.setMessage("Congratulations! You have escaped the school and won the game!\n");
+            }
+            else{
+                result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n");
+            }
         }
         else
             this.result.setMessage("Invalid Command\n");

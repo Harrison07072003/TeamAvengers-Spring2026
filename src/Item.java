@@ -51,6 +51,12 @@ public abstract class Item {
     public int getPrice() {
         return price;
     }
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    public void setRoomLocation(String roomLocation) {
+        this.roomLocation = roomLocation;
+    }
 
 
     //toString and fileString
