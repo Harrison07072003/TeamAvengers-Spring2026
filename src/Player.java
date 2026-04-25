@@ -302,12 +302,16 @@ public class Player extends Character {
     }
     //Command: Consume Food
     public String consumeFood(String itemName){
-        if(itemName.isBlank()){
-            return "Please enter a item to consume";
+        if(itemName == null || itemName.isBlank()){
+            return "Please enter an item to consume";
         }
+
         Item item = getItem(itemName);
         //if in inventory
-        if(this.getInventory().contains(item)&&item.getCategory().equalsIgnoreCase("Consumable")){
+        if(item!= null){
+            if(!item.getCategory().equalsIgnoreCase("Consumable")){
+                return"That item is not consumable.";
+            }
             if(this.getCurrentHP()==getMaxHP()){
                 return "You cannot consume right now, your HP is already full.";
             }
@@ -323,7 +327,11 @@ public class Player extends Character {
             return "5 HP has been restored. You now have " + total + "HP";
         }
         //if in picked up
-        if(this.getPickedUp()==(item)&&item.getCategory().equalsIgnoreCase("Consumable")){
+        Item picked = this.getPickedUp();
+        if(picked!= null && picked.getItemName().equalsIgnoreCase(itemName)){
+            if(!picked.getCategory().equalsIgnoreCase("Consumable")){
+                return"That item is not consumable.";
+            }
             if(this.getCurrentHP()==getMaxHP()){
                 return "You cannot consume right now, your HP is already full.";
             }
@@ -338,7 +346,7 @@ public class Player extends Character {
             setCurrentHP(total);
             return "5 HP has been restored. You now have " + total + "HP";
         }
-        return "Item entered not currently picked up or found in your inventory. Please enter a valid Item.";
+        return "Please enter a valid item you've picked up or have in your inventory.";
     }
 
     //Command: Combine Items - for cure vials, only in r16 chem lab (and flashlight?)
