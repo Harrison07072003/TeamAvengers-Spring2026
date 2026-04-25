@@ -233,7 +233,11 @@ public class Player extends Character {
         if (this.pickedUp == null) {
             return "You have not picked up an item to store.";
         }
-        if (this.getInventory().size() >= this.capacity) {// *FIX ME* inventory size limit yadaya..
+        if(pickedUp.getItemId().equals("A10")){
+            setCapacity(15);
+            return "Inventory has been increased to 15 items.";
+        }
+        if (this.getInventory().size() >= this.capacity) {
             return "Your inventory is full. Please drop an item before storing a new one.";
         }
         this.getInventory().add(this.pickedUp);
