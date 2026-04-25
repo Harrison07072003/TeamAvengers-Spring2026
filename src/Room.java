@@ -52,8 +52,8 @@ public class Room {
     }
 
     public String getExit(String input) {
-        if (this.exits.containsKey((input).substring(0,1))) {
-            return this.exits.get(input.substring(0,1));
+        if (this.exits.containsKey((input))) {
+            return this.exits.get(input);
         }else if(this.exits.containsValue(input)){
             return input;
         }

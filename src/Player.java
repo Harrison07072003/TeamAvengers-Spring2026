@@ -481,7 +481,19 @@ public class Player extends Character {
         }
         Room current = this.getCurrentRoom(this.currentRoom);
         String userInput = input.trim().toUpperCase();
-        String nextRoom = current.getExit(userInput);
+        if(userInput.substring(0,1).equalsIgnoreCase("N")){
+            userInput= "North";
+        }
+        else if(userInput.substring(0,1).equalsIgnoreCase("S")){
+            userInput= "South";
+        }
+        else if(userInput.substring(0,1).equalsIgnoreCase("E")){
+            userInput= "East";
+        }
+        else if(userInput.substring(0,1).equalsIgnoreCase("W")){
+            userInput= "West";
+        }
+        String nextRoom = current.getExit(userInput);//
         if (nextRoom == null) {
             return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
         }
