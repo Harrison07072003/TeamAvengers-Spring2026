@@ -49,7 +49,7 @@ public class View {
     public void showMap(String building) {
         if (building.equals("E Building")) {
             System.out.println(
-                            "                         |Building E|\n" +
+                            "                                  |Building E|\n" +
                             " [R5|Game Room]    -------     [R18|Kitchen]     ----- [R8|Dining Hall]\n" +
                             "      |                             |                             |\n" +
                             " [R13|Meditation Room] ----- [R4|Student Lounge] ----- [R16|Campus Cafe] -----> Library(R11-Study Room)"
@@ -70,7 +70,7 @@ public class View {
                             "        |                    |                                  |\n" +
                             "        |                    |                       [R15|Digital Media Lab]\n" +
                             "        |                    |                                  |\n" +
-                            " [R19|Health Lab] -------- [R|10Bathroom] --------   [R2|Janitor's Closet]\n" +
+                            " [R19|Health Lab] -------- [R10|Bathroom] --------   [R2|Janitor's Closet]\n" +
                             "        |\n" +
                             "        |\n" +
                             "Parking Lot(R20)"

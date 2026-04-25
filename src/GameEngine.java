@@ -16,17 +16,7 @@ public class GameEngine {
     public String navCommand(String command){
         result.resetMessage();
         result.resetStatus();
-        if(command.equals("finish")){
-            //A.getInventory().add(new QuestItem("A3","Cure Vial 1","QuestItem","Used to make a cure for the plague",0,"","",0));
-            //A.getInventory().add(new QuestItem("A3a","Cure Vial 2","QuestItem","Used to make a cure for the plague",0,"","",0));
-            //A.getInventory().add(new QuestItem("A3b","Cure Vial 3","QuestItem","Used to make a cure for the plague",0,"","",0));
-            //A.getInventory().add(new QuestItem("A3c","Cure Vial 4","QuestItem","Used to make a cure for the plague",0,"","",0));
-            //A.getInventory().add(new QuestItem("A3d","Cure Vial 5","QuestItem","Used to make a cure for the plague",0,"","",0));
-            //A.getInventory().add(new QuestItem("A13","Cure","QuestItem","A powerful remedy that can cure the plague",0,"R16","R16",0));
-            A.setCurrentRoom("R4");
-            //result.setMessage("You have collected all 5 vials! You can now escape the school!\n");
-        }
-        else if(command.equalsIgnoreCase("status")) {
+        if(command.equalsIgnoreCase("status")) {
             String health = A.getHealth();
             int attack = A.getAttack();
             int bonus = A.getAttackBonus();

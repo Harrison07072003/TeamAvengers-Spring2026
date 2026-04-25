@@ -149,8 +149,12 @@ public class Player extends Character {
                 monster.setAlive(false);
                 if (!monster.getInventory().isEmpty()) {
                     Item dropped = monster.getInventory().get(0);
-                    this.getInventory().add(dropped);
-                    this.addVial(dropped);
+                    if(inventoryFull())
+                        this.getCurrentRoom(this.currentRoom).addItem(dropped);
+                    else {
+                        this.getInventory().add(dropped);
+                        this.addVial(dropped);
+                    }
                 }
                 this.collectCoins(monster.getCoins());
             }
@@ -279,7 +283,7 @@ public class Player extends Character {
             return false;
         }
         if(item.getItemName().equalsIgnoreCase("Office Key")){
-            if(currentRoom.equals("R1") || currentRoom.equals("R20") || currentRoom.equals("R16")){
+            if(currentRoom.equals("R1") || currentRoom.equals("R10") || currentRoom.equals("R16")){
                 this.getCurrentRoom("R17").setLocked(false);
                 return true;
             }
@@ -364,6 +368,13 @@ public class Player extends Character {
                 this.getCurrentRoom(currentRoom).addItem(dropped);
                 this.getInventory().remove(dropped);
                 this.removeVial(dropped);
+                if(dropped.getItemId().equals("A10")){
+                    this.setCapacity(5);
+                    while(this.inventoryFull()){
+                        this.getCurrentRoom(this.currentRoom).addItem(this.getInventory().getLast());
+                        this.getInventory().removeLast();
+                    }
+                }
                 return "You have dropped " + dropped.getItemName() + " in the room.";
             }
         }
@@ -400,6 +411,9 @@ public class Player extends Character {
         return this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
                 this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
                 this.getInventory().contains(getItem("Cure Vial 5"));
+    }
+    public boolean inventoryFull(){
+        return this.getInventory().size() >= this.capacity;
     }
     public void addVial(Item item){
         if(item.getItemName().startsWith("Cure Vial"))
@@ -545,8 +559,12 @@ public class Player extends Character {
             }
                 if (puzzle.getRewards().size() > 0) {
                     for (int i = 0; i < puzzle.getRewards().size(); i++) {
-                        this.getInventory().add(puzzle.getRewards().get(i));
-                        this.addVial(puzzle.getRewards().get(i));
+                        if(this.inventoryFull())
+                            this.getCurrentRoom(this.currentRoom).getInventory().add(puzzle.getRewards().get(i));
+                        else {
+                            this.getInventory().add(puzzle.getRewards().get(i));
+                            this.addVial(puzzle.getRewards().get(i));
+                        }
                         result += puzzle.getRewards().get(i).getItemName() + " dropped.";
                     }
                 }
