@@ -17,7 +17,7 @@ public class GameController {
     //navigation state
     public void run(boolean savedgame){
         if(!savedgame)
-            engine.resetGame();
+            view.display(engine.resetGame());
         //navigation loop
         while(isRunning) {
             view.navUI(engine.getRoomName());
@@ -35,7 +35,7 @@ public class GameController {
                     view.display("Do you want to restart the game yes/no");
                     String response = input.nextLine();
                     if(response.equalsIgnoreCase("yes")) {
-                        engine.resetGame();
+                        view.display(engine.resetGame());
                         break;
                     }
                     else if(response.equalsIgnoreCase("no")) {
@@ -122,9 +122,9 @@ public class GameController {
             if(engine.saveExists())
                 engine.loadGame();
             else
-                engine.resetGame();
+                view.display(engine.resetGame());
         }
-        engine.setPlayerState(2);
+        engine.setPlayerState(1);
     }
     //puzzle state
     public void puzzle(){

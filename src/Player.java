@@ -113,6 +113,9 @@ public class Player extends Character {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+    public int getCapacity() {
+        return this.capacity;
+    }
 
 
 
@@ -177,8 +180,12 @@ public class Player extends Character {
                     monster.setAlive(false);
                     if (!monster.getInventory().isEmpty()) {
                         Item dropped = monster.getInventory().get(0);
-                        this.getInventory().add(dropped);
-                        this.addVial(dropped);
+                        if(inventoryFull())
+                            this.getCurrentRoom(this.currentRoom).addItem(dropped);
+                        else {
+                            this.getInventory().add(dropped);
+                            this.addVial(dropped);
+                        }
                     }
                     this.collectCoins(monster.getCoins());
                 }
@@ -239,7 +246,10 @@ public class Player extends Character {
         }
         if(pickedUp.getItemId().equals("A10")){
             setCapacity(15);
-            return "Inventory has been increased to 15 items.";
+            this.getInventory().add(this.pickedUp);
+            String itemName = this.pickedUp.getItemName();
+            this.setPickedUp(null);
+            return "You have stored " + itemName + " in your inventory." + " Inventory has been increased to 15 items.";
         }
         if (this.getInventory().size() >= this.capacity) {
             return "Your inventory is full. Please drop an item before storing a new one.";
@@ -247,7 +257,7 @@ public class Player extends Character {
         this.getInventory().add(this.pickedUp);
         String itemName = this.pickedUp.getItemName();
         this.addVial(pickedUp);
-        setPickedUp(null);
+        this.setPickedUp(null);
         return "You have stored " + itemName + " in your inventory.";
     }
 
@@ -365,6 +375,8 @@ public class Player extends Character {
         for (int i = 0; i < this.getInventory().size(); i++) {
             if (this.getInventory().get(i).getItemName().equalsIgnoreCase(item)) {
                 Item dropped = this.getInventory().get(i);
+                if(dropped.equals(this.equippedWeapon))
+                    return "You can't drop the " + getEquippedWeaponName() + " until you unequip it first";
                 this.getCurrentRoom(currentRoom).addItem(dropped);
                 this.getInventory().remove(dropped);
                 this.removeVial(dropped);
@@ -374,6 +386,8 @@ public class Player extends Character {
                         this.getCurrentRoom(this.currentRoom).addItem(this.getInventory().getLast());
                         this.getInventory().removeLast();
                     }
+                    return "You have dropped your " + dropped.getItemName() + " some of the items you were carrying in it may have spilled out." +
+                            "Your inventory capacity is back down to 5.";
                 }
                 return "You have dropped " + dropped.getItemName() + " in the room.";
             }
@@ -413,7 +427,7 @@ public class Player extends Character {
                 this.getInventory().contains(getItem("Cure Vial 5"));
     }
     public boolean inventoryFull(){
-        return this.getInventory().size() >= this.capacity;
+        return this.getInventory().size() > this.capacity;
     }
     public void addVial(Item item){
         if(item.getItemName().startsWith("Cure Vial"))
@@ -438,6 +452,16 @@ public class Player extends Character {
             }
         }
         return false;
+    }
+    public String unequipWeapon(){
+        String message = "";
+        if(!equippedWeapon.equals(standardWeapon)){
+            message += "You have unequipped the " + this.getEquippedWeaponName();
+            equippedWeapon = standardWeapon;
+        }
+        else
+            message += "You don't have anything equipped";
+        return message;
     }
 
     public String examineItem(String item) {

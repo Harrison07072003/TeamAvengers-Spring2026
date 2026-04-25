@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 public class RoomMap {
     // fields
     private ArrayList<Room> rooms;
-
     private String roomsFile;
     private String puzzlesFile;
     private String monstersFile;
@@ -325,6 +324,7 @@ public class RoomMap {
                 player.getRoomID() + "," +
                 player.getMaxHP() + "," +
                 player.getPreviousRoom() + "," +
+                player.getCapacity() + "," +
                 (player.getPickedUp() != null ? player.getPickedUp().toFileString() : ""));
     }
 
@@ -347,8 +347,7 @@ public class RoomMap {
         }
     }
 
-    // java
-// in src/RoomMap.java - add helper and replace methods below
+
 
     // helper to avoid breaking the '|' separator if field contains '|'
     private String sanitize(String s) {
@@ -357,7 +356,7 @@ public class RoomMap {
     }
 
     private void saveRoom(PrintWriter output, Room room) {
-        // Use '|' as field delimiter so commas in descriptions/building don't break parsing
+
         output.println("ROOM|" + sanitize(room.getRoomId()) +
                 "|" + sanitize(room.getRoomName()) +
                 "|" + sanitize(room.getRoomDescription()) +
@@ -406,7 +405,7 @@ public class RoomMap {
         output.println("ENDROOM");
     }
 
-// in handleRoomsLine(...) replace ROOM parsing branch with:
+
 
 
     private void handlePlayerLine(String line, Player player) {
@@ -421,42 +420,34 @@ public class RoomMap {
         player.setCurrentRoom(values[6].trim());
         player.setMaxHP(Integer.parseInt(values[7].trim()));
         player.setPreviousRoom(values[8].trim());
-        if(values.length > 9 && !values[9].trim().isEmpty()) {
-            Item pickedUp = returnItem(values[9].trim(), values[10].trim(), values[11].trim(), values[12].trim(),
-                    Integer.parseInt(values[13].trim()), values[14].trim(), values[15].trim(), Integer.parseInt(values[16].trim()));
+        player.setCapacity(Integer.parseInt(values[9].trim()));
+        if(values.length > 10 && !values[10].trim().isEmpty()) {
+            Item pickedUp = returnItem(values[10].trim(), values[11].trim(), values[12].trim(), values[13].trim(),
+                    Integer.parseInt(values[14].trim()), values[15].trim(), values[16].trim(), Integer.parseInt(values[17].trim()));
             player.setPickedUp(pickedUp);
         }
 
     }
 
-    // --- START: Robust item parsing for load operations ---
-    /**
-     * Parse an item line coming from a toFileString() representation where the description
-     * may contain commas. The format (fields) expected is:
-     * id,name,description,category,value,roomLocation,location,price
-     * description can contain commas, so this method reconstructs the description by
-     * taking the variable-middle part between the fixed head and fixed tail fields.
-     */
-    // java
     private Item parseItemFromData(String itemData) {
         String[] parts = itemData.split(",");
         if (parts.length < 8) {
-            return null; // not enough fields
+            return null;
         }
         int n = parts.length;
         int priceIndex = n - 1;
         int locationIndex = n - 2;
         int roomLocationIndex = n - 3;
         int valueIndex = n - 4;
-        int categoryIndex = 2; // as requested: category is the third parameter (index 2)
-        int descriptionStart = 3; // description begins at index 3
-        int descriptionEnd = valueIndex - 1; // description ends just before the value field
+        int categoryIndex = 2;
+        int descriptionStart = 3;
+        int descriptionEnd = valueIndex - 1;
 
         String itemId = parts[0].trim();
         String itemName = parts[1].trim();
         String category = parts[categoryIndex].trim();
 
-        // Rebuild description which may contain commas
+
         StringBuilder desc = new StringBuilder();
         for (int i = descriptionStart; i <= descriptionEnd; i++) {
             if (i > descriptionStart) desc.append(",");
@@ -472,11 +463,10 @@ public class RoomMap {
 
             return returnItem(itemId, itemName, category, itemDescription, value, roomLocation, location, price);
         } catch (NumberFormatException e) {
-            return null; // invalid numeric fields
+            return null;
         }
     }
 
-    // --- END: Robust item parsing for load operations ---
 
     private void handlePlayerInventoryLine(String line, Player player) {
         if (line.startsWith("Player ITEM|")) {
@@ -496,7 +486,6 @@ public class RoomMap {
 
     private void handleRoomsLine(String line) {
         if (line.startsWith("ROOM|")) {
-            // split into up to 6 parts: "ROOM", id, name, description, building, requiresFlashlight
             String[] roomValues = line.split("\\|", 7);
             if (roomValues.length < 7) {
                 System.out.println("Skipping malformed ROOM line: " + line);
@@ -509,7 +498,7 @@ public class RoomMap {
         } else if(line.startsWith("EXITS|")) {
             String exitsData = line.split("\\|",2)[1].trim();
             String[] exits = exitsData.split(",");
-            // iterate in pairs: direction, targetRoom
+
             for(int i = 0; i + 1 < exits.length; i += 2){
                 rooms.get(rooms.size() - 1).addExit(exits[i].trim(), exits[i+1].trim());
             }
@@ -530,11 +519,9 @@ public class RoomMap {
         } else if (line.startsWith("PUZZLE REWARD|")) {
             String rewardsData = line.split("\\|",2)[1].trim();
             if (rewardsData.equals("none")) {
-                // nothing to add
                 return;
             }
             String[] rewards = rewardsData.split(";");
-            // ensure puzzle exists before attempting to add rewards
             Puzzle roomPuzzle = rooms.get(rooms.size() - 1).getPuzzle();
             if (roomPuzzle == null) return;
             for (int i = 0; i < rewards.length; i++) {
@@ -557,7 +544,6 @@ public class RoomMap {
                 rooms.get(rooms.size() - 1).setVendingMachine(vm);
             }
         } else if (line.startsWith("Monster ITEM|")) {
-            // format: Monster ITEM|<monsterId>|<item toFileString>
             String[] split = line.split("\\|",3);
             String monsterId = split[1].trim();
             String itemData = split[2].trim();
@@ -578,7 +564,6 @@ public class RoomMap {
                 rooms.get(rooms.size() - 1).getVendingMachine().addItem(item, item.getPrice());
             }
         } else if (line.equals("ENDROOM")) {
-            // nothing to do here - room already completed
         }
     }
 

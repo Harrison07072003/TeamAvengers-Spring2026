@@ -7,7 +7,7 @@ public class GameEngine {
     //constructor
     public GameEngine(){
         this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","Item.txt","vendingmachines.txt");
-        this.A = new Player("Player", 100, 180, 5, 10,"R1",school);
+        this.A = new Player("Player", 100, 180, 5, 15,"R1",school);
         this.combatEngine = new CombatEngine(A);
         this.result = new GameResult();
     }
@@ -28,10 +28,19 @@ public class GameEngine {
                     "Attack: " + attack + " | ATK Bonus: (+" + bonus +") | Defense: " + defense + "\n" +
                     "Vials: " + vials + "/5 | Coins: " + coins + "\nCurrent Weapon: " + weapon +"\n");
         }
+        else if(command.equals("test")){
+            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
+            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
+            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
+            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
+        }
         else if(command.equalsIgnoreCase("inventory"))
             this.result.setMessage(A.getInventoryString()+"\n");
         else if(command.equalsIgnoreCase("inspect"))
             this.result.setMessage(A.inspectMonster()+"\n");
+        else if(command.equalsIgnoreCase("unequip")){
+            this.result.setMessage(A.unequipWeapon()+"\n");
+        }
         else if(command.startsWith("equip ")) {
             String itemName = command.substring(6);
             boolean success = A.equipWeapon(itemName);
@@ -147,13 +156,14 @@ public class GameEngine {
         return A.getHealth();
     }
     //game manager methods
-    public void resetGame(){
+    public String resetGame(){
         A.resetPlayer();
         school.generateRooms();
         school.spawnMonsters();
         school.loadPuzzles();
         school.putVendingMachines();
         school.loadItems();
+        return "You have just woken up and see that you are in GGC in a Chem Lab";
         //A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
     }
     public String saveGame(){

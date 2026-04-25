@@ -40,7 +40,7 @@ public class View {
         if(state == 1)
             System.out.println("Commands: \n" + "1.Status - Display current HP,stats,vial count, and money count\n" + "2.Inventory - View collected items" +
                 "\n" + "3.navHelp - Show a list of available navigation/world interaction commands\n" + "4.Checkpoint - Saves checkpoint\n" + "5.Show map - Displays the map and the player's location\n"
-        + "6.Escape - Escape the school(only usable with all vials)\n" + "7.Save Game - Saves gameplay\n" + "8.Load Game - Loads saved game or checkpoint\n" +
+        + "6.Escape - Escape the school(only usable with all vials combined and in the parking lot)\n" + "7.Save Game - Saves gameplay\n" + "8.Load Game - Loads saved game or checkpoint\n" +
                 "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay\n----------------------------");
         else if(state == 2)
             System.out.println("Commands: \n" + "1.Attack - Attack the monster with a weapon\n" + "2.Heavy Attack - Attack a monster with more damage, but with a chance to miss\n"
@@ -90,9 +90,17 @@ public class View {
     }
 
     public void showCredits(){
-        System.out.println("Teams Involved\n----------------\nCreative Team: Team Cobra\nDevelopment Team: Team Avengers\n" +
-                "\nDevelopers\n----------------\nTeam Manager:Jocelin Mendoza\nTechnical Lead:Harrison Allen\nData Lead:José Muñoz-Suastegui" +
-                "\nTesting Lead:Asliee Pena Cabrera\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo\n Thanks so much for playing the game!\n\n");
+        System.out.println("-----CREDITS---------\n" +
+                "Teams Involved\n----------------\n" +
+                "Creative Team: Team Cobra" +
+                "\nDevelopment Team: Team Avengers\n" +
+                "\nDevelopers\n----------------\n" +
+                "Team Manager:Jocelin Mendoza\n" +
+                "Technical Lead:Harrison Allen\n" +
+                "Data Lead:José Muñoz-Suastegui" +
+                "\nTesting Lead:Asliee Pena Cabrera" +
+                "\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo" +
+                "\nThanks so much for playing the game!\n\n");
     }
 
 }
