@@ -19,4 +19,3 @@ A9|Book|Weapon|A worn-out book filled with ancient knowledge|15|R3|R3|0
 A11|Broom|Weapon|A cleaning tool that can be used as a weapon|15|R2|R2|0
 A10|Backpack|Tool|A sturdy backpack used for carrying items|15|R16|R16|0
 A12|Office Key|QuestItem|A key that opens the office door|0|R1|P3|0
-A13|Cure|QuestItem|A powerful remedy that can cure the plague|0|R16|R16|0

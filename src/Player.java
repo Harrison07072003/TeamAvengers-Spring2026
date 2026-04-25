@@ -223,7 +223,7 @@ public class Player extends Character {
             Item item = room.getInventory().get(items.indexOf(itemName));
             room.removeItem(item);
             setPickedUp(item);
-            return "You have picked up " + itemName;
+            return "You have picked up " + itemName +"\n" + item;
         }
         return "There is no item with that name in this room.";
     }
@@ -361,7 +361,7 @@ public class Player extends Character {
         if(this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"))){
             this.getInventory().remove(getItem("Flashlight"));
             this.getInventory().remove(getItem("Batteries"));
-            Item poweredFlashlight = new Tool("I9", "Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
+            Item poweredFlashlight = new Tool("A14","Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
             this.getInventory().add(poweredFlashlight);
             return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
         }

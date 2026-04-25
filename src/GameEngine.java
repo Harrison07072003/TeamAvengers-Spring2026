@@ -60,8 +60,10 @@ public class GameEngine {
             result.setMessage(A.explorePuzzle() + "\n");
         else if(command.startsWith("pickup "))
             result.setMessage(A.pickUp(command.substring(7)) + "\n");
-        else if(command.equalsIgnoreCase("store item"))
-            result.setMessage(A.storeItem() + "\n");
+        else if(command.equalsIgnoreCase("buy food"))
+            result.setMessage(A.buyFood() + "\n");
+        else if(command.startsWith("consume "))
+            result.setMessage(A.consumeFood(command.substring(8)) + "\n");
        else if(command.startsWith("drop "))
             result.setMessage(A.dropItem(command.substring(5)) + "\n");
        else if(command.startsWith("leave "))
@@ -88,7 +90,8 @@ public class GameEngine {
                 result.setMessage("Congratulations! You have escaped the school and won the game!\n");
             }
             else{
-                result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n");
+                result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n"
+                 + "You currently only have collected " + A.getVials() + "/5 vials ,and need to combined into Cure in the Chem Lab 2 in order to escape\n");
             }
         }
         else

@@ -25,7 +25,7 @@ public class GameController {
             if(command.equalsIgnoreCase("help")) {
                 view.help(engine.getPlayerState());
             }
-            if(command.equalsIgnoreCase("navHelp")){
+            else if(command.equalsIgnoreCase("navHelp")){
                 view.navHelp();
             }
             else if(command.equalsIgnoreCase("map"))
@@ -64,7 +64,7 @@ public class GameController {
                     }
 
                 }
-                if(command.equalsIgnoreCase("explore puzzle") && !(result.substring(0, result.length() - 1).startsWith("You have already solved this puzzle."))) {
+                if(command.equalsIgnoreCase("explore puzzle") && (result.substring(0, result.length() - 1).startsWith("Puzzle"))) {
                     view.display("Do you want to solve or ignore the puzzle?" +
                             " Type in 'solve' to solve or press any other key to ignore.");
                     String response = input.nextLine();
@@ -78,9 +78,23 @@ public class GameController {
                     isRunning = false;
                     view.showCredits();
                 }
+                if(command.startsWith("pickup") && result.startsWith("You have picked up ")){
+                    while(true) {
+                        view.display("Do you want to store this item- Enter store or drop");
+                        String store = input.nextLine();
+                        if (store.equalsIgnoreCase("store")) {
+                            view.display(engine.getPlayer().storeItem());
+                            break;
+                        } else if (store.equalsIgnoreCase("drop")) {
+                            view.display(engine.getPlayer().leave(engine.getPlayer().getPickedUp().getItemName()));
+                            break;
+                        }
+                        view.display("I didn't quite get that");
+                    }
+                }
             }
         }
-        view.display("You have left the game");
+        view.display("Bye! Bye!");
     }
     //battle state
     public void battle(){

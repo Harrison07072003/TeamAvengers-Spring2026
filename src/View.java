@@ -17,30 +17,29 @@ public class View {
                 "--------------------------------\n" + "Action:");
     }
 
-    public void puzzleUI(){}
     public void navHelp(){
         System.out.println("Commands: \n" + "1.Enter Room - type 'enter <room#>'(ex: enter r19) allows you to travel between differnt rooms\n"
                 + "2.Explore Room - type 'explore room' allows you to examine the room for puzzles,items,monsters, and vending machines\n"
-                + "3.Inspect - type 'inspect' if monster you will be prompted to ignore or engage monster\n"
+                + "3.Inspect - type 'inspect' if monster in room you will be prompted to ignore or engage monster\n"
                 + "4.Engage - type 'engage' if you want to do battle with the monster and enter combat after inspecting it\n"
                 + "5.Ignore - type 'ignore' if you want to ignore a monster encounter after inspecting it\n"
-                + "6.Explore Puzzle - type 'explore puzzle' if you want to see a puzzle and be prompted to solve or ignore\n"
+                + "6.Explore Puzzle - type 'explore puzzle' if puzzle in room and want to see a puzzle and be prompted to solve or ignore\n"
                 + "7.Solve Puzzle - type 'solve puzzle' if you want to be given a chance to solve the puzzle and put in answer\n"
                 + "8.Ignore Puzzle - type 'ignore puzzle if you want to ignore the puzzle and come back to it later\n"
-                + "9.Pickup Item - \n"
-                + "10.Drop Item - \n"
-                + "11.Use Item - \n"
-                + "12.Store Item - \n"
-                + "13.Combine Items - \n"
-                + "14.Buy Food - \n"
-                + "15.Consume Item - \n"
-                + "16.Examine Item - \n"
-                + "17.Equip Weapon - \n----------------------------");
+                + "9.Pickup Item - type 'pickup <itemname>' (ex: pickup Flashlight) allows you to pickup items and allow you to put them in your inventory\n"
+                + "10.Drop Item - type 'drop <itemname>' (ex: drop Flashlight) allows you to drop items and put them in the room inventory\n"
+                + "11.Use Item - type 'use <itemname>' (ex: use Office Key) allows you to use items that interact with the game(only usable with office key to unlock door in chem office)\n"
+                + "12.Store Item - type 'store' when you have picked up an item to allow it be actually stored in your inventory \n"
+                + "13.Combine Items - type 'combine' when you items in your inventory that can be combined\n"
+                + "14.Buy Food - type 'buy food' in room with vending machine in order to buy food from it for 4 coins each\n"
+                + "15.Consume Food - type 'consume <itemname>' (ex: consume Vending Machine Food) allows you to restore health using food(Only Consumables)\n"
+                + "16.Examine Item - type 'examine <itemname>' (ex: examine Batteries) allows you to examine item descriptions of items in inventory\n"
+                + "17.Equip Weapon - type 'equip <itemname>' (ex: equip Fork) allows you to equip weapons to increase attack(Only Weapons)\n----------------------------");
     }
     public void help(int state){
         if(state == 1)
             System.out.println("Commands: \n" + "1.Status - Display current HP,stats,vial count, and money count\n" + "2.Inventory - View collected items" +
-                "\n" + "3.navHelp - Show a list of available navigation/word interaction commands\n" + "4.Checkpoint - Saves checkpoint\n" + "5.Show map - Displays the map and the player's location\n"
+                "\n" + "3.navHelp - Show a list of available navigation/world interaction commands\n" + "4.Checkpoint - Saves checkpoint\n" + "5.Show map - Displays the map and the player's location\n"
         + "6.Escape - Escape the school(only usable with all vials)\n" + "7.Save Game - Saves gameplay\n" + "8.Load Game - Loads saved game or checkpoint\n" +
                 "9.Quit - Exit the game\n" + "10.Restart - Restart gameplay\n----------------------------");
         else if(state == 2)
@@ -93,7 +92,7 @@ public class View {
     public void showCredits(){
         System.out.println("Teams Involved\n----------------\nCreative Team: Team Cobra\nDevelopment Team: Team Avengers\n" +
                 "\nDevelopers\n----------------\nTeam Manager:Jocelin Mendoza\nTechnical Lead:Harrison Allen\nData Lead:José Muñoz-Suastegui" +
-                "\nTesting Lead:Asliee Pena Cabrera\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo");
+                "\nTesting Lead:Asliee Pena Cabrera\nRequirements & Documentation Lead:Gethsemane Gonzalez Cirilo\n Thanks so much for playing the game!\n\n");
     }
 
 }
