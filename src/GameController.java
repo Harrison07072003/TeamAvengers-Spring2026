@@ -122,6 +122,7 @@ public class GameController {
             if(engine.saveExists()) {
                 view.display("Loading last save\n");
                 engine.loadGame();
+                engine.getPlayer().setAlive(true);
             }
             else {
                 view.display("Resetting game\n");
