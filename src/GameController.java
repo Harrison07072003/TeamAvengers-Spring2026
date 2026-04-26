@@ -119,12 +119,17 @@ public class GameController {
         }
         else if(!engine.playerAlive()){
             view.display("You were defeated...");
-            if(engine.saveExists())
+            if(engine.saveExists()) {
+                view.display("Loading last save\n");
                 engine.loadGame();
-            else
+            }
+            else {
+                view.display("Resetting game\n");
                 view.display(engine.resetGame());
+            }
         }
-        engine.destoryMonster();
+        if(!engine.monsterAlive())
+            engine.destoryMonster();
         engine.setPlayerState(1);
     }
     //puzzle state
