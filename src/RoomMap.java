@@ -61,6 +61,9 @@ public class RoomMap {
                 if(room.getRoomId().equals("R17")){ //if prof office -jocelin
                     room.setLocked(true);
                 }
+                if(room.getRoomId().equals("R14")){
+                    room.setCoins(3);
+                }
 
                 rooms.add(room);
             }
@@ -362,7 +365,8 @@ public class RoomMap {
                 "|" + sanitize(room.getRoomDescription()) +
                 "|" + sanitize(room.getBuilding()) +
                 "|" + room.requiresValidFlashlight() +
-                "|" + room.isLocked());
+                "|" + room.isLocked() +
+                "|" + room.getCoins());
         output.println("EXITS|" + room.getExitsFileString());
         for (Item item : room.getInventory()) {
             output.println("Room ITEM|" + item.toFileString());
@@ -486,14 +490,15 @@ public class RoomMap {
 
     private void handleRoomsLine(String line) {
         if (line.startsWith("ROOM|")) {
-            String[] roomValues = line.split("\\|", 7);
-            if (roomValues.length < 7) {
+            String[] roomValues = line.split("\\|", 8);
+            if (roomValues.length < 8) {
                 System.out.println("Skipping malformed ROOM line: " + line);
                 return;
             }
             Room room = new Room(roomValues[1], roomValues[2], roomValues[3], roomValues[4],
                     Boolean.parseBoolean(roomValues[5]));
             room.setLocked(Boolean.parseBoolean(roomValues[6]));
+            room.setCoins(Integer.parseInt(roomValues[7]));
             rooms.add(room);
         } else if(line.startsWith("EXITS|")) {
             String exitsData = line.split("\\|",2)[1].trim();

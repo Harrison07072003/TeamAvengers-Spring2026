@@ -49,10 +49,10 @@ public class Monster extends Character{
     public String getDropsString(){
         String drop = "";
         if(this.getInventory().isEmpty())
-            return "";
+            return "nothing";
         else
             for(int i = 0; i < this.getInventory().size(); i++){
-                drop += this.getInventory().get(i).getItemName() + ",";
+                drop += "a " + this.getInventory().get(i).getItemName() + ",";
             }
         return drop.substring(0,drop.length()-1);
     }

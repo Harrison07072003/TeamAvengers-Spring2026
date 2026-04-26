@@ -2,21 +2,22 @@
 A1|Flashlight|Tool|Used to see throughout the game. Needs batteries to stay powered|0|R17|R17|0
 A2|Batteries|Tool|Used to power the flashlight|0|R1|P1|0
 A3|Cure Vial 4|QuestItem|Used to make a cure for the plague|0|R18|M1|0
-A3a|Cure Vial 3|QuestItem|Used to make a cure for the plague|0|R7|M5|0
-A3b|Cure Vial 1|QuestItem|Used to make a cure for the plague|0|R4|P1|0
-A3c|Cure Vial 2|QuestItem|Used to make a cure for the plague|0|R5|P2|0
-A3d|Cure Vial 5|QuestItem|Used to make a cure for the plague|0|R3|R3|0
-A4|Vending Machine Food|Consumable|Food sold in vending machines|5|R5|V1|4
-A4a|Vending Machine Food|Consumable|Food sold in vending machines|5|R11|V2|4
-A4b|Vending Machine Food|Consumable|Food sold in vending machines|5|R19|V3|4
-A5|Normal Food|Consumable|Basic food that restores health|7|R8|R8|0
-A5a|Normal Food|Consumable|Basic food that restores health|7|R8|R8|0
-A5b|Normal Food|Consumable|Basic food that restores health|7|R8|R8|0
-A5c|Normal Food|Consumable|Basic food that restores health|7|R19|M6|0
-A5d|Normal Food|Consumable|Basic food that restores health|7|R12|P5|0
+A3|Cure Vial 3|QuestItem|Used to make a cure for the plague|0|R7|M5|0
+A3|Cure Vial 1|QuestItem|Used to make a cure for the plague|0|R4|P1|0
+A3|Cure Vial 2|QuestItem|Used to make a cure for the plague|0|R5|P2|0
+A3|Cure Vial 5|QuestItem|Used to make a cure for the plague|0|R3|R3|0
+A4|Vending Machine Food|Consumable|Food sold in vending machines|10|R5|V1|4
+A4|Vending Machine Food|Consumable|Food sold in vending machines|10|R11|V2|4
+A4|Vending Machine Food|Consumable|Food sold in vending machines|10|R19|V3|4
+A5|Normal Food|Consumable|Basic food that restores health|14|R8|P6|0
+A5|Normal Food|Consumable|Basic food that restores health|14|R8|P6|0
+A5|Normal Food|Consumable|Basic food that restores health|14|R8|P6|0
+A5|Normal Food|Consumable|Basic food that restores health|14|R19|M6|0
+A5|Normal Food|Consumable|Basic food that restores health|14|R12|P5|0
 A7|Kitchen Knife|Weapon|Sharp knife used for cutting and self-defense|20|R6|R6|0
-A7a|Kitchen Knife|Weapon|Sharp knife used for cutting and self-defense|20|R15|M2|0
+A7|Kitchen Knife|Weapon|Sharp knife used for cutting and self-defense|20|R15|M2|0
 A8|Fork|Weapon|A utensil that can be used as a weapon in emergencies|10|R8|R8|0
+A8|Fork|Weapon|A utensil that can be used as a weapon in emergencies|10|R9|M7|0
 A9|Book|Weapon|A worn-out book filled with ancient knowledge|15|R3|R3|0
 A11|Broom|Weapon|A cleaning tool that can be used as a weapon|15|R2|P4|0
 A10|Backpack|Tool|A sturdy backpack used for carrying items|15|R16|R16|0

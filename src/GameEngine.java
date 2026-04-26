@@ -7,7 +7,7 @@ public class GameEngine {
     //constructor
     public GameEngine(){
         this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","Item.txt","vendingmachines.txt");
-        this.A = new Player("Player", 100, 180, 5, 15,"R1",school);
+        this.A = new Player("Player", 100, 15, 7, 15,"R1",school);
         this.combatEngine = new CombatEngine(A);
         this.result = new GameResult();
     }
@@ -29,10 +29,9 @@ public class GameEngine {
                     "Vials: " + vials + "/5 | Coins: " + coins + "\nCurrent Weapon: " + weapon +"\n");
         }
         else if(command.equals("test")){
-            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
-            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
-            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
-            A.getInventory().add(new Consumable("A1","Test","Consumable","test",5,"R1","R1",0));
+            A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
+            A.getInventory().add(new QuestItem("A13","Cure","QuestItem","Cure for the plague",0,"","",0));
+            A.setCurrentRoom("R14");
         }
         else if(command.equalsIgnoreCase("inventory"))
             this.result.setMessage(A.getInventoryString()+"\n");
@@ -48,6 +47,9 @@ public class GameEngine {
                 this.result.setMessage("You have equipped the " + itemName + "!\n");
             else
                 this.result.setMessage("You don't have a " + itemName + " in your inventory.\n");
+            if(itemName.isBlank()){
+                this.result.setMessage("Please enter a name of a weapon.\n");
+            }
         }
         else if(command.startsWith("examine "))
             result.setMessage(A.examineItem(command.substring(8)) + "\n");
@@ -59,15 +61,16 @@ public class GameEngine {
             result.setMessage(A.explorePuzzle() + "\n");
         else if(command.startsWith("pickup "))
             result.setMessage(A.pickUp(command.substring(7)) + "\n");
+        else if(command.equals("collect coins")){
+            result.setMessage(A.collectCoinsinRoom() + "\n");
+        }
         else if(command.equalsIgnoreCase("buy food"))
             result.setMessage(A.buyFood() + "\n");
         else if(command.startsWith("consume "))
             result.setMessage(A.consumeFood(command.substring(8)) + "\n");
-       else if(command.startsWith("drop "))
+        else if(command.startsWith("drop "))
             result.setMessage(A.dropItem(command.substring(5)) + "\n");
-       else if(command.startsWith("leave "))
-            result.setMessage(A.leave(command.substring(6)) + "\n");
-       else if(command.startsWith("use ")) {
+        else if(command.startsWith("use ")) {
             if(A.useItem(command.substring(4))){
                 result.setMessage("You used the " + command.substring(4) + "!\n");
             }
@@ -90,8 +93,10 @@ public class GameEngine {
             }
             else{
                 result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n"
-                 + "You currently only have collected " + A.getVials() + "/5 vials ,and need to combined into Cure in the Chem Lab 2 in order to escape\n");
+                 + "You have collected " + A.getVials() + "/5 vials ,after you obtain 5/5 vials, combine them in Chem Lab 2 to form a cure in order to escape\n");
             }
+            if(A.containsCure())
+                result.setMessage("You have the cure. Now head to the Parking Lot to escape and win the game.\n");
         }
         else
             this.result.setMessage("Invalid Command\n");
@@ -156,7 +161,7 @@ public class GameEngine {
         return A.getHealth();
     }
     //game manager methods
-    public String resetGame(){
+    public String resetGame() {
         A.resetPlayer();
         school.generateRooms();
         school.spawnMonsters();
@@ -164,7 +169,6 @@ public class GameEngine {
         school.putVendingMachines();
         school.loadItems();
         return "You have just woken up and see that you are in GGC in a Chem Lab";
-        //A.getInventory().add(new Tool("104,","Powered Flashlight","Tool","A flashlight that can be used to explore dark rooms",0,"R1","P1",0));
     }
     public String saveGame(){
         return school.saveGame(A);
@@ -174,6 +178,9 @@ public class GameEngine {
     }
     public boolean saveExists(){
         return school.saveExists();
+    }
+    public void destoryMonster(){
+        this.getPlayer().getCurrentRoom(A.getRoomID()).removeMonster(A.getMonster());
     }
     //loads test data
     /*public void test(){

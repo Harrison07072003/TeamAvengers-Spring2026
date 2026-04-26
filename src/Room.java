@@ -14,7 +14,7 @@ public class Room {
     private VendingMachine vendingMachine;
     private boolean requiresValidFlashlight;
     private boolean locked;
-
+    private int coins;
     //constructor
     public Room(String roomId, String roomName, String roomDescription, String building, boolean requiresValidFlashlight) {
         this.roomId = roomId;
@@ -28,6 +28,7 @@ public class Room {
         this.vendingMachine = null;
         this.requiresValidFlashlight = requiresValidFlashlight;
         this.locked = false;
+        this.coins = 0;
     }
 
     //getters
@@ -76,7 +77,7 @@ public class Room {
         return this.requiresValidFlashlight;
     }
 
-  public VendingMachine getVendingMachine() {
+    public VendingMachine getVendingMachine() {
         return vendingMachine;
     }
 
@@ -157,5 +158,10 @@ public class Room {
         }
         return exitString.substring(0, exitString.length() - 1);
     }
-
+    public int getCoins(){
+        return this.coins;
+    }
+    public void setCoins(int coins){
+        this.coins = coins;
+    }
 }

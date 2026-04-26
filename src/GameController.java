@@ -71,7 +71,7 @@ public class GameController {
                     if(response.equals("solve"))
                         puzzle();
                     else{
-                        view.display("You decided not to ignore the puzzle");
+                        view.display("You decided to ignore the puzzle and come back later");
                     }
                 }
                 if(command.equalsIgnoreCase("escape") && result.startsWith("Congratulations! You have escaped the school and won the game!")){
@@ -114,7 +114,7 @@ public class GameController {
         //after battle
         if(!engine.monsterAlive()){
             view.display("You won the battle!");
-            view.display("You found a " + engine.getPlayer().getMonster().getDropsString()
+            view.display("You found " + engine.getPlayer().getMonster().getDropsString()
                     + " on " + engine.getPlayer().getMonsterName() + "! You also found " + engine.getPlayer().getMonster().getCoins() +" coins");
         }
         else if(!engine.playerAlive()){
@@ -124,6 +124,7 @@ public class GameController {
             else
                 view.display(engine.resetGame());
         }
+        engine.destoryMonster();
         engine.setPlayerState(1);
     }
     //puzzle state

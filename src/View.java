@@ -24,8 +24,8 @@ public class View {
                 + "4.Engage - type 'engage' if you want to do battle with the monster and enter combat after inspecting it\n"
                 + "5.Ignore - type 'ignore' if you want to ignore a monster encounter after inspecting it\n"
                 + "6.Explore Puzzle - type 'explore puzzle' if puzzle in room and want to see a puzzle and be prompted to solve or ignore\n"
-                + "7.Solve Puzzle - type 'solve puzzle' if you want to be given a chance to solve the puzzle and put in answer\n"
-                + "8.Ignore Puzzle - type 'ignore puzzle if you want to ignore the puzzle and come back to it later\n"
+                + "7.Solve Puzzle - type 'solve' if you want to be given a chance to solve the puzzle and put in answer\n"
+                + "8.Ignore Puzzle - type 'ignore' if you want to ignore the puzzle and come back to it later\n"
                 + "9.Pickup Item - type 'pickup <itemname>' (ex: pickup Flashlight) allows you to pickup items and allow you to put them in your inventory\n"
                 + "10.Drop Item - type 'drop <itemname>' (ex: drop Flashlight) allows you to drop items and put them in the room inventory\n"
                 + "11.Use Item - type 'use <itemname>' (ex: use Office Key) allows you to use items that interact with the game(only usable with office key to unlock door in chem office)\n"
@@ -34,7 +34,8 @@ public class View {
                 + "14.Buy Food - type 'buy food' in room with vending machine in order to buy food from it for 4 coins each\n"
                 + "15.Consume Food - type 'consume <itemname>' (ex: consume Vending Machine Food) allows you to restore health using food(Only Consumables)\n"
                 + "16.Examine Item - type 'examine <itemname>' (ex: examine Batteries) allows you to examine item descriptions of items in inventory\n"
-                + "17.Equip Weapon - type 'equip <itemname>' (ex: equip Fork) allows you to equip weapons to increase attack(Only Weapons)\n----------------------------");
+                + "17.Equip Weapon - type 'equip <itemname>' (ex: equip Fork) allows you to equip weapons to increase attack(Only Weapons)\n"
+                + "18.Collect Coins - type 'collect coins' to pickup coins in a room\n----------------------------");
     }
     public void help(int state){
         if(state == 1)
@@ -52,7 +53,7 @@ public class View {
                             "                                  |Building E|\n" +
                             " [R5|Game Room]    -------     [R18|Kitchen]     ----- [R8|Dining Hall]\n" +
                             "      |                             |                             |\n" +
-                            " [R13|Meditation Room] ----- [R4|Student Lounge] ----- [R16|Campus Cafe] -----> Library(R11-Study Room)"
+                            " [R13|Meditation Room] ----- [R4|Student Lounge] ----- [R6|Campus Cafe] -----> Library(R11-Study Room)"
             );
         } else if (building.equals("Library")) {
             System.out.println(

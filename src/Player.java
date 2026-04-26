@@ -34,7 +34,7 @@ public class Player extends Character {
         else if (heavyDamage)
             damage = (this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3;
         else if (enemy.isDefending())
-            damage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 0.6 - enemy.getDefense());
+            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus())-enemy.getDefense()) *0.6);
         else
             damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - enemy.getDefense();
         if (damage < 1)
@@ -333,16 +333,15 @@ public class Player extends Character {
             if(this.getCurrentHP()==getMaxHP()){
                 return "You cannot consume right now, your HP is already full.";
             }
-            int total = this.getCurrentHP()+ 5;
+            int total = this.getCurrentHP()+ item.getValue();
             if(total>getMaxHP()){
-                int restored = getMaxHP()-getCurrentHP();//if we wanna tell player specifically, how much was added
-                setCurrentHP(getMaxHP());
-                getInventory().remove(item);
+                this.setCurrentHP(this.getMaxHP());
+                this.getInventory().remove(item);
                 return "HP fully restored.";
             }
-            getInventory().remove(item);
-            setCurrentHP(total);
-            return "5 HP has been restored. You now have " + total + "HP";
+            this.getInventory().remove(item);
+            this. setCurrentHP(total);
+            return item.getValue() + " HP has been restored. You now have " + total + " HP";
         }
         //if in picked up
         Item picked = this.getPickedUp();
@@ -372,6 +371,8 @@ public class Player extends Character {
 
 
     public String dropItem(String item) {
+        if(this.getInventory().isEmpty())
+            return "You have no items in your inventory";
         for (int i = 0; i < this.getInventory().size(); i++) {
             if (this.getInventory().get(i).getItemName().equalsIgnoreCase(item)) {
                 Item dropped = this.getInventory().get(i);
@@ -392,19 +393,17 @@ public class Player extends Character {
                 return "You have dropped " + dropped.getItemName() + " in the room.";
             }
         }
-        return null;
+        return "That item isn't in your inventory";
     }
     public String combineItems(){
-        if(this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"))){
+        if(this.combineFlashlightMessage()){
             this.getInventory().remove(getItem("Flashlight"));
             this.getInventory().remove(getItem("Batteries"));
             Item poweredFlashlight = new Tool("A14","Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
             this.getInventory().add(poweredFlashlight);
             return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
         }
-        else if(this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
-                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
-                this.getInventory().contains(getItem("Cure Vial 5")) && this.currentRoom.equals("R16")){
+        if(this.combineCureMessage() && this.currentRoom.equals("R16")){
             this.getInventory().remove(getItem("Cure Vial 1"));
             this.getInventory().remove(getItem("Cure Vial 2"));
             this.getInventory().remove(getItem("Cure Vial 3"));
@@ -413,8 +412,9 @@ public class Player extends Character {
             Item Cure = new QuestItem("A13","Cure","QuestItem","Cure for the plague",0,"","",0);
             this.getInventory().add(Cure);
             return "You have combined the vials and created the Cure for the plague";
-
         }
+        else if(this.combineCureMessage())
+            return "You have all the vials, but you need to be in Chem Lab 2 combine them";
         return "You don't have the necessary items to combine.";
     }
 
@@ -481,16 +481,16 @@ public class Player extends Character {
         }
         Room current = this.getCurrentRoom(this.currentRoom);
         String userInput = input.trim().toUpperCase();
-        if(userInput.substring(0,1).equalsIgnoreCase("N")){
+        if(userInput.substring(0,1).equalsIgnoreCase("N") && userInput.length() == 1){
             userInput= "North";
         }
-        else if(userInput.substring(0,1).equalsIgnoreCase("S")){
+        else if(userInput.substring(0,1).equalsIgnoreCase("S") && userInput.length() == 1){
             userInput= "South";
         }
-        else if(userInput.substring(0,1).equalsIgnoreCase("E")){
+        else if(userInput.substring(0,1).equalsIgnoreCase("E") && userInput.length() == 1){
             userInput= "East";
         }
-        else if(userInput.substring(0,1).equalsIgnoreCase("W")){
+        else if(userInput.substring(0,1).equalsIgnoreCase("W") && userInput.length() == 1){
             userInput= "West";
         }
         String nextRoom = current.getExit(userInput);//
@@ -540,6 +540,8 @@ public class Player extends Character {
             if (current.hasPuzzle()) {
                 result += "\nThere is a puzzle in this room";
             }
+            if(current.getCoins() != 0)
+                result += "\nThere are coins in this room";
 
             result += "\nExits: " + current.getExits();
             return result;
@@ -557,7 +559,7 @@ public class Player extends Character {
 
     //puzzle methods
     public boolean escapeGame() {
-        if (currentRoom.equals("R20") && this.getInventory().contains(getItem("Cure")))
+        if (currentRoom.equals("R20") && this.containsCure())
             return true;
         return false;
     }
@@ -591,7 +593,7 @@ public class Player extends Character {
             result += puzzle.getSuccessMessage();
             if (puzzle.getCoins() > 0) {
                 this.setCoins(this.getCoins() + puzzle.getCoins());
-                result += puzzle.getCoins() + " coins earned.";
+                result += puzzle.getCoins() + " coins earned. ";
             }
                 if (puzzle.getRewards().size() > 0) {
                     for (int i = 0; i < puzzle.getRewards().size(); i++) {
@@ -601,11 +603,50 @@ public class Player extends Character {
                             this.getInventory().add(puzzle.getRewards().get(i));
                             this.addVial(puzzle.getRewards().get(i));
                         }
-                        result += puzzle.getRewards().get(i).getItemName() + " dropped.";
+                        result += " " + puzzle.getRewards().get(i).getItemName() + " dropped.";
                     }
                 }
                 return result;
             }
             return puzzle.getFailureMessage();
         }
+    public String getInventoryString() {
+        int i = 1;
+        String inventoryString = "";
+        String weaponString = "";
+        if (this.getInventory().isEmpty()) {
+            return "Your Inventory is Empty " + spaceInInventory();
+        }
+        for (Item item : this.getInventory()) {
+            if(item.getCategory().equals("Weapon"))
+                weaponString += i + "." + item.getItemName() + "\n";
+            else
+                inventoryString += i + "." + item.getItemName() + "\n";
+            i++;
+        }
+        if(weaponString.isEmpty())
+            weaponString = "You have no weapons in your inventory ";
+        if(inventoryString.isEmpty())
+            inventoryString = "You have no non-weapon items in your inventory ";
+        return "Items\n" + "----------\n" + inventoryString.substring(0,inventoryString.length()-1) +  "\nWeapons\n" + "----------\n"
+                + weaponString.substring(0,weaponString.length()-1) + " \n" + this.spaceInInventory();
+    }
+    public String spaceInInventory(){
+        return "\nYou have " + (this.capacity - this.getInventory().size() + "/" + this.getCapacity() + " spaces available");
+    }
+    public String collectCoinsinRoom(){
+        int collected = 0;
+        Room current = this.getCurrentRoom(this.currentRoom);
+        if(current.getCoins() <= 0)
+            return "There are no coins in this room";
+        else {
+            collected = current.getCoins();
+            this.setCoins(this.getCoins() + current.getCoins());
+            current.setCoins(0);
+        }
+        return "You have collected " + collected + " coins of the ground.";
+    }
+    public boolean containsCure() {
+        return this.getInventory().contains(getItem("Cure"));
+    }
 }
