@@ -140,6 +140,9 @@ public class GameController {
             if(choice.equalsIgnoreCase("no"))
                 break;
         }
+        if(engine.getPuzzleStatus()){
+            engine.destroyPuzzle();
+        }
     }
     //starts game
    public void startGame(){

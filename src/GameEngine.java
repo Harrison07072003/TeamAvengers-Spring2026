@@ -148,6 +148,7 @@ public class GameEngine {
         result.setMessage(A.getRoomName());
         return result.getMessage();
     }
+
     public int getPlayerState(){
         return this.getPlayer().getCurrentState();
     }
@@ -182,6 +183,11 @@ public class GameEngine {
     public void destoryMonster(){
         this.getPlayer().getCurrentRoom(A.getRoomID()).removeMonster(A.getMonster());
     }
+    //copy detroy monster for puzze
+    public void destroyPuzzle(){
+        this.getPlayer().getCurrentRoom(A.getRoomID()).removePuzzle();
+    }
+
     //loads test data
     /*public void test(){
         school.getRooms().add(new Room("R1","Dining Hall","Trays of food are scattered around, and some tables and chairs have been scattered.","Building E",true));
