@@ -472,6 +472,27 @@ public class Player extends Character {
         return "You don't have that item";
     }
 
+// helper method for Enter Room
+    private String wrapText(String text, int maxWidth) {
+        if (text == null || text.isBlank()) return "";
+        String[] words = text.trim().split("\\s+");
+        StringBuilder out = new StringBuilder();
+        int lineLen = 0;
+
+        for (String word : words) {
+            if (lineLen == 0) {
+                out.append(word);
+                lineLen = word.length();
+            } else if (lineLen + 1 + word.length() <= maxWidth) {
+                out.append(" ").append(word);
+                lineLen += 1 + word.length();
+            } else {
+                out.append("\n").append(word);
+                lineLen = word.length();
+            }
+        }
+        return out.toString();
+    }
 
     //Command: Enter Room (move player)
     //room methods
@@ -502,7 +523,8 @@ public class Player extends Character {
         if (current.requiresValidFlashlight() && !this.getInventory().contains(getItem("Powered Flashlight"))) {
             return "Functioning flashlight with batteries is needed to explore this room.";
         } else {
-            String result = "You are currently in the " + current.getRoomName() + ": " + current.getRoomDescription();
+            String result = "You are currently in the " + current.getRoomName() + ":\n"
+                    + wrapText(current.getRoomDescription(), 90);
             if (current.hasItem()) {
                 if (current.getInventory().size() == 1) {
                     result += "\nThere is an item in this room: " + current.getInventory().get(0).getItemName();
