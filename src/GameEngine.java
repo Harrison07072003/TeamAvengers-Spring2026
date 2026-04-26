@@ -7,7 +7,7 @@ public class GameEngine {
     //constructor
     public GameEngine(){
         this.school = new RoomMap("Rooms.txt","puzzles.txt","Monsters.txt","Item.txt","vendingmachines.txt");
-        this.A = new Player("Player", 100, 15, 7, 15,"R1",school);
+        this.A = new Player("Player", 100, 16, 7, 15,"R1",school);
         this.combatEngine = new CombatEngine(A);
         this.result = new GameResult();
     }
@@ -95,7 +95,7 @@ public class GameEngine {
                 result.setMessage("You cannot escape yet. You need to collect all 5 vials to escape.\n"
                  + "You have collected " + A.getVials() + "/5 vials ,after you obtain 5/5 vials, combine them in Chem Lab 2 to form a cure in order to escape\n");
             }
-            if(A.containsCure())
+            if(A.containsCure() && !A.escapeGame())
                 result.setMessage("You have the cure. Now head to the Parking Lot to escape and win the game.\n");
         }
         else
