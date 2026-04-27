@@ -171,6 +171,7 @@ public class GameEngine {
     //game manager methods
     public String resetGame() {
         A.resetPlayer();
+        school.resetRooms();
         school.generateRooms();
         school.spawnMonsters();
         school.loadPuzzles();

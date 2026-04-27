@@ -621,6 +621,8 @@ public class RoomMap {
         }
         return "Error saving checkpoint.";
     }
-
+    public void resetRooms(){
+        this.rooms.clear();
+    }
 
 }
