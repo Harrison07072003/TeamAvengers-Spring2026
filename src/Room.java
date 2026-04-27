@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-
+//Jocelin
 public class Room {
     //fields
     private String roomId;

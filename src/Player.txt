@@ -1,2 +1,0 @@
-#(characterID, hp, atk, def, coins, startingRoom)
-P1,100,5,0,15,R1

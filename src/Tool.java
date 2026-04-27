@@ -1,4 +1,5 @@
 // Tools are non-consumable utility items such as flashlights or batteries.
+//Gethsemane
 public class Tool extends Item {
     private String utilityType;
 

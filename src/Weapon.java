@@ -1,4 +1,5 @@
 // Weapons treat the shared Item value field as an attack bonus.
+//Gethsemane
 public class Weapon extends Item {
 
     public Weapon(String itemId, String itemName, String category,
@@ -11,7 +12,7 @@ public class Weapon extends Item {
         return this.getValue();
     }
     public String toString(){
-        return this.getItemName() + "| " + this.getDescription() + " Gives you +" + this.getAttackBonus() + " boost to your attack";
+        return this.getItemName() + "| " + this.getDescription() + ". Gives you +" + this.getAttackBonus() + " boost to your attack";
     }
 
 }

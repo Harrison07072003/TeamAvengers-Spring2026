@@ -1,4 +1,5 @@
 // Quest items carry a quest type token that Player.useItem(...) interprets.
+//Gethsemane
 public class QuestItem extends Item {
     private String questType;
 

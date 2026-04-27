@@ -1,3 +1,4 @@
+//Harrison
 import java.util.Scanner;
 
 public class GameController {
@@ -119,9 +120,9 @@ public class GameController {
         }
         else if(!engine.playerAlive()){
             view.display("You were defeated...");
-            if(engine.saveExists()) {
-                view.display("Loading last save\n");
-                engine.loadGame();
+            if(engine.checkpointExists()) {
+                view.display("Loading last checkpoint\n");
+                view.display(engine.loadCheckpoint());
                 engine.getPlayer().setAlive(true);
             }
             else {

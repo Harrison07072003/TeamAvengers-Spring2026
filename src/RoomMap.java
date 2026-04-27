@@ -1,3 +1,4 @@
+//Asliee and Harrison
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -29,7 +30,7 @@ public class RoomMap {
         checkpointFile = "checkpointFile.txt";
     }
 
-    public void generateRooms() {
+    public void generateRooms() { //Asilee
         Scanner input;
         String roomId;
         String roomName;
@@ -74,7 +75,7 @@ public class RoomMap {
     }
 
 
-    public void spawnMonsters() {
+    public void spawnMonsters() { //Asilee
         Scanner input;
         String monsterId;
         String monsterName;
@@ -110,7 +111,7 @@ public class RoomMap {
     }
 
 
-    public void loadPuzzles() {
+    public void loadPuzzles() { //Asilee
         Scanner input;
         String puzzleId;
         String puzzleName;
@@ -145,7 +146,7 @@ public class RoomMap {
 
     }
 
-    public void putVendingMachines() {
+    public void putVendingMachines() { //Asilee
         Scanner input;
         String vendingId;
         String roomId;
@@ -166,8 +167,7 @@ public class RoomMap {
             System.out.println("Error: vendingmachines.txt file not found.");
         }
     }
-    public void loadItems() {
-        // need to separate per type of item
+    public void loadItems() { //Asilee
         Scanner input;
         String itemId;
         String itemName;
@@ -213,10 +213,14 @@ public class RoomMap {
             System.out.println("Error: items.txt file not found.");
         }
     }
-    public boolean saveExists() {
+    public boolean saveExists() { //Harrison
         File save = new File(saveFile);
         File checkpoint = new File(checkpointFile);
         return save.exists() || checkpoint.exists();
+    }
+    public boolean checkpointExists(){
+        File checkpoint = new File(checkpointFile);
+        return checkpoint.exists();
     }
     public ArrayList<Room> getRooms(){
         return this.rooms;
@@ -225,7 +229,7 @@ public class RoomMap {
         int roomNumber = Integer.parseInt(num.substring(1));
         return rooms.get(roomNumber-1);
     }
-    private Item returnItem(String itemId, String itemName, String category, String itemDescription, int value, String roomLocation,String location,int price){
+    private Item returnItem(String itemId, String itemName, String category, String itemDescription, int value, String roomLocation,String location,int price){ //Harrison
         if(category.equals("Weapon")){
             return new Weapon (itemId, itemName, category, itemDescription, value, roomLocation, location, price);
         }
@@ -241,7 +245,7 @@ public class RoomMap {
         return null;
     }
 
-    public String saveGame(Player player) {
+    public String saveGame(Player player) { //Harrison and Asliee
         try (PrintWriter output = new PrintWriter(saveFile)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             output.println("Current Timestamp: " + timestamp);
@@ -256,7 +260,7 @@ public class RoomMap {
     }
 
 
-    public void setActualLoadFile(String save,String checkpoint) {
+    public void setActualLoadFile(String save,String checkpoint) { //Harrison and Asliee
         File file1 = new File(save);
         File file2 = new File(checkpoint);
         if(!file1.exists() && !file2.exists()){
@@ -280,7 +284,7 @@ public class RoomMap {
 
     }
 
-    public String loadGame(Player player) {
+    public String loadGame(Player player) { //Harrison and Asliee
         this.setActualLoadFile(saveFile,checkpointFile);
         if (actualLoadFile == null || actualLoadFile.isEmpty()) {
             return "There are no saved games or checkpoints found.\n";
@@ -315,8 +319,40 @@ public class RoomMap {
         }
         return "Game loaded successfully.\n";
     }
+    public String loadCheckpoint(Player player) { //Harrison and Asliee
 
-    private void savePlayerSection(PrintWriter output, Player player) {
+        rooms.clear();
+        player.getInventory().clear();
+        File save = new File(checkpointFile);
+        if (!save.exists()) {
+            return "No checkpoint found.\n";
+        }
+        //compare timestamps and load most recent
+        try (Scanner input = new Scanner(save)) {
+            String section = "";
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+                if (line.length() == 0) continue;
+
+                if (line.equals("PLAYER")) { section = "PLAYER"; continue; }
+                if (line.equals("ROOMS")) { section = "ROOMS"; continue; }
+                if (line.equals("PLAYER INVENTORY")) { section = "PLAYER INVENTORY"; continue; }
+
+                if (section.equals("PLAYER")) {
+                    handlePlayerLine(line, player);
+                } else if (section.equals("PLAYER INVENTORY")) {
+                    handlePlayerInventoryLine(line, player);
+                } else if (section.equals("ROOMS")) {
+                    handleRoomsLine(line);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            return "No checkpoint found\n.";
+        }
+        return "Game loaded successfully.\n";
+    }
+
+    private void savePlayerSection(PrintWriter output, Player player) { //Harrison and Asliee
         output.println("PLAYER");
         output.println(player.getCharaterID() + "," +
                 player.getCurrentHP() + "," +
@@ -331,7 +367,7 @@ public class RoomMap {
                 (player.getPickedUp() != null ? player.getPickedUp().toFileString() : ""));
     }
 
-    private void savePlayerInventorySection(PrintWriter output, Player player) {
+    private void savePlayerInventorySection(PrintWriter output, Player player) { //Harrison and Asliee
         output.println("PLAYER INVENTORY");
         for (Item item : player.getInventory()) {
             output.println("Player ITEM| " + item.toFileString());
@@ -358,7 +394,7 @@ public class RoomMap {
         return s.replace("|", "/"); // replace pipe with safe char
     }
 
-    private void saveRoom(PrintWriter output, Room room) {
+    private void saveRoom(PrintWriter output, Room room) { //Harrison and Asliee
 
         output.println("ROOM|" + sanitize(room.getRoomId()) +
                 "|" + sanitize(room.getRoomName()) +
@@ -412,7 +448,7 @@ public class RoomMap {
 
 
 
-    private void handlePlayerLine(String line, Player player) {
+    private void handlePlayerLine(String line, Player player) { //Harrison and Asliee
         String[] values = line.split(",");
         // preserved original mapping from your code
         player.setCharacterID(values[0].trim());
@@ -433,7 +469,7 @@ public class RoomMap {
 
     }
 
-    private Item parseItemFromData(String itemData) {
+    private Item parseItemFromData(String itemData) { //Harrison and Asliee
         String[] parts = itemData.split(",");
         if (parts.length < 8) {
             return null;
@@ -472,7 +508,7 @@ public class RoomMap {
     }
 
 
-    private void handlePlayerInventoryLine(String line, Player player) {
+    private void handlePlayerInventoryLine(String line, Player player) { //Harrison and Asliee
         if (line.startsWith("Player ITEM|")) {
             String itemData = line.split("\\|",2)[1].trim();
             Item item = parseItemFromData(itemData);
@@ -488,7 +524,7 @@ public class RoomMap {
         }
     }
 
-    private void handleRoomsLine(String line) {
+    private void handleRoomsLine(String line) { //Harrison and Asliee
         if (line.startsWith("ROOM|")) {
             String[] roomValues = line.split("\\|", 8);
             if (roomValues.length < 8) {
@@ -572,7 +608,7 @@ public class RoomMap {
         }
     }
 
-    public String checkpoint(Player player) {
+    public String checkpoint(Player player) { //Harrison and Asliee
         try (PrintWriter output = new PrintWriter(checkpointFile)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             output.println("Current Timestamp: " + timestamp);
@@ -585,5 +621,6 @@ public class RoomMap {
         }
         return "Error saving checkpoint.";
     }
+
 
 }

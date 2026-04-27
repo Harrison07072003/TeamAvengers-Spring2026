@@ -1,3 +1,4 @@
+//Gethsamane and Jocelin
 import java.util.HashMap;
 
 public class VendingMachine {

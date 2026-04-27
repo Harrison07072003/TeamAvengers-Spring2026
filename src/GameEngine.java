@@ -1,3 +1,4 @@
+//Harrison
 public class GameEngine {
     //fields
     private final Player A;
@@ -85,7 +86,7 @@ public class GameEngine {
         else if(command.equalsIgnoreCase("load game"))
             result.setMessage(this.loadGame());
         else if(command.equalsIgnoreCase("checkpoint")){
-            result.setMessage(school.checkpoint(A));
+            result.setMessage(school.checkpoint(A) + "\n");
         }
         else if(command.equalsIgnoreCase("escape")){
             if(A.escapeGame()){
@@ -183,8 +184,14 @@ public class GameEngine {
     public String loadGame(){
         return school.loadGame(A);
     }
+    public String loadCheckpoint(){
+        return school.loadCheckpoint(A);
+    }
     public boolean saveExists(){
         return school.saveExists();
+    }
+    public boolean checkpointExists(){
+        return school.checkpointExists();
     }
     public void destoryMonster(){
         this.getPlayer().getCurrentRoom(A.getRoomID()).removeMonster(A.getMonster());

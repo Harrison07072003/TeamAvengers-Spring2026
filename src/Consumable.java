@@ -1,3 +1,4 @@
+//Gethsemane
 // Consumables are inventory items whose numeric value is treated as healing.
 public class Consumable extends Item {
 
@@ -11,6 +12,6 @@ public class Consumable extends Item {
         return this.getValue();
     }
     public String toString(){
-        return this.getItemName() + "| " + this.getDescription() + " Gives you +" + this.getValue() + " healing";
+        return this.getItemName() + "| " + this.getDescription() + ". Gives you +" + this.getValue() + " healing";
     }
 }

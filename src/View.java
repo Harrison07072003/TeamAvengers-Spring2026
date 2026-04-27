@@ -1,3 +1,4 @@
+//Harrison and Jocelin did Map
 public class View {
     //fields
     //constructor
