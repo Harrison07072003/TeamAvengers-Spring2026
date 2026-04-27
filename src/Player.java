@@ -380,9 +380,19 @@ public class Player extends Character {
                 this.removeVial(dropped);
                 if(dropped.getItemId().equals("A10")){
                     this.setCapacity(5);
+                    int limit = this.getInventory().size()-1;
                     while(this.inventoryFull()){
-                        this.getCurrentRoom(this.currentRoom).addItem(this.getInventory().getLast());
-                        this.getInventory().removeLast();
+                        if(this.getInventory().get(limit).equals(this.equippedWeapon)) {
+                            limit--;
+                        }
+                        else {
+                            if (inventoryFull()) {
+                                this.getCurrentRoom(this.currentRoom).addItem(this.getInventory().get(limit));
+                                this.removeVial(this.getInventory().get(limit));
+                                this.getInventory().remove(limit);
+                                limit--;
+                            }
+                        }
                     }
                     return "You have dropped your " + dropped.getItemName() + " some of the items you were carrying in it may have spilled out." +
                             "Your inventory capacity is back down to 5.";
