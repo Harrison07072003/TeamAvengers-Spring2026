@@ -222,22 +222,23 @@ public class Player extends Character {
     //item methods
     //command: PickUp Item (on the srs, ik its sorta irrelevant, but they wanted it)
     public String pickUp(String itemName) {
-        if (itemName.isBlank()) {
+        if (itemName == null || itemName.isBlank()) {
             return "Please enter an item to pick up.";
         }
         Room room = this.getCurrentRoom(currentRoom);
         ArrayList<String> items = new ArrayList<>();
         for (int i = 0; i < room.getInventory().size(); i++) {
-            items.add(room.getInventory().get(i).getItemName());
+            items.add(room.getInventory().get(i).getItemName().toLowerCase());
         }
-        if (items.contains(itemName)) {
-            Item item = room.getInventory().get(items.indexOf(itemName));
+        if (items.contains(itemName.toLowerCase())) {
+            Item item = room.getInventory().get(items.indexOf(itemName.toLowerCase()));
             room.removeItem(item);
             setPickedUp(item);
             return "You have picked up " + itemName +"\n" + item;
         }
         return "There is no item with that name in this room.";
     }
+
 
     //command: Store item - srs-> depends on "Pickup" command.
     public String storeItem() {
