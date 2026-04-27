@@ -60,9 +60,9 @@ public class View {
             System.out.println(
                             "                                    |Library|\n" +
                             "Building E(R6)<----[R11|Study Room]                  [R12|Server Room]-----> Parking Lot(R20)\n" +
-                            "                        |                            |            \n" +
-                            "                   [R3|Library Lobby]----[R9|Computer Classroom]  \n" +
-                            "                              |             |            \n" +
+                            "                        |                            |           |\n" +
+                            "                   [R3|Library Lobby]----[R9|Computer Classroom] |\n" +
+                            "                              |             |                    |\n" +
                             "[R14|Electric Control Room]----             ----[R7|Malfunctioning Elevators]"
             );
         } else if (building.equals("H Building")) {
