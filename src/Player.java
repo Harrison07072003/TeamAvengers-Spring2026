@@ -1,0 +1,668 @@
+//Everyone
+import java.util.ArrayList;
+public class Player extends Character {
+    //fields
+    private String previousRoom;
+    private String currentRoom;
+    private final RoomMap Map;
+    private Weapon equippedWeapon;
+    private final Weapon standardWeapon = new Weapon("I0", "Fists", "Weapon", "Your own two fists, not very effective but better than nothing.", 0, "", "", 0);
+    private int vials;
+    private int currentState; //lets the game know what state the player is in 1=navigation,2=battle,3=puzzle,4=finished
+    private Item pickedUp; //need for item methods.- j
+    private int capacity;
+
+
+    //constructor
+    public Player(String id, int maxHP, int attack, int defense, int coins, String roomID, RoomMap map) {
+        super(id, maxHP, attack, defense, coins);
+        this.currentRoom = roomID;
+        this.Map = map;
+        this.equippedWeapon = standardWeapon;
+        this.currentState = 1;
+        this.vials = 0;
+        this.previousRoom = roomID;
+        this.pickedUp = null;
+        this.capacity = 5;
+    }
+
+    //getters and setters
+    public int getDamage(Monster enemy, boolean heavyDamage) {
+        double damage;
+        if (heavyDamage && enemy.isDefending())
+            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus() * 1.3) - enemy.getDefense()));
+        else if (heavyDamage)
+            damage = (this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3;
+        else if (enemy.isDefending())
+            damage = (((this.getAttack() + this.equippedWeapon.getAttackBonus())-enemy.getDefense()) *0.6);
+        else
+            damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - enemy.getDefense();
+        if (damage < 1)
+            return 1;
+        else
+            return (int) damage;
+    }
+
+    public String getRoomName() {
+        return this.getCurrentRoom(currentRoom).getRoomName();
+    }
+
+    public String getMonsterName() {
+        return this.getMonster().getMonsterName();
+    }
+
+    public Monster getMonster() {
+        return this.getCurrentRoom(this.getRoomID()).getMonsters().get(0);
+    }
+
+    public int getCurrentState() {
+        return this.currentState;
+    }
+
+    public int getAttackBonus() {
+        return this.equippedWeapon.getAttackBonus();
+    }
+
+    public String getBuilding() {
+        return this.getCurrentRoom(currentRoom).getBuilding();
+    }
+
+    public String getEquippedWeaponName() {
+        return this.equippedWeapon.getItemName();
+    }
+
+    public int getVials() {
+        return this.vials;
+    }
+
+    public void setVials(int vials) {
+        this.vials = vials;
+    }
+
+    public Room getCurrentRoom(String roomID) {
+        return this.Map.getRoom(roomID);
+    }
+
+    public String getRoomID() {
+        return this.currentRoom;
+    }
+
+    public Item getPickedUp() {
+        return this.pickedUp;
+    }
+
+    public void setPickedUp(Item item) {
+        this.pickedUp = item;
+    }
+
+    public void setState(int state) {
+        this.currentState = state;
+    }
+
+    public void setCurrentRoom(String roomID) {
+        this.currentRoom = roomID;
+    }
+
+    public String getPreviousRoom() {
+        return this.previousRoom;
+    }
+
+    public void setPreviousRoom(String previousRoom) {
+        this.previousRoom = previousRoom;
+    }
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+    public int getCapacity() {
+        return this.capacity;
+    }
+
+
+
+    //reset
+    public void resetPlayer() {
+        this.setCurrentRoom("R1");
+        this.setPreviousRoom("R1");
+        this.pickedUp = null;
+        this.capacity = 5;
+        this.setAlive(true);
+        this.setCurrentHP(this.getMaxHP());
+        this.setVials(0);
+        this.setStandardWeapon();
+        this.getInventory().clear();
+    }
+
+    private void setStandardWeapon() {
+        this.equippedWeapon = standardWeapon;
+    }
+
+    //methods
+    //monster methods
+    public void attack(Monster monster) {
+        if (monster.isAlive()) {
+            double damage = this.getAttack() + this.equippedWeapon.getAttackBonus() - monster.getDefense();
+            if (monster.isDefending()) {
+                damage = damage * (0.6);
+            }
+            if (damage <= 0) {
+                damage = 1;
+            }
+            monster.setCurrentHP(monster.getCurrentHP() - (int) damage);
+            if (monster.getCurrentHP() <= 0) {
+                monster.setAlive(false);
+                if (!monster.getInventory().isEmpty()) {
+                    Item dropped = monster.getInventory().get(0);
+                    if(inventoryFull())
+                        this.getCurrentRoom(this.currentRoom).addItem(dropped);
+                    else {
+                        this.getInventory().add(dropped);
+                        this.addVial(dropped);
+                    }
+                }
+                this.collectCoins(monster.getCoins());
+            }
+        }
+    }
+
+    public boolean heavyAttack(Monster monster) {
+        if (monster.isAlive()) {
+            double heavyDamage = ((this.getAttack() + this.equippedWeapon.getAttackBonus()) * 1.3);
+            if (monster.isDefending()) {
+                heavyDamage -= monster.getDefense();
+            }
+            if (heavyDamage <= 0) {
+                heavyDamage = 1;
+            }
+            int chance = (int) (Math.random() * 100);
+            if (chance > 40) {
+                monster.setCurrentHP(monster.getCurrentHP() - (int) heavyDamage);
+                if (monster.getCurrentHP() <= 0) {
+                    monster.setAlive(false);
+                    if (!monster.getInventory().isEmpty()) {
+                        Item dropped = monster.getInventory().get(0);
+                        if(inventoryFull())
+                            this.getCurrentRoom(this.currentRoom).addItem(dropped);
+                        else {
+                            this.getInventory().add(dropped);
+                            this.addVial(dropped);
+                        }
+                    }
+                    this.collectCoins(monster.getCoins());
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void collectCoins(int coins) {
+        this.setCoins(this.getCoins() + coins);
+    }
+
+    public String inspectMonster() {
+        if (this.getCurrentRoom(currentRoom).hasMonsters()) {
+            Monster monster = this.getMonster();
+            if (monster.isAlive()) {
+                return monster.getMonsterName() + ": " + monster.getMonsterDescription() + "\nHP: " + monster.getCurrentHP() + "/" + monster.getMaxHP() + "\nAttack: "
+                        + monster.getAttack() + "\nDefense: " + monster.getDefense();
+            }
+        }
+        return "No Monsters detected";
+    }
+
+    public boolean engageMonster() {
+        return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
+    }
+
+
+    //item methods
+    //command: PickUp Item (on the srs, ik its sorta irrelevant, but they wanted it)
+    public String pickUp(String itemName) {
+        if (itemName == null || itemName.isBlank()) {
+            return "Please enter an item to pick up.";
+        }
+        Room room = this.getCurrentRoom(currentRoom);
+        ArrayList<String> items = new ArrayList<>();
+        for (int i = 0; i < room.getInventory().size(); i++) {
+            items.add(room.getInventory().get(i).getItemName().toLowerCase());
+        }
+        if (items.contains(itemName.toLowerCase())) {
+            Item item = room.getInventory().get(items.indexOf(itemName.toLowerCase()));
+            room.removeItem(item);
+            setPickedUp(item);
+            return "You have picked up " + itemName +"\n" + item;
+        }
+        return "There is no item with that name in this room.";
+    }
+
+
+    //command: Store item - srs-> depends on "Pickup" command.
+    public String storeItem() {
+        if (this.pickedUp == null) {
+            return "You have not picked up an item to store.";
+        }
+        if(pickedUp.getItemId().equals("A10")){
+            setCapacity(15);
+            this.getInventory().add(this.pickedUp);
+            String itemName = this.pickedUp.getItemName();
+            this.setPickedUp(null);
+            return "You have stored " + itemName + " in your inventory." + " Inventory has been increased to 15 items.";
+        }
+        if (this.getInventory().size() >= this.capacity) {
+            return "Your inventory is full. Please drop an item before storing a new one.";
+        }
+        this.getInventory().add(this.pickedUp);
+        String itemName = this.pickedUp.getItemName();
+        this.addVial(pickedUp);
+        this.setPickedUp(null);
+        return "You have stored " + itemName + " in your inventory.";
+    }
+
+    //Command: Drop item
+    public String leave(String itemName) {
+            if (itemName.isBlank()) {
+                return "Please enter an item to drop.";
+            }
+            if(pickedUp == null){
+                return "You have not picked up an item to drop.";
+            }
+            if (pickedUp.getItemName().equalsIgnoreCase(itemName)) {
+                Item item;
+                if (pickedUp.getItemName().equalsIgnoreCase(itemName)) {
+                    item = pickedUp;
+                    setPickedUp(null);
+                } else {
+                    return "Item entered not found. Please enter an item you've picked up or have in your inventory.";
+                }
+                this.getCurrentRoom(currentRoom).addItem(item);
+                return "You have dropped " + item.getItemName() + " in the room.";
+            }
+        return "Item entered not found. Please enter an item you've picked up or have in your inventory.";
+    }
+    
+    //Command: Use Item - "for key item only"-analysis doc...
+    public boolean useItem(String itemName){
+        if(itemName.isBlank()){
+            return false;
+        }
+        Item item = getItem(itemName);
+        if(item == null){
+            return false;
+        }
+        if(item.getItemName().equalsIgnoreCase("Office Key")){
+            if(currentRoom.equals("R1") || currentRoom.equals("R10") || currentRoom.equals("R16")){
+                this.getCurrentRoom("R17").setLocked(false);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Command: Buy Food
+    public String buyFood(){
+        Room room = this.getCurrentRoom(currentRoom);
+        if(room.hasVendingMachine()){
+            if(this.getCoins() >= 4){
+                this.setCoins(this.getCoins() - 4);
+                room.addItem(room.getVendingMachine().getItem());
+                return "Vending machine food has been dispensed into the room.";
+            }
+            else{
+                return "You don't have enough coins to buy food. You need at least 4 coins.";
+            }
+        }
+        else{
+            return "There is no vending machine in this room.";
+        }
+    }
+    //Command: Consume Food
+    public String consumeFood(String itemName){
+        if(itemName == null || itemName.isBlank()){
+            return "Please enter an item to consume";
+        }
+
+        Item item = getItem(itemName);
+        //if in inventory
+        if(item!= null){
+            if(!item.getCategory().equalsIgnoreCase("Consumable")){
+                return"That item is not consumable.";
+            }
+            if(this.getCurrentHP()==getMaxHP()){
+                return "You cannot consume right now, your HP is already full.";
+            }
+            int total = this.getCurrentHP()+ item.getValue();
+            if(total>getMaxHP()){
+                this.setCurrentHP(this.getMaxHP());
+                this.getInventory().remove(item);
+                return "HP fully restored.";
+            }
+            this.getInventory().remove(item);
+            this. setCurrentHP(total);
+            return item.getValue() + " HP has been restored. You now have " + total + " HP";
+        }
+        //if in picked up
+        Item picked = this.getPickedUp();
+        if(picked!= null && picked.getItemName().equalsIgnoreCase(itemName)){
+            if(!picked.getCategory().equalsIgnoreCase("Consumable")){
+                return"That item is not consumable.";
+            }
+            if(this.getCurrentHP()==getMaxHP()){
+                return "You cannot consume right now, your HP is already full.";
+            }
+            int total = this.getCurrentHP()+ 5;
+            if(total>getMaxHP()){
+                int restored = getMaxHP()-getCurrentHP();//if we wanna tell player specifically, how much was added
+                setCurrentHP(getMaxHP());
+                setPickedUp(null);
+                return "HP fully restored.";
+            }
+            setPickedUp(null);
+            setCurrentHP(total);
+            return "5 HP has been restored. You now have " + total + "HP";
+        }
+        return "Please enter a valid item you've picked up or have in your inventory.";
+    }
+
+    //Command: Combine Items - for cure vials, only in r16 chem lab (and flashlight?)
+
+
+
+    public String dropItem(String item) {
+        if(this.getInventory().isEmpty())
+            return "You have no items in your inventory";
+        for (int i = 0; i < this.getInventory().size(); i++) {
+            if (this.getInventory().get(i).getItemName().equalsIgnoreCase(item)) {
+                Item dropped = this.getInventory().get(i);
+                if(dropped.equals(this.equippedWeapon))
+                    return "You can't drop the " + getEquippedWeaponName() + " until you unequip it first";
+                this.getCurrentRoom(currentRoom).addItem(dropped);
+                this.getInventory().remove(dropped);
+                this.removeVial(dropped);
+                if(dropped.getItemId().equals("A10")){
+                    this.setCapacity(5);
+                    while(this.inventoryFull()){
+                        this.getCurrentRoom(this.currentRoom).addItem(this.getInventory().getLast());
+                        this.getInventory().removeLast();
+                    }
+                    return "You have dropped your " + dropped.getItemName() + " some of the items you were carrying in it may have spilled out." +
+                            "Your inventory capacity is back down to 5.";
+                }
+                return "You have dropped " + dropped.getItemName() + " in the room.";
+            }
+        }
+        return "That item isn't in your inventory";
+    }
+    public String combineItems(){
+        if(this.combineFlashlightMessage()){
+            this.getInventory().remove(getItem("Flashlight"));
+            this.getInventory().remove(getItem("Batteries"));
+            Item poweredFlashlight = new Tool("A14","Powered Flashlight", "Tool", "A flashlight with batteries, can be used to explore dark rooms.", 0, "", "", 0);
+            this.getInventory().add(poweredFlashlight);
+            return "You have combined the Flashlight and Batteries to create a Powered Flashlight!";
+        }
+        if(this.combineCureMessage() && this.currentRoom.equals("R16")){
+            this.getInventory().remove(getItem("Cure Vial 1"));
+            this.getInventory().remove(getItem("Cure Vial 2"));
+            this.getInventory().remove(getItem("Cure Vial 3"));
+            this.getInventory().remove(getItem("Cure Vial 4"));
+            this.getInventory().remove(getItem("Cure Vial 5"));
+            Item Cure = new QuestItem("A13","Cure","QuestItem","Cure for the plague",0,"","",0);
+            this.getInventory().add(Cure);
+            return "You have combined the vials and created the Cure for the plague";
+        }
+        else if(this.combineCureMessage())
+            return "You have all the vials, but you need to be in Chem Lab 2 combine them";
+        return "You don't have the necessary items to combine.";
+    }
+
+    public boolean combineFlashlightMessage(){
+        return this.getInventory().contains(getItem("Flashlight")) && this.getInventory().contains(getItem("Batteries"));
+    }
+    public boolean combineCureMessage(){
+        return this.getInventory().contains(getItem("Cure Vial 1")) && this.getInventory().contains(getItem("Cure Vial 2")) &&
+                this.getInventory().contains(getItem("Cure Vial 3")) && this.getInventory().contains(getItem("Cure Vial 4")) &&
+                this.getInventory().contains(getItem("Cure Vial 5"));
+    }
+    public boolean inventoryFull(){
+        return this.getInventory().size() > this.capacity;
+    }
+    public void addVial(Item item){
+        if(item.getItemName().startsWith("Cure Vial"))
+            this.vials++;
+    }
+    public void removeVial(Item item) {
+        if (item.getItemName().startsWith("Cure Vial"))
+            this.vials--;
+    }
+
+    public String checkWeapon(){
+        if(this.equippedWeapon.getItemName().equals("Fists"))
+            return "There is no weapon equipped.";
+        return this.equippedWeapon.toString();
+    }
+
+    public boolean equipWeapon(String weapon) {
+        for (int i = 0; i < this.getInventory().size(); i++) {
+            if (this.getInventory().get(i).getItemName().equalsIgnoreCase(weapon)) {
+                this.equippedWeapon = (Weapon) this.getInventory().get(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    public String unequipWeapon(){
+        String message = "";
+        if(!equippedWeapon.equals(standardWeapon)){
+            message += "You have unequipped the " + this.getEquippedWeaponName();
+            equippedWeapon = standardWeapon;
+        }
+        else
+            message += "You don't have anything equipped";
+        return message;
+    }
+
+    public String examineItem(String item) {
+        for (int i = 0; i < this.getInventory().size(); i++) {
+            if (item.equalsIgnoreCase(this.getInventory().get(i).getItemName()))
+                return this.getInventory().get(i).toString();
+        }
+        return "You don't have that item";
+    }
+
+// helper method for Enter Room
+    private String wrapText(String text, int maxWidth) {
+        if (text == null || text.isBlank()) return "";
+        String[] words = text.trim().split("\\s+");
+        StringBuilder out = new StringBuilder();
+        int lineLen = 0;
+
+        for (String word : words) {
+            if (lineLen == 0) {
+                out.append(word);
+                lineLen = word.length();
+            } else if (lineLen + 1 + word.length() <= maxWidth) {
+                out.append(" ").append(word);
+                lineLen += 1 + word.length();
+            } else {
+                out.append("\n").append(word);
+                lineLen = word.length();
+            }
+        }
+        return out.toString();
+    }
+
+    //Command: Enter Room (move player)
+    //room methods
+    public String enterRoom(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
+        }
+        Room current = this.getCurrentRoom(this.currentRoom);
+        String userInput = input.trim().toUpperCase();
+        if (userInput.equals("N") || userInput.equals("NORTH")) userInput = "North";
+        else if (userInput.equals("S") || userInput.equals("SOUTH")) userInput = "South";
+        else if (userInput.equals("E") || userInput.equals("EAST")) userInput = "East";
+        else if (userInput.equals("W") || userInput.equals("WEST")) userInput = "West";
+        String nextRoom = current.getExit(userInput);//
+        if (nextRoom == null) {
+            return "There is no entrance in that direction. Please enter a valid Direction or Room ID.";
+        }
+        if(this.getCurrentRoom(nextRoom).isLocked()){
+            return "This room is locked. You must use a key item to enter this room.";
+        }
+        this.previousRoom = this.currentRoom;
+        this.currentRoom = nextRoom;
+        return "You have entered " + this.getCurrentRoom(this.currentRoom).getRoomName() + ".";
+    }
+
+    public String exploreRoom() {
+        Room current = this.getCurrentRoom(currentRoom);
+        if (current.requiresValidFlashlight() && !this.getInventory().contains(getItem("Powered Flashlight"))) {
+            return "Functioning flashlight with batteries is needed to explore this room.";
+        } else {
+            String result = "You are currently in the " + current.getRoomName() + ":\n"
+                    + wrapText(current.getRoomDescription(), 90);
+            if (current.hasItem()) {
+                if (current.getInventory().size() == 1) {
+                    result += "\nThere is an item in this room: " + current.getInventory().get(0).getItemName();
+                }
+                if (current.getInventory().size() > 1) {
+                    result += "\nThere are items in this room: ";
+                    for (Item item : current.getInventory()) {
+                        result += "\n- " + item.getItemName();
+                    }
+                }
+            }
+            if (current.hasVendingMachine()) {
+                result += "\nThere is a vending machine in this room. You can buy food from it to restore health.";
+            }
+            if (current.hasMonsters()) {
+                if (current.getMonster().size() == 1) {
+                    result += "\nThere is a monster in this room: " + current.getMonster().get(0).getMonsterName();
+                }
+                if (current.getMonster().size() > 1) {
+                    result += "\nThere are monsters in this room: ";
+                    for (Monster monster : current.getMonster()) {
+                        result += "\n- " + monster.getMonsterName();
+                    }
+                }
+            }
+
+            if (current.hasPuzzle()) {
+                result += "\nThere is a puzzle in this room";
+            }
+            if(current.getCoins() != 0)
+                result += "\nThere are coins in this room";
+
+            result += "\nExits: " + current.getExits();
+            return result;
+        }
+    }
+
+    public Item getItem(String itemName) {
+        for (Item item : this.getInventory()) {
+            if (item.getItemName().equalsIgnoreCase(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    //puzzle methods
+    public boolean escapeGame() {
+        if (currentRoom.equals("R20") && this.containsCure())
+            return true;
+        return false;
+    }
+
+    public Weapon getEquippedWeapon() {
+        return this.equippedWeapon;
+    }
+
+    public void setEquippedWeapon(Weapon equippedWeapon) {
+        this.equippedWeapon = equippedWeapon;
+    }
+
+    public String explorePuzzle() {
+        String result = "";
+        if (this.getCurrentRoom(currentRoom).hasPuzzle()) {
+            if(this.getCurrentRoom(currentRoom).getPuzzle().isSolved()){
+                return "You have already solved this puzzle.";
+            }
+            Puzzle puzzle = this.getCurrentRoom(currentRoom).getPuzzle();
+            result += puzzle.getPuzzleName() + ": " + puzzle.getQuestion();
+        } else {
+            return "no puzzle detected";
+        }
+        return result;
+    }
+
+    public String solvePuzzle(String answer) {
+        Puzzle puzzle = this.getCurrentRoom(currentRoom).getPuzzle();
+        String result = "";
+        if (puzzle.checkSolution(answer)) {
+            result += puzzle.getSuccessMessage();
+            if (puzzle.getCoins() > 0) {
+                this.setCoins(this.getCoins() + puzzle.getCoins());
+                result += puzzle.getCoins() + " coins earned. ";
+            }
+                if (puzzle.getRewards().size() > 0) {
+                    for (int i = 0; i < puzzle.getRewards().size(); i++) {
+                        if(this.inventoryFull())
+                            this.getCurrentRoom(this.currentRoom).getInventory().add(puzzle.getRewards().get(i));
+                        else {
+                            this.getInventory().add(puzzle.getRewards().get(i));
+                            this.addVial(puzzle.getRewards().get(i));
+                        }
+                        result += " " + puzzle.getRewards().get(i).getItemName() + " dropped.";
+                    }
+                }
+                return result;
+            }
+            return puzzle.getFailureMessage();
+        }
+    public String getInventoryString() {
+        int i = 1;
+        int w = 1;
+        String inventoryString = "";
+        String weaponString = "";
+        if (this.getInventory().isEmpty()) {
+            return "Your Inventory is Empty " + spaceInInventory();
+        }
+        for (Item item : this.getInventory()) {
+            if(item.getCategory().equals("Weapon")) {
+                weaponString += w + "." + item.getItemName() + "\n";
+                w++;
+            }
+            else {
+                inventoryString += i + "." + item.getItemName() + "\n";
+                i++;
+            }
+
+        }
+        if(weaponString.isEmpty())
+            weaponString = "You have no weapons in your inventory ";
+        if(inventoryString.isEmpty())
+            inventoryString = "You have no non-weapon items in your inventory ";
+        return "Items\n" + "----------\n" + inventoryString.substring(0,inventoryString.length()-1) +  "\nWeapons\n" + "----------\n"
+                + weaponString.substring(0,weaponString.length()-1) + " \n" + this.spaceInInventory();
+    }
+    public String spaceInInventory(){
+        return "\nYou have " + (this.capacity - this.getInventory().size() + "/" + this.getCapacity() + " spaces available");
+    }
+    public String collectCoinsinRoom(){
+        int collected = 0;
+        Room current = this.getCurrentRoom(this.currentRoom);
+        if(current.getCoins() <= 0)
+            return "There are no coins in this room";
+        else {
+            collected = current.getCoins();
+            this.setCoins(this.getCoins() + current.getCoins());
+            current.setCoins(0);
+        }
+        return "You have collected " + collected + " coins of the ground.";
+    }
+    public boolean containsCure() {
+        return this.getInventory().contains(getItem("Cure"));
+    }
+}
