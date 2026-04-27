@@ -118,6 +118,12 @@ public class GameEngine {
     public boolean battleEnded(){
         return this.combatEngine.isBattleOver();
     }
+    public boolean retreated(){
+        return this.combatEngine.getRetreated();
+    }
+    public String enter(String direction){
+        return this.getPlayer().enterRoom(direction);
+    }
     public boolean playerAlive(){
         return A.isAlive();
     }

@@ -38,14 +38,6 @@ public class Monster extends Character{
                 player.setAlive(false);
         }
     }
-    public Item dropItem(){
-        Item drop = this.getInventory().get(0);
-        if(!this.isAlive() && !this.getInventory().isEmpty()) {
-            return drop;
-        }
-        else
-            return null;
-    }
     public String getDropsString(){
         String drop = "";
         if(this.getInventory().isEmpty())
@@ -55,9 +47,6 @@ public class Monster extends Character{
                 drop += "a " + this.getInventory().get(i).getItemName() + ",";
             }
         return drop.substring(0,drop.length()-1);
-    }
-   public String fileString(){
-        return this.getCharaterID() + "," + this.getMonsterName() + "," + this.getMonsterDescription() + "," + this.getMaxHP() + "," + this.getAttack() + "," + this.getDefense() + "," + this.getCoins() + "," + this.getRoomID();
     }
     public String getRoomID() {
         return this.RoomID;

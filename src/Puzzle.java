@@ -28,10 +28,6 @@ public class Puzzle {
         this.solved = false;
     }
     // getters
-    public String getPuzzleId() {
-        return puzzleId;
-
-    }
     public String getPuzzleName() {
         return puzzleName;
     }
@@ -71,17 +67,6 @@ public class Puzzle {
 
     //solved
     //methods
-    public ArrayList<Item> dropItems() {
-        ArrayList <Item> items = new ArrayList<>();
-        if(this.solved) {
-            for(int i = 0; i < this.rewards.size(); i++) {
-                items.add(this.rewards.get(i));
-            }
-        }
-        return items;
-    }
-
-
     public boolean checkSolution(String answer) {
         if (answer == null || this.solved) {
             return false;
@@ -97,12 +82,6 @@ public class Puzzle {
 
     public boolean isSolved() {
         return this.solved;
-    }
-    public String getRoomId() {
-        return this.roomId;
-    }
-    public void settRoomId(String roomId) {
-        this.roomId = roomId;
     }
     public String toFileString() {
         return this.puzzleId + ";" + this.puzzleName + ";" + this.question + ";" + this.solution + ";" + this.roomId + ";" + this.successMessage + ";" + this.failureMessage + ";" + this.coins + ";" + this.solved;

@@ -7,7 +7,7 @@ public class View {
         System.out.println(message);
     }
     public void navUI(String RoomName){
-        System.out.println(RoomName +"\nCommands Available: Status, Inventory, Map, Inspect, Equip, Quit, Help" +"\nEnter a command:");
+        System.out.println(RoomName +"\nCommands Available: Status,Map,Enter/Explore Room,Explore Puzzle,Inspect. (Use Help and navhelp to get full list of commands." +"\nEnter a command:");
     }
 
     public void monsterUI(String health,String monster,String monsterHealth){

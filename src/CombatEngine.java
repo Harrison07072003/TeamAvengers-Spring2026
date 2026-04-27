@@ -31,6 +31,9 @@ public class CombatEngine {
     public boolean getMonsterAlive(){
         return this.enemy.isAlive();
     }
+    public boolean getRetreated(){
+        return this.retreated;
+    }
     //battle command
     public String action(String command){
         String result = "";
@@ -99,9 +102,8 @@ public class CombatEngine {
             }
         }
         else if(command.equalsIgnoreCase("retreat")){
-            result += "You retreat from the battle, to the last room you were in.\n";
+            result += "You retreated from battle to fight another day!\n";
             retreated = true;
-            player.retreat();
         }
         else{
             result += "Invalid command. Try again.\n";

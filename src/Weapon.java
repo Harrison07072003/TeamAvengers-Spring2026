@@ -10,4 +10,8 @@ public class Weapon extends Item {
     public int getAttackBonus() {
         return this.getValue();
     }
+    public String toString(){
+        return this.getItemName() + "| " + this.getDescription() + " Gives you +" + this.getAttackBonus() + " boost to your attack";
+    }
+
 }

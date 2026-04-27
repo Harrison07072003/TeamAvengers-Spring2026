@@ -10,4 +10,7 @@ public class Consumable extends Item {
     public int getHpRestore() {
         return this.getValue();
     }
+    public String toString(){
+        return this.getItemName() + "| " + this.getDescription() + " Gives you +" + this.getValue() + " healing";
+    }
 }

@@ -210,10 +210,6 @@ public class Player extends Character {
         return "No Monsters detected";
     }
 
-    public void retreat() {
-        this.enterRoom(this.previousRoom);
-    }
-
     public boolean engageMonster() {
         return this.getCurrentRoom(currentRoom).getMonsters().get(0).isAlive();
     }
@@ -627,17 +623,22 @@ public class Player extends Character {
         }
     public String getInventoryString() {
         int i = 1;
+        int w = 1;
         String inventoryString = "";
         String weaponString = "";
         if (this.getInventory().isEmpty()) {
             return "Your Inventory is Empty " + spaceInInventory();
         }
         for (Item item : this.getInventory()) {
-            if(item.getCategory().equals("Weapon"))
-                weaponString += i + "." + item.getItemName() + "\n";
-            else
+            if(item.getCategory().equals("Weapon")) {
+                weaponString += w + "." + item.getItemName() + "\n";
+                w++;
+            }
+            else {
                 inventoryString += i + "." + item.getItemName() + "\n";
-            i++;
+                i++;
+            }
+
         }
         if(weaponString.isEmpty())
             weaponString = "You have no weapons in your inventory ";

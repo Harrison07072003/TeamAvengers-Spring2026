@@ -131,6 +131,21 @@ public class GameController {
         }
         if(!engine.monsterAlive())
             engine.destoryMonster();
+        if(engine.retreated()){
+            view.display("What room do you want to enter now. Enter a valid exit id or direction (ex: just r2 or e). Check the map with map command to look at exits!");
+            while(true) {
+                String room = input.nextLine();
+                String s = engine.enter(room);
+                if(s.startsWith("You have entered"))
+                    break;
+                else if(room.equalsIgnoreCase("map")){
+                    view.showMap(engine.getPlayerBuilding());
+                }
+                else
+                    view.display("Enter a valid direction or id");
+            }
+            view.display("You have retreated to the " + engine.getRoomName());
+        }
         engine.setPlayerState(1);
     }
     //puzzle state
@@ -156,10 +171,10 @@ public class GameController {
         String[] title = new String[]{
             "====================================================",
             "  ____   ____    ____     ____   _      _   ____  _____ ",
-            " / ___| / ___|  |  _ \\   / ___| / \\    | | / ___|| ____|",
+            " / ___| / ___|  /  _ \\   / ___| / \\    | | / ___|| ____|",
             "| |  _ | |  _   | |_) | | |  _ / _ \\   | || |  _ |  _|  ",
             "| |_| || |_| |  |  __/  | |_| / ___ \\  | || |_| || |___ ",
-            " \\____| \\____|  |_|      \\____/_/   \\_\\_| \\____||_____|",
+            " \\____| \\____| \\|_|      \\____/_/   \\_\\_| \\____||_____|",
             "",
             "                      GGC PLAGUE",
             "===================================================="
@@ -186,9 +201,8 @@ public class GameController {
                 case "start":
                 case "new":
                     view.display("Starting new game...\n");
-                    // start a fresh game; run(false) -> run will call resetGame()
                     run(false);
-                    menuActive = false; // if run returns, break out
+                    menuActive = false;
                     break;
                 case "2":
                 case "load":
@@ -213,7 +227,6 @@ public class GameController {
                 case "q":
                     view.display("Goodbye!");
                     isRunning = false;
-                    menuActive = false;
                     return;
                 default:
                     view.display("Invalid option. Please enter 1, 2, or 3 (or start/load/quit). ");
